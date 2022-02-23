@@ -25,7 +25,11 @@ class Invite2(discord.ui.Button):
     super().__init__(label='Alternative link.', style=discord.ButtonStyle.link,
                       url="https://discord.com/oauth2/authorize?client_id=931981494887534602&permissions=321536&scope=bot%20applications.commands", row = 1)
 
-client = discord.AutoShardedBot()
+intents = discord.Intents.default()
+intents.message_content = True
+intents.messages = True
+
+client = discord.AutoShardedBot(intents=intents)
 client.load_extension('cogs.verify')
 client.load_extension('cogs.ender_listen')
 
@@ -121,7 +125,6 @@ class OptionMin(discord.ui.View):
 @tasks.loop(seconds=10.0)
 async def update_url():
   await changedatabase()
-  print(os.environ["REPLIT_DB_URL"])
 
 async def open_account(user):
 
@@ -150,7 +153,7 @@ async def open_account(user):
 
 @client.event
 async def on_ready():
-  print("We have logged in as {0.user}".format(client))
+  print("Logged in as {0.user}".format(client))
   update_url.start()
   await client.change_presence(activity=discord.Game(name="Minecord | /setup"))
   print(f"{len(client.guilds)} servers")
@@ -303,8 +306,6 @@ async def on_reminder(msg):
             break
           except:
             db[str(id)]["stats"] = {}
-            
-      print(db[str(id)]["stats"])
     
     except:
       pass
@@ -319,15 +320,8 @@ async def on_reminder(msg):
       db[str(id)]["stats"]["chops"] = embed["fields"][1]["value"].split("\n")[1].split("/")[0]
       db[str(id)]["stats"]["fight"] = embed["fields"][2]["value"].split("\n")[1].split("/")[0]
 
-      print(db[str(id)]["stats"])
-
     except:
       pass
-
-    print(db[str(id)]["stats"]["mine"])
-    print(db[str(id)]["stats"]["fight"])
-    print(db[str(id)]["stats"]["chops"])
-
 
     try:
       await open_account(user)
@@ -519,7 +513,7 @@ async def config(ctx):
   await ctx.respond(embed=embed, view = view, ephemeral=True)
   to = await view.wait()
   while not(to):
-    if view.value:
+    if not(view.value):
       view = TogglesCl(ctx)
       await ctx.interaction.edit_original_message(view = view)
     else:

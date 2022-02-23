@@ -1,5 +1,5 @@
 language = "python3"
-run = "pip install py-cord==2.0.0b4 && python main.py"
+run = "pip install -U git+https://github.com/Pycord-Development/pycord && python main.py"
 
 [packager]
 ignoredPackages = ["discord.py", "discord"]
