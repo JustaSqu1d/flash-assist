@@ -6,7 +6,7 @@ app = Flask('')
 
 @app.route('/')
 def home():
-  return ""
+  return render_template('index.html')
 
 @app.route('/privacy-policy')
 def web2():
@@ -14,7 +14,7 @@ def web2():
 
 @app.route('/terms')
 def web3():
-  return render_template('tos.txt')
+  return render_template('tos.html')
 
 @app.route('/<stats>/<int:id>/')
 def API(stats,id):
