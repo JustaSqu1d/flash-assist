@@ -11,7 +11,7 @@ import aiohttp
 bots = [878007103460089886, 625363818968776705, 574652751745777665]
 
 async def changedatabase():
-  async with aiohttp.ClientSession() as session:
+  async with aiohttp.botSession() as session:
     async with session.get(f"https://VMA.squidsquidsquid.repl.co/{os.environ['PW']}") as response:
       html = await response.text()
       db.db_url = str(html)
@@ -19,20 +19,21 @@ async def changedatabase():
 class Invite(discord.ui.Button):
   def __init__(self):
     super().__init__(label='Invite me!', style=discord.ButtonStyle.link,
-                      url="https://discord.com/oauth2/authorize?client_id=836581672811495465&permissions=321536&scope=bot%20applications.commands", row = 1)
+                      url="https://discord.com/oauth2/authorize?bot_id=836581672811495465&permissions=321536&scope=bot%20applications.commands", row = 1)
 
 class Invite2(discord.ui.Button):
   def __init__(self):
     super().__init__(label='Alternative link.', style=discord.ButtonStyle.link,
-                      url="https://discord.com/oauth2/authorize?client_id=931981494887534602&permissions=321536&scope=bot%20applications.commands", row = 1)
+                      url="https://discord.com/oauth2/authorize?bot_id=931981494887534602&permissions=321536&scope=bot%20applications.commands", row = 1)
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.messages = True
 
-client = discord.AutoShardedBot(intents=intents, activity=discord.Game(name="Discord Bots | /setup"))
-client.load_extension('cogs.verify')
-client.load_extension('cogs.ender_listen')
+bot = discord.AutoShardedBot(intents=intents, activity=discord.Game(name="Discord Bots | /setup"))
+bot.load_extension('cogs.verify')
+bot.load_extension('cogs.ender_listen')
+bot.load_extension('cogs.vf_verify')
 
 class Option1(discord.ui.View):
     def __init__(self):
@@ -152,20 +153,20 @@ async def open_account(user):
 
   return True
 
-@client.event
+@bot.event
 async def on_ready():
-  print("Logged in as {0.user}".format(client))
+  print("Logged in as {0.user}".format(bot))
   update_url.start()
-  print(f"{len(client.guilds)} servers")
+  print(f"{len(bot.guilds)} servers")
 
-@client.event
+@bot.event
 async def on_message(msg):
   try:
-    if msg.author.id in bots: client.dispatch("reminder", msg)
+    if msg.author.id in bots: bot.dispatch("reminder", msg)
   except:
     pass
     
-@client.event
+@bot.event
 async def on_reminder(msg):
   try:
     ctx = msg.channel
@@ -426,19 +427,19 @@ async def on_reminder(msg):
   except:
     pass
     
-@client.event
+@bot.event
 async def on_interaction(itx):
   await open_account(itx.user)
-  await client.process_application_commands(itx)
+  await bot.process_application_commands(itx)
 
-@client.slash_command(name="terms", description="You can view our Terms of Service and Privacy Policy here.")
+@bot.slash_command(name="terms", description="You can view our Terms of Service and Privacy Policy here.")
 async def terms(ctx):
   await ctx.defer()
   embed = discord.Embed(title="Flash Assist Terms")
   embed.add_field(name="Links", value="[Terms of Service](https://flash-assist.squidsquidsquid.repl.co/terms)\n[Privacy Policy](https://flash-assist.squidsquidsquid.repl.co/privacy-policy)", inline = False)
   await ctx.followup.send(embed=embed)
 
-@client.slash_command(name="setup", description="Change your settings!")
+@bot.slash_command(name="setup", description="Change your settings!")
 async def setup(ctx):
   await ctx.defer(ephemeral=True)
   await open_account(ctx.author)
@@ -551,7 +552,7 @@ async def setup(ctx):
     await ctx.interaction.edit_original_message(embed = em, view = op1)
     return
 
-@client.slash_command(name="config", description="Edit what commands you want to be reminded upon!!")
+@bot.slash_command(name="config", description="Edit what commands you want to be reminded upon!!")
 async def config(ctx):
 
   embed = discord.Embed(title="Reminder Control Panel!",description="Green: ON\nRed: OFF")
@@ -567,7 +568,7 @@ async def config(ctx):
       await ctx.interaction.edit_original_message(view = view)
     to = await view.wait()
 
-@client.slash_command(name= "droprate", description="Find the drop-rate of boss keys!")
+@bot.slash_command(name= "droprate", description="Find the drop-rate of boss keys!")
 async def droprate(ctx):
     embed = discord.Embed(title="Boss Key Drop Rates", color =discord.Color.orange())
     embed.add_field(name="Boss Key Drops",value=db["success"],inline=False)
@@ -575,7 +576,7 @@ async def droprate(ctx):
     embed.set_footer(text=f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100))}%')
     await ctx.respond(embed = embed)
 
-@client.slash_command(name= "response", description="Use your own custom reminder messages!")
+@bot.slash_command(name= "response", description="Use your own custom reminder messages!")
 async def _response(ctx, 
   response: Option(str, description="Use custom response messages!", required=True)
 ):
@@ -589,7 +590,7 @@ async def _response(ctx,
   success = discord.Embed(title="Success!",color=discord.Color.green())
   await ctx.respond(embed = success)
 
-@client.slash_command(name= "invite", description="Invite me to join your server!")
+@bot.slash_command(name= "invite", description="Invite me to join your server!")
 async def invite(ctx):
   embed = discord.Embed(title="Invite me. :)",color=discord.Color.orange())
   embed.description = ""
@@ -598,7 +599,7 @@ async def invite(ctx):
   view.add_item(Invite2())
   await ctx.respond(embed=embed, view=view)
   
-@client.slash_command(name= "guide", description="Minecord? Whaaa....?")
+@bot.slash_command(name= "guide", description="Minecord? Whaaa....?")
 async def guide(ctx):
   embed = discord.Embed(title="Minecord Guide",color=discord.Color.orange(),url="https://just-a-squid.gitbook.io/minecord-1/v/minecord/")
   await ctx.respond(embed=embed)
@@ -713,4 +714,4 @@ class Toggles(discord.ui.View):
 
 
 keep_alive()
-client.run(os.environ['BOTTOKEN'])
+bot.run(os.environ['BOTTOKEN'])
