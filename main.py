@@ -11,7 +11,7 @@ import aiohttp
 bots = [878007103460089886, 625363818968776705, 574652751745777665]
 
 async def changedatabase():
-  async with aiohttp.botSession() as session:
+  async with aiohttp.ClientSession() as session:
     async with session.get(f"https://VMA.squidsquidsquid.repl.co/{os.environ['PW']}") as response:
       html = await response.text()
       db.db_url = str(html)
