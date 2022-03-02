@@ -1,1 +1,5 @@
-*.log
+*.pyc
+.replit
+poetry.lock
+pyproject.toml
+__pycache__/
