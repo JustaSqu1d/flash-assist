@@ -573,7 +573,7 @@ async def droprate(ctx):
     embed = discord.Embed(title="Boss Key Drop Rates", color =discord.Color.orange())
     embed.add_field(name="Boss Key Drops",value=db["success"],inline=False)
     embed.add_field(name="Mines Recorded",value=db["trials"],inline=False)
-    embed.set_footer(text=f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100), 2)}%')
+    embed.set_footer(text=f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100), 3)}%')
     await ctx.respond(embed = embed)
 
 @bot.slash_command(name= "response", description="Use your own custom reminder messages!")
