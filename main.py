@@ -395,7 +395,6 @@ async def on_reminder(msg):
       
       for embed in msg.embeds:
         embed = embed.to_dict()
-        print(f"{embed}\n")
         
         try:
           if "You will now find more treasure for the next" in embed["description"]:
