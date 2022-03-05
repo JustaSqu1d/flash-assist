@@ -25,7 +25,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.messages = True
 
-bot = discrd.AutoShardedBot(
+bot = discord.AutoShardedBot(
     intents=intents, activity=discord.Game(name="Discord Bots | /setup"))
 
 for filename in os.listdir("cogs"):
