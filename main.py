@@ -1,11 +1,14 @@
-import discord
-from discord.ext import tasks
-from discord.commands import Option
 import os
-from keepalive import keep_alive
-from replit import db
-import aiohttp
+
+import discord
 import sentry_sdk
+from discord.commands import Option
+from discord.ext import tasks
+from replit import db
+
+from helpers import changedatabase, open_account
+from keepalive import keep_alive
+from views import *
 
 sentry_sdk.init(
     "https://b0f5a63f88654de6beb78898668cc652@o1159308.ingest.sentry.io/6244172",
@@ -18,172 +21,19 @@ sentry_sdk.init(
 
 bots = [878007103460089886, 625363818968776705, 574652751745777665]
 
-async def changedatabase():
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-                f"https://VMA.squidsquidsquid.repl.co/{os.environ['PW']}"
-        ) as response:
-            html = await response.text()
-            db.db_url = str(html)
-
-class Invite(discord.ui.Button):
-    def __init__(self):
-        super().__init__(
-            label='Invite me!',
-            style=discord.ButtonStyle.link,
-            url=
-            "https://discord.com/oauth2/authorize?bot_id=836581672811495465&permissions=321536&scope=bot%20applications.commands",
-            row=1)
-
-
-class Invite2(discord.ui.Button):
-    def __init__(self):
-        super().__init__(
-            label='Alternative link.',
-            style=discord.ButtonStyle.link,
-            url=
-            "https://discord.com/oauth2/authorize?bot_id=931981494887534602&permissions=321536&scope=bot%20applications.commands",
-            row=1)
-
 intents = discord.Intents.default()
 intents.message_content = True
 intents.messages = True
 
 bot = discrd.AutoShardedBot(
     intents=intents, activity=discord.Game(name="Discord Bots | /setup"))
-bot.load_extension('cogs.verify')
-bot.load_extension('cogs.ender_listen')
-bot.load_extension('cogs.vf_verify')
-bot.load_extension('cogs.reminders')
-
-
-class Option1(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=60)
-        self.value = None
-
-    @discord.ui.button(label='Minecord', style=discord.ButtonStyle.primary)
-    async def callback(self, button, interaction):
-        self.value = False
-        self.stop()
-
-    @discord.ui.button(label='Minecord Classic',
-                       style=discord.ButtonStyle.secondary)
-    async def callback2(self, button, interaction):
-        self.value = True
-        self.stop()
-
-
-class Option2(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=60)
-        self.value = None
-
-    @discord.ui.button(label='Yes', style=discord.ButtonStyle.success)
-    async def callback(self, button, interaction):
-        self.value = True
-        self.stop()
-
-    @discord.ui.button(label='No', style=discord.ButtonStyle.danger)
-    async def callback2(self, button, interaction):
-        self.value = False
-        self.stop()
-
-class OptionAr(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=60)
-        self.value = None
-
-    @discord.ui.button(label='Chainmail Armor',
-                       style=discord.ButtonStyle.danger)
-    async def callback(self, button, interaction):
-        self.value = 2
-        self.stop()
-
-    @discord.ui.button(label='Iron Armor', style=discord.ButtonStyle.primary)
-    async def callback2(self, button, interaction):
-        self.value = 3
-        self.stop()
-
-    @discord.ui.button(label='Gold Armor', style=discord.ButtonStyle.success)
-    async def callback3(self, button, interaction):
-        self.value = 4
-        self.stop()
-
-    @discord.ui.button(label='Diamond Armor',
-                       style=discord.ButtonStyle.secondary)
-    async def callback4(self, button, interaction):
-        self.value = 5
-        self.stop()
-
-    @discord.ui.button(label='Netherite Armor',
-                       style=discord.ButtonStyle.secondary)
-    async def callback5(self, button, interaction):
-        self.value = 6
-        self.stop()
-
-
-class OptionMin(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=60)
-        self.value = None
-
-    @discord.ui.button(label='1', style=discord.ButtonStyle.danger)
-    async def callback(self, button, interaction):
-        self.value = 1
-        self.stop()
-
-    @discord.ui.button(label='2', style=discord.ButtonStyle.primary)
-    async def callback2(self, button, interaction):
-        self.value = 2
-        self.stop()
-
-    @discord.ui.button(label='3', style=discord.ButtonStyle.primary)
-    async def callback3(self, button, interaction):
-        self.value = 3
-        self.stop()
-
-    @discord.ui.button(label='4', style=discord.ButtonStyle.success)
-    async def callback4(self, button, interaction):
-        self.value = 4
-        self.stop()
-
-    @discord.ui.button(label='5', style=discord.ButtonStyle.success)
-    async def callback5(self, button, interaction):
-        self.value = 5
-
+for filename in os.listdir("cogs"):
+    if filename.endswith(".py"):
+        bot.load_extension(f"cogs.{filename[:-3]}")
 
 @tasks.loop(seconds=10.0)
 async def update_url():
     await changedatabase()
-
-
-async def open_account(user):
-
-    if str(user.id) in db:
-        return False
-
-    else:
-        db[str(user.id)] = {}
-        db[str(user.id)]["efficiency"] = 0
-        db[str(user.id)]["armor"] = 0
-        db[str(user.id)]["dragon"] = 5
-        db[str(user.id)]["mine"] = True
-        db[str(user.id)]["fight"] = True
-        db[str(user.id)]["chop"] = True
-        db[str(user.id)]["ed"] = True
-
-        db[str(user.id)]["efficiency2"] = 0
-        db[str(user.id)]["mine2"] = True
-        db[str(user.id)]["fight2"] = True
-        db[str(user.id)]["chop2"] = True
-        db[str(user.id)]["ed2"] = True
-
-        db[str(
-            user.id
-        )]["response"] = "% Time to &! `m!&`\nCurrent cooldown is `$ seconds`!"
-
-    return True
 
 
 @bot.event
@@ -198,10 +48,10 @@ async def on_message(msg) -> None:
     try:
         if msg.author.id in bots: bot.dispatch("reminder", msg)
         elif msg.author.id == 586743480651350063 and msg.content == "%reload cogs":
-            bot.load_extension('cogs.verify')
-            bot.load_extension('cogs.ender_listen')
-            bot.load_extension('cogs.vf_verify')
-            bot.load_extension('cogs.reminders')
+            for filename in os.listdir("cogs"):
+                if filename.endswith(".py"):
+                    bot.reload_extension(f"cogs.{filename[:-3]}")
+            await msg.channel.send("Reload success!")
         else:
             return
     except:
