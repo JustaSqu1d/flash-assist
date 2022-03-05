@@ -3,10 +3,18 @@ from discord.ext import tasks
 from discord.commands import Option
 import os
 from keepalive import keep_alive
-import asyncio
 from replit import db
-import random
 import aiohttp
+import sentry_sdk
+
+sentry_sdk.init(
+    "https://b0f5a63f88654de6beb78898668cc652@o1159308.ingest.sentry.io/6244172",
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0
+)
 
 bots = [878007103460089886, 625363818968776705, 574652751745777665]
 
@@ -41,7 +49,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.messages = True
 
-bot = discord.AutoShardedBot(
+bot = discrd.AutoShardedBot(
     intents=intents, activity=discord.Game(name="Discord Bots | /setup"))
 bot.load_extension('cogs.verify')
 bot.load_extension('cogs.ender_listen')
@@ -203,7 +211,6 @@ async def on_message(msg) -> None:
 async def on_interaction(itx):
     await open_account(itx.user)
     await bot.process_application_commands(itx)
-
 
 @bot.slash_command(
     name="terms",
