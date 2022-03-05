@@ -1,17 +1,14 @@
-"""s"""
-
 import discord
 from discord.ext import commands
-
 import asyncio
-from main import open_account, Invite
 from replit import db
 import random
+from helpers import open_account
+from views import Invite
 
 class Reminders(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
 
     @commands.Cog.listener()
     async def on_reminder(self, msg):
