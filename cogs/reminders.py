@@ -106,7 +106,7 @@ class Reminders(commands.Cog):
                     pass
 
                 await asyncio.sleep(cooldown)
-                await ctx.send(response)
+
                 if random.randint(1, 10) == random.randint(1, 10):
                     view = discord.ui.View()
                     view.add_item(Invite())
