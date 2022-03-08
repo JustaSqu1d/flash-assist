@@ -11,7 +11,7 @@ from keepalive import keep_alive
 from views import *
 
 sentry_sdk.init(
-    "https://b0f5a63f88654de6beb78898668cc652@o1159308.ingest.sentry.io/6244172",
+    os.environ['SDKKEY'],
 
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
@@ -36,13 +36,11 @@ for filename in os.listdir("cogs"):
 async def update_url():
     await changedatabase()
 
-
 @bot.event
 async def on_ready():
     print("Logged in as {0.user}".format(bot))
     update_url.start()
     print(f"{len(bot.guilds)} servers")
-
 
 @bot.event
 async def on_message(msg) -> None:
@@ -66,6 +64,7 @@ async def on_interaction(itx):
     description="You can view our Terms of Service and Privacy Policy here.")
 async def terms(ctx):
     await ctx.defer()
+    bot.dispatch("application_command", ctx)
     embed = discord.Embed(title="Flash Assist Terms")
     embed.add_field(
         name="Links",
@@ -78,6 +77,7 @@ async def terms(ctx):
 @bot.slash_command(name="setup", description="Change your settings!")
 async def setup(ctx):
     await ctx.defer(ephemeral=True)
+    bot.dispatch("application_command", ctx)
     await open_account(ctx.author)
     user = ctx.author
     view = Option1()
@@ -204,7 +204,7 @@ async def setup(ctx):
     name="config",
     description="Edit what commands you want to be reminded upon!!")
 async def config(ctx):
-
+    bot.dispatch("application_command", ctx)
     embed = discord.Embed(title="Reminder Control Panel!",
                           description="Green: ON\nRed: OFF")
     view = Toggles(ctx)
@@ -223,6 +223,7 @@ async def config(ctx):
 @bot.slash_command(name="droprate",
                    description="Find the drop-rate of boss keys!")
 async def droprate(ctx):
+    bot.dispatch("application_command", ctx)
     embed = discord.Embed(title="Boss Key Drop Rates",
                           color=discord.Color.orange())
     embed.add_field(name="Boss Key Drops", value=db["success"], inline=False)
@@ -238,6 +239,7 @@ async def droprate(ctx):
                    description="Use your own custom reminder messages!")
 async def _response(ctx, response: Option(
     str, description="Use custom response messages!", required=True)):
+    bot.dispatch("application_command", ctx)
     if "%" not in response:
         failed = discord.Embed(
             title="Missing Arguments!",
@@ -259,6 +261,7 @@ async def _response(ctx, response: Option(
 
 @bot.slash_command(name="invite", description="Invite me to join your server!")
 async def invite(ctx):
+    bot.dispatch("application_command", ctx)
     embed = discord.Embed(title="Invite me. :)", color=discord.Color.orange())
     embed.description = ""
     view = discord.ui.View()
@@ -269,6 +272,7 @@ async def invite(ctx):
 
 @bot.slash_command(name="guide", description="Minecord? Whaaa....?")
 async def guide(ctx):
+    bot.dispatch("application_command", ctx)
     embed = discord.Embed(
         title="Minecord Guide",
         color=discord.Color.orange(),
