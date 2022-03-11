@@ -41,6 +41,7 @@ async def on_ready():
     print("Logged in as {0.user}".format(bot))
     update_url.start()
     print(f"{len(bot.guilds)} servers")
+    print(f"{len(bot.users)} users")
 
 @bot.event
 async def on_message(msg) -> None:
