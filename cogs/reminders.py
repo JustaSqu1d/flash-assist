@@ -256,6 +256,7 @@ class Reminders(commands.Cog):
                     except:
                         pass
                 
+                
 
 
             response = db[str(user.id)]["response"]
@@ -279,6 +280,9 @@ class Reminders(commands.Cog):
                 await ctx.send(response, view=view)
             else:
                 await ctx.send(response)
+
+        except UnboundLocalError:
+            pass
 
         except Exception as e: 
             print(e)
