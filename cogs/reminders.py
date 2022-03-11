@@ -179,7 +179,6 @@ class Reminders(commands.Cog):
                         and db[str(user.id)]["chop2"] and db[str(user.id)]["ed2"]):
                     return
 
-                await open_account(user)
                 if "you mined" in msg.content:
                     db["trials"] += 1
                     if "boss key" in msg.content:
@@ -223,6 +222,8 @@ class Reminders(commands.Cog):
                     db[str(user.id)]["fish"]
                     db[str(user.id)]["worker"]
                 except:
+                    await open_account(user)
+                    
                     db[str(user.id)]["treasure"] = True
                     db[str(user.id)]["fish"] = True
                     db[str(user.id)]["worker"] = True
