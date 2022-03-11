@@ -280,8 +280,8 @@ class Reminders(commands.Cog):
             else:
                 await ctx.send(response)
 
-        except:
-            pass
+        except Exception as e: 
+            print(e)
 
 
 def setup(bot):
