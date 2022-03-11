@@ -169,11 +169,12 @@ class TogglesCl(discord.ui.View):
             self.ctx.author.id)]["ed"])
         await interaction.response.edit_message(view=self)
 
-    @discord.ui.button(label='Minecord',
-                       style=discord.ButtonStyle.primary,
-                       row=2)
-    async def callback5(self, button, interaction):
-        self.value = True
+    @discord.ui.select(placeholder='Minecord', min_values=1, max_values=1, options=[
+        discord.SelectOption(label='Virtual Fisher', description='Edit Virtual Fisher Settings'),
+        discord.SelectOption(label='Minecord Classic', description='Edit Minecord Classic Settings')
+    ])
+    async def select_callback(self, select, interaction):
+        self.value = select.values[0]
         self.stop()
 
 
@@ -230,9 +231,59 @@ class Toggles(discord.ui.View):
             self.ctx.author.id)]["ed2"])
         await interaction.response.edit_message(view=self)
 
-    @discord.ui.button(label='Minecord Classic',
-                       style=discord.ButtonStyle.primary,
-                       row=2)
-    async def callback5(self, button, interaction):
-        self.value = False
+    @discord.ui.select(placeholder='Minecord Classic', min_values=1, max_values=1, options=[
+        discord.SelectOption(label='Virtual Fisher', description='Edit Virtual Fisher Settings'),
+        discord.SelectOption(label='Minecord', description='Edit Minecord Settings')
+    ])
+    async def select_callback(self, select, interaction):
+        self.value = select.values[0]
+        self.stop()
+
+class TogglesVf(discord.ui.View):
+    def __init__(self, ctx):
+        super().__init__(timeout=60)
+        self.value = None
+        self.ctx = ctx
+        user = self.ctx.author
+        for child in self.children:
+            if child.label == "Treasure":
+                if not (db[str(user.id)]["treasure"]):
+                    child.style = discord.ButtonStyle.danger
+            if child.label == "Fish":
+                if not (db[str(user.id)]["fish"]):
+                    child.style = discord.ButtonStyle.danger
+            if child.label == "Worker":
+                if not (db[str(user.id)]["worker"]):
+                    child.style = discord.ButtonStyle.danger
+
+    @discord.ui.button(label='Treasure', style=discord.ButtonStyle.success)
+    async def callback(self, button, interaction):
+        button.style = discord.ButtonStyle.danger if button.style == discord.ButtonStyle.success else discord.ButtonStyle.success
+
+        db[str(self.ctx.author.id)]["treasure"] = not (db[str(
+            self.ctx.author.id)]["treasure"])
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(label='Fish', style=discord.ButtonStyle.success)
+    async def callback2(self, button, interaction):
+        button.style = discord.ButtonStyle.danger if button.style == discord.ButtonStyle.success else discord.ButtonStyle.success
+
+        db[str(self.ctx.author.id)]["fish"] = not (db[str(
+            self.ctx.author.id)]["fish"])
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(label='Worker', style=discord.ButtonStyle.success)
+    async def callback3(self, button, interaction):
+        button.style = discord.ButtonStyle.danger if button.style == discord.ButtonStyle.success else discord.ButtonStyle.success
+
+        db[str(self.ctx.author.id)]["worker"] = not (db[str(
+            self.ctx.author.id)]["worker"])
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.select(placeholder='Virtual Fisher', min_values=1, max_values=1, options=[
+        discord.SelectOption(label='Minecord', description='Edit Minecord Settings'),
+        discord.SelectOption(label='Minecord Classic', description='Edit Minecord Classic Settings')
+    ])
+    async def select_callback(self, select, interaction):
+        self.value = select.values[0]
         self.stop()

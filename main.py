@@ -205,14 +205,19 @@ async def config(ctx):
                           description="Green: ON\nRed: OFF")
     view = Toggles(ctx)
     await ctx.respond(embed=embed, view=view, ephemeral=True)
+    view.value = "Minecord"
     to = await view.wait()
     while not (to):
-        if not (view.value):
+        if view.value == "Minecord Classic":
             view = TogglesCl(ctx)
             await ctx.interaction.edit_original_message(view=view)
-        else:
+        elif view.value == "Minecord":
             view = Toggles(ctx)
             await ctx.interaction.edit_original_message(view=view)
+        elif view.value == "Virtual Fisher":
+            view = TogglesVf(ctx)
+            await ctx.interaction.edit_original_message(view=view)
+            
         to = await view.wait()
 
 
