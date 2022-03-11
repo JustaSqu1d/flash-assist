@@ -12,10 +12,6 @@ from views import *
 
 sentry_sdk.init(
     os.environ['SDKKEY'],
-
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production.
     traces_sample_rate=1.0
 )
 
@@ -244,12 +240,12 @@ async def _response(ctx, response: Option(
         failed = discord.Embed(
             title="Missing Arguments!",
             description=
-            "Make your own custom reminder with `%response <response>`\nPlease use the following format in your message:\n**Put `%` on where you want you to be mentioned.**\n`&` for the command name.^\n`$` for the command cooldown.^\n\n*^optional*"
+            "Make your own custom reminder with `/response`\nPlease use the following format in your message:\n**Put `%` on where you want you to be mentioned.**\n`&` for the name.^\n`$` for the cooldown.^\n\n*^optional*"
         )
         failed.add_field(
             name="Example",
             value=
-            f"`%response % hi & cd:$`\nResults in\n\n{ctx.author.mention} hi mine cd:5"
+            f"`/response % & elasped (cd:$)`\nBecomes\n\n{ctx.author.mention} command elapsed (cd:5)"
         )
         await ctx.respond(embed=failed)
         return
@@ -270,13 +266,15 @@ async def invite(ctx):
     await ctx.respond(embed=embed, view=view)
 
 
-@bot.slash_command(name="guide", description="Minecord? Whaaa....?")
+@bot.slash_command(name="guide", description="A guide for the bots we support")
 async def guide(ctx):
     bot.dispatch("application_command", ctx)
     embed = discord.Embed(
-        title="Minecord Guide",
-        color=discord.Color.orange(),
-        url="https://just-a-squid.gitbook.io/minecord-1/v/minecord/")
+        title="Guide",
+        description="**[Minecord](https://just-a-squid.gitbook.io/minecord-1/v/minecord/)**\n**[Virtual Fisher](https://virtualfisher.com/guide)**",
+        color=discord.Color.orange()
+    )
+    embed.set_footer("Flash Assist is not affiliated with any of the Discord bots it supports.")
     await ctx.respond(embed=embed)
 
 

@@ -236,13 +236,6 @@ class Reminders(commands.Cog):
                     pass
                 await asyncio.sleep(cooldown)
 
-                if random.randint(1, 10) == random.randint(1, 10):
-                    view = discord.ui.View()
-                    view.add_item(Invite())
-                    await ctx.send(response, view=view)
-                else:
-                    await ctx.send(response)
-
             if msg.author.id == 574652751745777665:
                 try:
                     try:
@@ -253,38 +246,69 @@ class Reminders(commands.Cog):
                         user = msg.interaction.user
                 except:
                     pass
+                
+                try:
+                    db[str(user.id)]["treasure"]
+                    db[str(user.id)]["fish"]
+                    db[str(user.id)]["worker"]
+                except:
+                    db[str(user.id)]["treasure"] = True
+                    db[str(user.id)]["fish"] = True
+                    db[str(user.id)]["worker"] = True
+
 
                 for embed in msg.embeds:
                     embed = embed.to_dict()
 
                     try:
                         if "You will now find more treasure for the next" in embed[
-                                "description"]:
+                                "description"] and db[str(user.id)]["treasure"]:
                             minutes = int(embed["description"].split(" ")[10])
                             type = "Treasure"
-                            seconds = minutes * 60
+                            cooldown = minutes * 60
 
                         elif "You will now catch more fish for the next" in embed[
-                                "description"]:
+                                "description"] and db[str(user.id)]["fish"] :
                             minutes = int(embed["description"].split(" ")[10])
                             type = "Fish"
-                            seconds = minutes * 60
+                            cooldown = minutes * 60
 
                         elif "You hired a worker for the next" in embed[
-                                "description"] and "catches will automatically be added to your inventory.":
+                                "description"] and "catches will automatically be added to your inventory." and db[str(user.id)]["worker"] :
                             minutes = int(
-                                embed["description"].split(" ")[8].split("**")[1])
+                                embed["description"].split(" ")[8].split("**")[1]
+                            )
                             type = "Worker"
-                            seconds = minutes * 60
+                            cooldown = minutes * 60
 
                         else:
                             continue
 
-                        await asyncio.sleep(seconds)
-                        await ctx.send(f"{user.mention} {type} boost has elapsed!")
-
                     except:
                         pass
+                
+
+                response = db[str(user.id)]["response"]
+                try:
+                    response = response.replace("%", f"{user.mention}")
+                except:
+                    pass
+                try:
+                    response = response.replace("&", f"{command}")
+                except:
+                    pass
+                try:
+                    response = response.replace("$", f"{cooldown}")
+                except:
+                    pass
+                await asyncio.sleep(cooldown)
+            
+            if random.randint(1, 10) == random.randint(1, 10):
+                view = discord.ui.View()
+                view.add_item(Invite())
+                await ctx.send(response, view=view)
+            else:
+                await ctx.send(response)
 
         except:
             pass
