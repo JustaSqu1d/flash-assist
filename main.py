@@ -274,7 +274,7 @@ async def guide(ctx):
         description="**[Minecord](https://just-a-squid.gitbook.io/minecord-1/v/minecord/)**\n**[Virtual Fisher](https://virtualfisher.com/guide)**",
         color=discord.Color.orange()
     )
-    embed.set_footer("Flash Assist is not affiliated with any of the Discord bots it supports.")
+    embed.set_footer(text="Flash Assist is not affiliated with any of the Discord bots it supports.")
     await ctx.respond(embed=embed)
 
 
