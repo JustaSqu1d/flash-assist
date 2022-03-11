@@ -172,9 +172,9 @@ class TogglesCl(discord.ui.View):
             self.ctx.author.id)]["ed"])
         await interaction.response.edit_message(view=self)
 
-    @discord.ui.select(placeholder='Minecord', min_values=1, max_values=1, options=[
+    @discord.ui.select(placeholder='Currently editing: Minecord Classic', min_values=1, max_values=1, options=[
         discord.SelectOption(label='Virtual Fisher', description='Edit Virtual Fisher Settings'),
-        discord.SelectOption(label='Minecord Classic', description='Edit Minecord Classic Settings')
+        discord.SelectOption(label='Minecord', description='Edit Minecord Classic Settings')
     ])
     async def select_callback(self, select, interaction):
         self.value = select.values[0]
@@ -237,9 +237,9 @@ class Toggles(discord.ui.View):
             self.ctx.author.id)]["ed2"])
         await interaction.response.edit_message(view=self)
 
-    @discord.ui.select(placeholder='Minecord Classic', min_values=1, max_values=1, options=[
+    @discord.ui.select(placeholder='Currently editing: Minecord', min_values=1, max_values=1, options=[
         discord.SelectOption(label='Virtual Fisher', description='Edit Virtual Fisher Settings'),
-        discord.SelectOption(label='Minecord', description='Edit Minecord Settings')
+        discord.SelectOption(label='Minecord Classic', description='Edit Minecord Classic Settings')
     ])
     async def select_callback(self, select, interaction):
         self.value = select.values[0]
@@ -289,7 +289,7 @@ class TogglesVf(discord.ui.View):
             self.ctx.author.id)]["worker"])
         await interaction.response.edit_message(view=self)
 
-    @discord.ui.select(placeholder='Virtual Fisher', min_values=1, max_values=1, options=[
+    @discord.ui.select(placeholder='Currently editing: Virtual Fisher', min_values=1, max_values=1, options=[
         discord.SelectOption(label='Minecord', description='Edit Minecord Settings'),
         discord.SelectOption(label='Minecord Classic', description='Edit Minecord Classic Settings')
     ])
