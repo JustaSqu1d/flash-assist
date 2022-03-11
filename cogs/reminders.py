@@ -97,22 +97,6 @@ class Reminders(commands.Cog):
                     command = "nether fight"
                 else:
                     return
-                response = db[str(user.id)]["response"]
-                try:
-                    response = response.replace("%", f"{user.mention}")
-                    response = response.replace("&", f"{command}")
-                    response = response.replace("$", f"{cooldown}")
-                except:
-                    pass
-
-                await asyncio.sleep(cooldown)
-
-                if random.randint(1, 10) == random.randint(1, 10):
-                    view = discord.ui.View()
-                    view.add_item(Invite())
-                    await ctx.send(response, view=view)
-                else:
-                    await ctx.send(response)
 
             if msg.author.id == 625363818968776705:
                 try:
@@ -220,21 +204,6 @@ class Reminders(commands.Cog):
                     command = "fight"
                 else:
                     return
-                response = db[str(user.id)]["response"]
-
-                try:
-                    response = response.replace("%", f"{user.mention}")
-                except:
-                    pass
-                try:
-                    response = response.replace("&", f"{command}")
-                except:
-                    pass
-                try:
-                    response = response.replace("$", f"{cooldown}")
-                except:
-                    pass
-                await asyncio.sleep(cooldown)
 
             if msg.author.id == 574652751745777665:
                 try:
@@ -288,20 +257,21 @@ class Reminders(commands.Cog):
                         pass
                 
 
-                response = db[str(user.id)]["response"]
-                try:
-                    response = response.replace("%", f"{user.mention}")
-                except:
-                    pass
-                try:
-                    response = response.replace("&", f"{command}")
-                except:
-                    pass
-                try:
-                    response = response.replace("$", f"{cooldown}")
-                except:
-                    pass
-                await asyncio.sleep(cooldown)
+
+            response = db[str(user.id)]["response"]
+            try:
+                response = response.replace("%", f"{user.mention}")
+            except:
+                pass
+            try:
+                response = response.replace("&", f"{command}")
+            except:
+                pass
+            try:
+                response = response.replace("$", f"{cooldown}")
+            except:
+                pass
+            await asyncio.sleep(cooldown)
             
             if random.randint(1, 10) == random.randint(1, 10):
                 view = discord.ui.View()
