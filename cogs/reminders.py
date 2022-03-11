@@ -264,7 +264,7 @@ class Reminders(commands.Cog):
             except:
                 pass
             try:
-                response = response.replace("&", f"{command}")
+                response = response.replace("&", command)
             except:
                 pass
             try:
