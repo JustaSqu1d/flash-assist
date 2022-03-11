@@ -31,8 +31,12 @@ async def open_account(user):
         db[str(user.id)]["chop2"] = True
         db[str(user.id)]["ed2"] = True
 
+        db[str(user.id)]["treasure"] = True
+        db[str(user.id)]["fish"] = True
+        db[str(user.id)]["worker"] = True
+        
         db[str(
             user.id
-        )]["response"] = "% Time to &! `m!&`\nCurrent cooldown is `$ seconds`!"
+        )]["response"] = "% & boost/command cooldown elapsed! \nCurrent cooldown is `$ seconds`!"
 
     return True
