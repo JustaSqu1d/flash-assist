@@ -233,13 +233,13 @@ class Reminders(commands.Cog):
                         if "You will now find more treasure for the next" in embed[
                                 "description"] and db[str(user.id)]["treasure"]:
                             minutes = int(embed["description"].split(" ")[10])
-                            type = "Treasure"
+                            command = "treasure"
                             cooldown = minutes * 60
 
                         elif "You will now catch more fish for the next" in embed[
                                 "description"] and db[str(user.id)]["fish"] :
                             minutes = int(embed["description"].split(" ")[10])
-                            type = "Fish"
+                            command = "fish"
                             cooldown = minutes * 60
 
                         elif "You hired a worker for the next" in embed[
@@ -247,7 +247,7 @@ class Reminders(commands.Cog):
                             minutes = int(
                                 embed["description"].split(" ")[8].split("**")[1]
                             )
-                            type = "Worker"
+                            command = "worker"
                             cooldown = minutes * 60
 
                         else:
