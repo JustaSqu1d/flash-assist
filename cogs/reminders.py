@@ -5,6 +5,8 @@ from replit import db
 import random
 from helpers import open_account
 from views import Invite
+import traceback
+
 
 class Reminders(commands.Cog):
     def __init__(self, bot):
@@ -287,8 +289,8 @@ class Reminders(commands.Cog):
         except UnboundLocalError:
             pass
 
-        except Exception as e: 
-            print(e)
+        except: 
+            traceback.print_exc()
 
 
 def setup(bot):
