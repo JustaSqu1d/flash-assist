@@ -124,18 +124,21 @@ class TogglesCl(discord.ui.View):
         #[<Button style=<ButtonStyle.success: 3> url=None disabled=False label='Mine' emoji=None row=None>, <Button style=<ButtonStyle.success: 3> url=None disabled=False label='Fight' emoji=None row=None>, <Button style=<ButtonStyle.success: 3> url=None disabled=False label='Chop' emoji=None row=None>, <Button style=<ButtonStyle.success: 3> url=None disabled=False label='Enderdragon' emoji=None row=None>, <Button style=<ButtonStyle.primary: 1> url=None disabled=False label='Minecord Classic' emoji=None row=2>]
         user = self.ctx.author
         for child in self.children:
-            if child.label == "Mine":
-                if not (db[str(user.id)]["mine"]):
-                    child.style = discord.ButtonStyle.danger
-            if child.label == "Fight":
-                if not (db[str(user.id)]["fight"]):
-                    child.style = discord.ButtonStyle.danger
-            if child.label == "Chop":
-                if not (db[str(user.id)]["chop"]):
-                    child.style = discord.ButtonStyle.danger
-            if child.label == "Enderdragon":
-                if not (db[str(user.id)]["ed"]):
-                    child.style = discord.ButtonStyle.danger
+            try:
+                if child.label == "Mine":
+                    if not (db[str(user.id)]["mine"]):
+                        child.style = discord.ButtonStyle.danger
+                if child.label == "Fight":
+                    if not (db[str(user.id)]["fight"]):
+                        child.style = discord.ButtonStyle.danger
+                if child.label == "Chop":
+                    if not (db[str(user.id)]["chop"]):
+                        child.style = discord.ButtonStyle.danger
+                if child.label == "Enderdragon":
+                    if not (db[str(user.id)]["ed"]):
+                        child.style = discord.ButtonStyle.danger
+            except:
+                pass
 
     @discord.ui.button(label='Mine', style=discord.ButtonStyle.success)
     async def callback(self, button, interaction):
@@ -186,18 +189,21 @@ class Toggles(discord.ui.View):
         #[<Button style=<ButtonStyle.success: 3> url=None disabled=False label='Mine' emoji=None row=None>, <Button style=<ButtonStyle.success: 3> url=None disabled=False label='Fight' emoji=None row=None>, <Button style=<ButtonStyle.success: 3> url=None disabled=False label='Chop' emoji=None row=None>, <Button style=<ButtonStyle.success: 3> url=None disabled=False label='Enderdragon' emoji=None row=None>, <Button style=<ButtonStyle.primary: 1> url=None disabled=False label='Minecord Classic' emoji=None row=2>]
         user = self.ctx.author
         for child in self.children:
-            if child.label == "Mine":
-                if not (db[str(user.id)]["mine2"]):
-                    child.style = discord.ButtonStyle.danger
-            if child.label == "Fight":
-                if not (db[str(user.id)]["fight2"]):
-                    child.style = discord.ButtonStyle.danger
-            if child.label == "Chop":
-                if not (db[str(user.id)]["chop2"]):
-                    child.style = discord.ButtonStyle.danger
-            if child.label == "Enderdragon":
-                if not (db[str(user.id)]["ed2"]):
-                    child.style = discord.ButtonStyle.danger
+            try:
+                if child.label == "Mine":
+                    if not (db[str(user.id)]["mine2"]):
+                        child.style = discord.ButtonStyle.danger
+                if child.label == "Fight":
+                    if not (db[str(user.id)]["fight2"]):
+                        child.style = discord.ButtonStyle.danger
+                if child.label == "Chop":
+                    if not (db[str(user.id)]["chop2"]):
+                        child.style = discord.ButtonStyle.danger
+                if child.label == "Enderdragon":
+                    if not (db[str(user.id)]["ed2"]):
+                        child.style = discord.ButtonStyle.danger
+            except:
+                pass
 
     @discord.ui.button(label='Mine', style=discord.ButtonStyle.success)
     async def callback(self, button, interaction):
@@ -246,15 +252,18 @@ class TogglesVf(discord.ui.View):
         self.ctx = ctx
         user = self.ctx.author
         for child in self.children:
-            if child.label == "Treasure":
-                if not (db[str(user.id)]["treasure"]):
-                    child.style = discord.ButtonStyle.danger
-            if child.label == "Fish":
-                if not (db[str(user.id)]["fish"]):
-                    child.style = discord.ButtonStyle.danger
-            if child.label == "Worker":
-                if not (db[str(user.id)]["worker"]):
-                    child.style = discord.ButtonStyle.danger
+            try:
+                if child.label == "Treasure":
+                    if not (db[str(user.id)]["treasure"]):
+                        child.style = discord.ButtonStyle.danger
+                if child.label == "Fish":
+                    if not (db[str(user.id)]["fish"]):
+                        child.style = discord.ButtonStyle.danger
+                if child.label == "Worker":
+                    if not (db[str(user.id)]["worker"]):
+                        child.style = discord.ButtonStyle.danger
+            except:
+                pass
 
     @discord.ui.button(label='Treasure', style=discord.ButtonStyle.success)
     async def callback(self, button, interaction):
