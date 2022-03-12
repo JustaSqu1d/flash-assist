@@ -116,7 +116,7 @@ class Reminders(commands.Cog):
                     url = embed['author']['icon_url']
                     id = url.split("/")[4]
                     stats = embed['fields'][0][
-                        "value"]  #"Mine: 7353\nFight: 755\nChops: 732"\\\
+                        "value"]  
                     stats = stats.split("\n")
                     stats2 = {}
 

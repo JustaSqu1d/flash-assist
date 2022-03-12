@@ -255,6 +255,7 @@ async def _response(ctx, response: Option(
         await ctx.respond(embed=failed)
         return
     user = ctx.author
+    response = discord.utils.escape_mentions(response)
     db[str(user.id)]["response"] = response
     success = discord.Embed(title="Success!", color=discord.Color.green())
     await ctx.respond(embed=success)
