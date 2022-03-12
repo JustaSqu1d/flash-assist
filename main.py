@@ -5,7 +5,7 @@ import sentry_sdk
 from discord.commands import Option
 from discord.ext import tasks
 from replit import db
-
+from datetime import datetime
 from helpers import changedatabase, open_account
 from keepalive import keep_alive
 from views import *
@@ -67,6 +67,7 @@ async def terms(ctx):
         value=
         "[Terms of Service](https://flash-assist.squidsquidsquid.repl.co/terms)\n[Privacy Policy](https://flash-assist.squidsquidsquid.repl.co/privacy-policy)",
         inline=False)
+    em.timestamp = datetime.now()
     await ctx.followup.send(embed=embed)
 
 
@@ -79,7 +80,8 @@ async def setup(ctx):
     view = Option1()
     em = discord.Embed(title="What are your settings for?",
                        color=ctx.author.color)
-    em.set_footer(text=f"© just a squid#5483 2022 | m!help | {ctx.author}")
+    em.set_footer(text=f"© Flash Assist 2022 | /invite | {ctx.author}")
+    em.timestamp = datetime.now()
     await ctx.followup.send(embed=em, view=view)
 
     timedout = await view.wait()
@@ -95,7 +97,8 @@ async def setup(ctx):
         em = discord.Embed(title="Do you have efficiency?",
                            description="Yes | No",
                            color=ctx.author.color)
-        em.set_footer(text=f"© just a squid#5483 2022 | m!help | {ctx.author}")
+        em.set_footer(text=f"© Flash Assist 2022 | /invite | {ctx.author}")
+        em.timestamp = datetime.now()
         op1 = Option2()
         await ctx.interaction.edit_original_message(embed=em, view=op1)
 
@@ -117,8 +120,8 @@ async def setup(ctx):
 
         em = discord.Embed(title="What armor do you have?",
                            color=ctx.author.color)
-
-        em.set_footer(text=f"© just a squid#5483 2022 | %setup | {ctx.author}")
+        em.timestamp = datetime.now()
+        em.set_footer(text=f"© Flash Assist 2022 | %setup | {ctx.author}")
         await ctx.interaction.edit_original_message(embed=em, view=opar)
 
         timedout = await opar.wait()
@@ -132,10 +135,11 @@ async def setup(ctx):
         db[str(user.id)]["armor"] = opar.value
 
         em = discord.Embed(
-            title="What is your Ender Dragon cooldown (answer in minutes)?",
-            description="Enter a number!",
+            title="What is your Ender Dragon cooldown (In minutes)?",
+            description="Select a number!",
             color=ctx.author.color)
-        em.set_footer(text=f"© just a squid#5483 2022 | m!help | {ctx.author}")
+        em.timestamp = datetime.now()
+        em.set_footer(text=f"© Flash Assist 2022 | /invite | {ctx.author}")
 
         opmin = OptionMin()
 
@@ -153,7 +157,8 @@ async def setup(ctx):
 
         em = discord.Embed(title="Setup Complete!",
                            color=discord.Color.green())
-        em.set_footer(text=f"© just a squid#5483 2022 | m!help | {ctx.author}")
+        em.timestamp = datetime.now()
+        em.set_footer(text=f"© Flash Assist 2022 | /invite | {ctx.author}")
 
         for child in opmin.children:
             child.disabled = True
@@ -166,7 +171,8 @@ async def setup(ctx):
         em = discord.Embed(title="Do you have efficiency?",
                            description="Yes | No",
                            color=ctx.author.color)
-        em.set_footer(text=f"© just a squid#5483 2022 | m!help | {ctx.author}")
+        em.timestamp = datetime.now()
+        em.set_footer(text=f"© Flash Assist 2022 | /invite | {ctx.author}")
 
         op1 = Option2()
         await ctx.interaction.edit_original_message(embed=em, view=op1)
@@ -187,11 +193,11 @@ async def setup(ctx):
 
         em = discord.Embed(title="Setup Complete!",
                            color=discord.Color.green())
-        em.set_footer(text=f"© just a squid#5483 2022 | m!help | {ctx.author}")
+        em.set_footer(text=f"© Flash Assist 2022 | /invite | {ctx.author}")
 
         for child in op1.children:
             child.disabled = True
-
+        em.timestamp = datetime.now()
         await ctx.interaction.edit_original_message(embed=em, view=op1)
         return
 
@@ -204,6 +210,7 @@ async def config(ctx):
     embed = discord.Embed(title="Reminder Control Panel!",
                           description="Green: ON\nRed: OFF")
     view = Toggles(ctx)
+    em.timestamp = datetime.now()
     await ctx.respond(embed=embed, view=view, ephemeral=True)
     view.value = "Minecord"
     to = await view.wait()
@@ -233,6 +240,7 @@ async def droprate(ctx):
         text=
         f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100), 3)}%'
     )
+    em.timestamp = datetime.now()
     await ctx.respond(embed=embed)
 
 
@@ -252,12 +260,14 @@ async def _response(ctx, response: Option(
             value=
             f"`/response % & elasped (cd:$)`\nBecomes\n\n{ctx.author.mention} command elapsed (cd:5)"
         )
+        em.timestamp = datetime.now()
         await ctx.respond(embed=failed)
         return
     user = ctx.author
     response = discord.utils.escape_mentions(response)
     db[str(user.id)]["response"] = response
     success = discord.Embed(title="Success!", color=discord.Color.green())
+    em.timestamp = datetime.now()
     await ctx.respond(embed=success)
 
 
@@ -269,6 +279,7 @@ async def invite(ctx):
     view = discord.ui.View()
     view.add_item(Invite())
     view.add_item(Invite2())
+    em.timestamp = datetime.now()
     await ctx.respond(embed=embed, view=view)
 
 
@@ -280,6 +291,7 @@ async def guide(ctx):
         description="**[Minecord](https://just-a-squid.gitbook.io/minecord-1/v/minecord/)**\n**[Virtual Fisher](https://virtualfisher.com/guide)**",
         color=discord.Color.orange()
     )
+    embed.timestamp = datetime.now()
     embed.set_footer(text="Flash Assist is not affiliated with any of the Discord bots it supports.")
     await ctx.respond(embed=embed)
 
