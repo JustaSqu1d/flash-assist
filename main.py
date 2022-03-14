@@ -240,7 +240,7 @@ async def droprate(ctx):
         text=
         f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100), 3)}%'
     )
-    em.timestamp = datetime.now()
+    embed.timestamp = datetime.now()
     await ctx.respond(embed=embed)
 
 
@@ -297,4 +297,4 @@ async def guide(ctx):
 
 
 keep_alive()
-bot.run(os.environ['BOTTOKEN'])
+bot.run(os.environ['BOTTOKEN'], reconnect=True)
