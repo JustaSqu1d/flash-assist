@@ -24,6 +24,8 @@ intents.messages = True
 bot = discord.AutoShardedBot(
     intents=intents, activity=discord.Game(name="Discord Bots | /setup"))
 
+minecord = bot.create_group("minecord", "Settings for Minecords")
+
 for filename in os.listdir("cogs"):
     if filename.endswith(".py"):
         bot.load_extension(f"cogs.{filename[:-3]}")
@@ -55,23 +57,22 @@ async def on_interaction(itx):
     await open_account(itx.user)
     await bot.process_application_commands(itx)
 
-@bot.slash_command(
-    name="terms",
-    description="You can view our Terms of Service and Privacy Policy here.")
-async def terms(ctx):
-    await ctx.defer()
+@minecord.slash_command(name="droprate",
+                   description="Find the drop-rate of boss keys!")
+async def droprate(ctx):
     bot.dispatch("application_command", ctx)
-    embed = discord.Embed(title="Flash Assist Terms")
-    embed.add_field(
-        name="Links",
-        value=
-        "[Terms of Service](https://flash-assist.squidsquidsquid.repl.co/terms)\n[Privacy Policy](https://flash-assist.squidsquidsquid.repl.co/privacy-policy)",
-        inline=False)
+    embed = discord.Embed(title="Boss Key Drop Rates",
+                          color=discord.Color.orange())
+    embed.add_field(name="Boss Key Drops", value=db["success"], inline=False)
+    embed.add_field(name="Mines Recorded", value=db["trials"], inline=False)
+    embed.set_footer(
+        text=
+        f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100), 3)}%'
+    )
     em.timestamp = datetime.now()
-    await ctx.followup.send(embed=embed)
+    await ctx.respond(embed=embed)
 
-
-@bot.slash_command(name="setup", description="Change your settings!")
+@minecord.slash_command(name="setup", description="Change your Minecord settings!")
 async def setup(ctx):
     await ctx.defer(ephemeral=True)
     bot.dispatch("application_command", ctx)
@@ -228,10 +229,13 @@ async def config(ctx):
         to = await view.wait()
 
 
-@bot.slash_command(name="droprate",
-                   description="Find the drop-rate of boss keys!")
-async def droprate(ctx):
+@bot.slash_command(
+    name="terms",
+    description="You can view our Terms of Service and Privacy Policy here.")
+async def terms(ctx):
+    await ctx.defer()
     bot.dispatch("application_command", ctx)
+
     embed = discord.Embed(title="Boss Key Drop Rates",
                           color=discord.Color.orange())
     embed.add_field(name="Boss Key Drops", value=db["success"], inline=False)
@@ -241,7 +245,7 @@ async def droprate(ctx):
         f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100), 3)}%'
     )
     embed.timestamp = datetime.now()
-    await ctx.respond(embed=embed)
+    await ctx.respond(embed=embed) 
 
 
 @bot.slash_command(name="response",
@@ -260,7 +264,8 @@ async def _response(ctx, response: Option(
             value=
             f"`/response % & elasped (cd:$)`\nBecomes\n\n{ctx.author.mention} command elapsed (cd:5)"
         )
-        em.timestamp = datetime.now()
+        failed.timestamp = datetime.now()
+        
         await ctx.respond(embed=failed)
         return
     user = ctx.author
@@ -283,7 +288,7 @@ async def invite(ctx):
     await ctx.respond(embed=embed, view=view)
 
 
-@bot.slash_command(name="guide", description="A guide for the bots we support")
+@bot.slash_command(name="guide", description="A guide for the bots we support.")
 async def guide(ctx):
     bot.dispatch("application_command", ctx)
     embed = discord.Embed(

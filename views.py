@@ -7,7 +7,7 @@ class Invite(discord.ui.Button):
             label='Invite me!',
             style=discord.ButtonStyle.link,
             url=
-            "https://discord.com/oauth2/authorize?bot_id=836581672811495465&permissions=321536&scope=bot%20applications.commands",
+            "https://discord.com/api/oauth2/authorize?client_id=836581672811495465&permissions=321536&redirect_uri=https%3A%2F%2Fflash-assist.squidsquidsquid.repl.co%2F&response_type=code&scope=identify%20bot%20applications.commands",
             row=1)
 
 
@@ -17,7 +17,7 @@ class Invite2(discord.ui.Button):
             label='Alternative link.',
             style=discord.ButtonStyle.link,
             url=
-            "https://discord.com/oauth2/authorize?bot_id=931981494887534602&permissions=321536&scope=bot%20applications.commands",
+            "https://flash-assist.squidsquidsquid.repl.co/#invite",
             row=1)
 
 class Option1(discord.ui.View):
