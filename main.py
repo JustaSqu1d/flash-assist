@@ -44,12 +44,14 @@ async def on_ready():
 async def on_message(msg) -> None:
     if msg.author.id in bots: 
         bot.dispatch("reminder", msg)
+        
     elif msg.author.id == 586743480651350063 and msg.content == "%reload cogs":
         for filename in os.listdir("cogs"):
             if filename.endswith(".py"):
                 bot.reload_extension(f"cogs.{filename[:-3]}")
         await msg.channel.send("Reload success!")
-    elif msg.content == bot.user.mention:
+        
+    elif msg.content == "<@!836581672811495465>" or msg.content == "<@!836581672811495465>\n":
         ping = int((bot.latency)*1000)
         embed = discord.Embed(title="Latency", description=f"Gateway: {ping} ms")
 
@@ -63,8 +65,6 @@ async def on_message(msg) -> None:
             embed.color = discord.Color.green()
 
         await msg.reply("Ping!", embed=embed, mention_author=False)
-        
-        print(bot.user.public_flags.all())
 
     else:
         return
