@@ -89,7 +89,7 @@ async def droprate(ctx):
     embed.timestamp = datetime.now()
     await ctx.respond(embed=embed)
 
-@minecord.command(name="setup", description="Change your Minecord settings!")
+@minecord.command(name="setup", description="Setup for Minecord!")
 async def setup(ctx):
     await ctx.defer(ephemeral=True)
     bot.dispatch("application_command", ctx)
@@ -296,12 +296,12 @@ async def _response(ctx, response: Option(
 @bot.slash_command(name="invite", description="Invite me to join your server!")
 async def invite(ctx):
     bot.dispatch("application_command", ctx)
-    embed = discord.Embed(title="Invite me. :)", color=discord.Color.orange())
+    embed = discord.Embed(title="Flash Assist", description = "Flash Assist is a Discord bot that reminds you to use commands when the command's cooldown has elapsed or ended.\nThis service covers a couple bots, but the coverage for more bots is coming soon!\nFeatures includes custom reminders along with friendly UI for easy customization!", color=discord.Color.orange())
     embed.description = ""
     view = discord.ui.View()
     view.add_item(Invite())
     view.add_item(Invite2())
-    embed.timestamp = datetime.now()
+    view.add_item(Invite3())
     await ctx.respond(embed=embed, view=view)
 
 

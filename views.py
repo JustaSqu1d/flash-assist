@@ -14,11 +14,21 @@ class Invite(discord.ui.Button):
 class Invite2(discord.ui.Button):
     def __init__(self):
         super().__init__(
-            label='Alternative link.',
+            label='Alternative link',
             style=discord.ButtonStyle.link,
             url=
-            "https://flash-assist.squidsquidsquid.repl.co/#invite",
+            "https://discord.com/api/oauth2/authorize?client_id=836581672811495465&permissions=321536&redirect_uri=https%3A%2F%2Fdiscord.com%2Finvite%2FfJt6yFeD5v&response_type=code&scope=identify%20bot%20applications.commands",
             row=1)
+
+
+class Invite3(discord.ui.Button):
+    def __init__(self):
+        super().__init__(
+            label='Website',
+            style=discord.ButtonStyle.link,
+            url=
+            "https://flash-assist.squidsquidsquid.repl.co/",
+            row=2)
 
 class Option1(discord.ui.View):
     def __init__(self):
@@ -121,7 +131,6 @@ class TogglesCl(discord.ui.View):
         super().__init__(timeout=60)
         self.value = None
         self.ctx = ctx
-        #[<Button style=<ButtonStyle.success: 3> url=None disabled=False label='Mine' emoji=None row=None>, <Button style=<ButtonStyle.success: 3> url=None disabled=False label='Fight' emoji=None row=None>, <Button style=<ButtonStyle.success: 3> url=None disabled=False label='Chop' emoji=None row=None>, <Button style=<ButtonStyle.success: 3> url=None disabled=False label='Enderdragon' emoji=None row=None>, <Button style=<ButtonStyle.primary: 1> url=None disabled=False label='Minecord Classic' emoji=None row=2>]
         user = self.ctx.author
         for child in self.children:
             try:

@@ -262,8 +262,6 @@ class Reminders(commands.Cog):
                     except:
                         pass
                 
-                
-
 
             response = db[str(user.id)]["response"]
             try:
@@ -288,6 +286,9 @@ class Reminders(commands.Cog):
                 await ctx.send(response)
 
         except UnboundLocalError:
+            pass
+        
+        except discord.errors.Forbidden:
             pass
 
         except: 
