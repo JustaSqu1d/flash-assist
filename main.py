@@ -272,7 +272,7 @@ async def _response(ctx, response: Option(
     response = discord.utils.escape_mentions(response)
     db[str(user.id)]["response"] = response
     success = discord.Embed(title="Success!", color=discord.Color.green())
-    em.timestamp = datetime.now()
+    success.timestamp = datetime.now()
     await ctx.respond(embed=success)
 
 
@@ -284,7 +284,7 @@ async def invite(ctx):
     view = discord.ui.View()
     view.add_item(Invite())
     view.add_item(Invite2())
-    em.timestamp = datetime.now()
+    embed.timestamp = datetime.now()
     await ctx.respond(embed=embed, view=view)
 
 
