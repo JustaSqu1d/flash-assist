@@ -49,6 +49,11 @@ async def on_message(msg) -> None:
             if filename.endswith(".py"):
                 bot.reload_extension(f"cogs.{filename[:-3]}")
         await msg.channel.send("Reload success!")
+    elif msg.content == bot.user.mention:
+        ping = discord.Embed(title="Latency", description=f"Gateway: {bot.latency} ms")
+        await msg.reply("Ping", embed=ping)
+        print(bot.user.public_flags.all())
+        
     else:
         return
 
