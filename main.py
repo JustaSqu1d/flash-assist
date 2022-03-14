@@ -57,7 +57,7 @@ async def on_interaction(itx):
     await open_account(itx.user)
     await bot.process_application_commands(itx)
 
-@minecord.slash_command(name="droprate",
+@minecord.command(name="droprate",
                    description="Find the drop-rate of boss keys!")
 async def droprate(ctx):
     bot.dispatch("application_command", ctx)
@@ -72,7 +72,7 @@ async def droprate(ctx):
     em.timestamp = datetime.now()
     await ctx.respond(embed=embed)
 
-@minecord.slash_command(name="setup", description="Change your Minecord settings!")
+@minecord.command(name="setup", description="Change your Minecord settings!")
 async def setup(ctx):
     await ctx.defer(ephemeral=True)
     bot.dispatch("application_command", ctx)
@@ -211,7 +211,7 @@ async def config(ctx):
     embed = discord.Embed(title="Reminder Control Panel!",
                           description="Green: ON\nRed: OFF")
     view = Toggles(ctx)
-    em.timestamp = datetime.now()
+    embed.timestamp = datetime.now()
     await ctx.respond(embed=embed, view=view, ephemeral=True)
     view.value = "Minecord"
     to = await view.wait()
