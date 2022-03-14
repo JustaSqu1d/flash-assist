@@ -50,10 +50,22 @@ async def on_message(msg) -> None:
                 bot.reload_extension(f"cogs.{filename[:-3]}")
         await msg.channel.send("Reload success!")
     elif msg.content == bot.user.mention:
-        ping = discord.Embed(title="Latency", description=f"Gateway: {bot.latency} ms")
-        await msg.reply("Ping", embed=ping)
-        print(bot.user.public_flags.all())
+        ping = int((bot.latency)*1000)
+        embed = discord.Embed(title="Latency", description=f"Gateway: {ping} ms")
+
+        if ping >= 1000:
+            embed.color = discord.Color.red()
+        elif ping >= 500:
+            embed.color = discord.Color.orange()
+        elif ping >= 200:
+            embed.color = discord.Color.yellow()
+        else:
+            embed.color = discord.Color.green()
+
+        await msg.reply("Ping!", embed=embed, mention_author=False)
         
+        print(bot.user.public_flags.all())
+
     else:
         return
 
