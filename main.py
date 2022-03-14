@@ -52,8 +52,8 @@ async def on_message(msg) -> None:
         await msg.channel.send("Reload success!")
         
     elif msg.content == "<@!836581672811495465>" or msg.content == "<@!836581672811495465>\n":
-        ping = int((bot.latency)*1000)
-        embed = discord.Embed(title="Latency", description=f"Gateway: {ping} ms")
+        ping = int((bot.latencies[msg.guild.shard_id][1])*1000)   
+        embed = discord.Embed(title="Latency", description=f"**Gateway:** {ping} ms\n**Shard**: {msg.guild.shard_id}")
 
         if ping >= 1000:
             embed.color = discord.Color.red()
