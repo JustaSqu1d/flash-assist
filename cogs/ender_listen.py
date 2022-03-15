@@ -42,4 +42,4 @@ class Ed(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Ed(bot))  # register the cog
+    bot.add_cog(Ed(bot))

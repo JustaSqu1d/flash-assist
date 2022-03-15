@@ -30,6 +30,13 @@ class Reminders(commands.Cog):
                     pass
 
                 try:
+                    if "you dealt" in msg.content and "damage" in msg.content:
+                        print(msg.content.split("dealt"))
+                except:
+                    pass        
+
+
+                try:
                     embed = msg.embeds[0].to_dict()
                     health = embed["title"].split(" ")[1].split("*")[0].split("/")
 
