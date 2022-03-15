@@ -2,14 +2,6 @@ from replit import db
 import aiohttp
 import os
 
-async def changedatabase():
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-                f"https://VMA.squidsquidsquid.repl.co/{os.environ['PW']}"
-        ) as response:
-            html = await response.text()
-            db.db_url = str(html)
-
 async def open_account(user):
 
     if str(user.id) in db:

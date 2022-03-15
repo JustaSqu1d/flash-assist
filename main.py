@@ -6,7 +6,7 @@ from discord.commands import Option
 from discord.ext import tasks
 from replit import db
 from datetime import datetime
-from helpers import changedatabase, open_account
+from helpers import open_account
 from keepalive import keep_alive
 from views import *
 import time
@@ -33,14 +33,9 @@ for filename in os.listdir("cogs"):
     if filename.endswith(".py"):
         bot.load_extension(f"cogs.{filename[:-3]}")
 
-@tasks.loop(seconds=10.0)
-async def update_url():
-    await changedatabase()
-
 @bot.event
 async def on_ready():
     print("Logged in as {0.user}".format(bot))
-    update_url.start()
     print(f"{len(bot.guilds)} servers")
 
 @bot.event
