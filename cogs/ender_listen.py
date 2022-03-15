@@ -24,12 +24,11 @@ class Ed(commands.Cog):
             except:
                 pass
             
-            try:
-                msg3 = await self.bot.wait_for("message",
-                                               check=check,
-                                               timeout=20.0)
-            except:
-                pass
+            msg3 = None
+
+            async for message in msg.channel.history(limit=10):
+                if "you dealt" in message.content and msg.author in msg.mentions and message.author.id == 878007103460089886:
+                    msg3 = message.content
 
             try:
                 embed = msg2.embeds[0].to_dict()
