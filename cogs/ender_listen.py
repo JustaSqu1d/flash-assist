@@ -15,10 +15,17 @@ class Ed(commands.Cog):
         msg.content = msg.content.lower()
         user = msg.author
 
-        if msg.content == "m!ed" or msg.content == "m!enderdragon" or msg.content == "m!bf" or msg.content == "m!bossfight":
+        if msg.content in "m!ed" or msg.content in "m!enderdragon" or msg.content in "m!bf" or msg.content in "m!bossfight":
 
             try:
                 msg2 = await self.bot.wait_for("message",
+                                               check=check,
+                                               timeout=20.0)
+            except:
+                pass
+            
+            try:
+                msg3 = await self.bot.wait_for("message",
                                                check=check,
                                                timeout=20.0)
             except:
@@ -38,6 +45,12 @@ class Ed(commands.Cog):
                 db[str(user.id)]["stats"]["damage"] = damage
             except:
                 pass
+            
+            try:
+                print(msg3.content)
+            except:
+                pass
+            
 
 
 def setup(bot):
