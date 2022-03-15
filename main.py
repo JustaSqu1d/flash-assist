@@ -27,7 +27,7 @@ bot = discord.AutoShardedBot(
 
 minecord = bot.create_group("minecord", "Settings for Minecords")
 
-stat_start = 0
+stat_start = 1647313924.9087572
 
 for filename in os.listdir("cogs"):
     if filename.endswith(".py"):
@@ -42,7 +42,6 @@ async def on_ready():
     print("Logged in as {0.user}".format(bot))
     update_url.start()
     print(f"{len(bot.guilds)} servers")
-    print(time.time())
 
 @bot.event
 async def on_message(msg) -> None:
@@ -116,7 +115,7 @@ async def stats(ctx):
     em.add_field(name = "Average Ender Dragon Damage", value = f'{avg_damage}')
     em.add_field(name = "Ender Dragon Fights", value = f'{total_fights}')
     em.set_footer(text="Statistics since")
-    em.timestamp = datetime.fromtimestamp(time.time())
+    em.timestamp = datetime.fromtimestamp(stat_start)
     await ctx.followup.send(embed=em)
 
 @minecord.command(name="setup", description="Setup for Minecord!")
