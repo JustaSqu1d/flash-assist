@@ -9,6 +9,7 @@ from datetime import datetime
 from helpers import changedatabase, open_account
 from keepalive import keep_alive
 from views import *
+import time
 
 sentry_sdk.init(
     os.environ['SDKKEY'],
@@ -26,6 +27,8 @@ bot = discord.AutoShardedBot(
 
 minecord = bot.create_group("minecord", "Settings for Minecords")
 
+stat_start = 0
+
 for filename in os.listdir("cogs"):
     if filename.endswith(".py"):
         bot.load_extension(f"cogs.{filename[:-3]}")
@@ -39,6 +42,7 @@ async def on_ready():
     print("Logged in as {0.user}".format(bot))
     update_url.start()
     print(f"{len(bot.guilds)} servers")
+    print(time.time())
 
 @bot.event
 async def on_message(msg) -> None:
@@ -88,6 +92,32 @@ async def droprate(ctx):
     )
     embed.timestamp = datetime.now()
     await ctx.respond(embed=embed)
+
+@minecord.command(name="stats", description="Your Minecord statistics!")
+async def stats(ctx):
+    await ctx.defer(ephemeral=True)
+    bot.dispatch("application_command", ctx)
+    await open_account(ctx.author)
+    user = ctx.author
+    em = discord.Embed(title=f"{user.name}'s Statistics",
+                       color=ctx.author.color)
+    try:
+        all_damage = 0
+        for damage in db[str(user.id)]["damages"]:
+            all_damage += damage
+        total_fights = len(db[str(user.id)]["damages"])
+        avg_damage = all_damage/total_fights
+        
+    except:
+        db[str(user.id)]["damages"] = []
+        all_damage, avg_damage, total_fights = 0, 0, 0
+
+    em.add_field(name = "Total Ender Dragon Damage", value = f'{all_damage}')
+    em.add_field(name = "Average Ender Dragon Damage", value = f'{avg_damage}')
+    em.add_field(name = "Ender Dragon Fights", value = f'{total_fights}')
+    em.set_footer(text="Statistics since")
+    em.timestamp = datetime.fromtimestamp(time.time())
+    await ctx.followup.send(embed=em)
 
 @minecord.command(name="setup", description="Setup for Minecord!")
 async def setup(ctx):

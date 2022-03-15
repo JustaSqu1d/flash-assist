@@ -31,7 +31,13 @@ class Reminders(commands.Cog):
 
                 try:
                     if "you dealt" in msg.content and "damage" in msg.content:
-                        print(msg.content.split("dealt"))
+                        damage = int(msg.content.split("dealt")[1].split(" ")[1]))
+
+                        try:
+                            db[str(user.id)]["damages"].append(damage)
+                        except:
+                            db[str(user.id)]["damages"] = [damage]
+                        
                 except:
                     pass        
 
