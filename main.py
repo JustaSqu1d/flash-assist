@@ -110,7 +110,7 @@ async def stats(ctx):
     #TODO embed.add_field(name = "")
     embed.set_footer(text="Statistics since")
     embed.timestamp = datetime.fromtimestamp(stat_start)
-    await ctx.followup.send(embed=em)
+    await ctx.followup.send(embed=embed)
 
 @minecord.command(name="setup", description="Setup for Minecord!")
 async def setup(ctx):
@@ -290,7 +290,7 @@ async def terms(ctx):
     embed.add_field(name="Mines Recorded", value=db["trials"], inline=False)
     embed.set_footer(
         text=
-        f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100), 3)}%\n Or about 1 in {round(db["trials"]/db["success"])}'
+        f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100), 3)}% (1 in {round(db["trials"]/db["success"])})'
     )
     embed.timestamp = datetime.now()
     await ctx.respond(embed=embed) 
