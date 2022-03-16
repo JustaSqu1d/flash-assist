@@ -333,6 +333,7 @@ async def invite(ctx):
     view.add_item(Invite())
     view.add_item(Invite2())
     view.add_item(Invite3())
+    view.add_item(Invite4())
     await ctx.respond(embed=embed, view=view)
 
 

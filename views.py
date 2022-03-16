@@ -30,6 +30,16 @@ class Invite3(discord.ui.Button):
             "https://flash-assist.squidsquidsquid.repl.co/",
             row=2)
 
+
+class Invite4(discord.ui.Button):
+    def __init__(self):
+        super().__init__(
+            label='Discord Server',
+            style=discord.ButtonStyle.link,
+            url=
+            "https://discord.com/invite/fJt6yFeD5v",
+            row=2)
+
 class Option1(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=60)
