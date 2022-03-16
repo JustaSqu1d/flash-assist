@@ -3,13 +3,11 @@ import os
 import discord
 import sentry_sdk
 from discord.commands import Option
-from discord.ext import tasks
 from replit import db
 from datetime import datetime
 from helpers import open_account
 from keepalive import keep_alive
 from views import *
-import time
 
 sentry_sdk.init(
     os.environ['SDKKEY'],
@@ -27,7 +25,7 @@ bot = discord.AutoShardedBot(
 
 minecord = bot.create_group("minecord", "Settings for Minecords")
 
-stat_start = 1647313924.9087572
+stat_start = 1647338400
 
 for filename in os.listdir("cogs"):
     if filename.endswith(".py"):
