@@ -86,32 +86,6 @@ async def droprate(ctx):
     embed.timestamp = datetime.now()
     await ctx.respond(embed=embed)
 
-@minecord.command(name="stats", description="Your Minecord statistics!")
-async def stats(ctx):
-    await ctx.defer(ephemeral=True)
-    bot.dispatch("application_command", ctx)
-    await open_account(ctx.author)
-    user = ctx.author
-    embed = discord.Embed(title=f"{user.name}'s Statistics",
-                       color=discord.Color("OxFF7514"))
-    try:
-        all_damage = 0
-        for damage in db[str(user.id)]["damages"]:
-            all_damage += damage
-        total_fights = len(db[str(user.id)]["damages"])
-        avg_damage = all_damage/total_fights
-        avg_damage = round(avg_damage, 2)
-        
-    except:
-        db[str(user.id)]["damages"] = []
-        all_damage, avg_damage, total_fights = 0, 0, 0
-
-    embed.add_field(name = "Ender Dragon (Classic)", value = f"Total Damage: {all_damage}\nAverage Damage: {avg_damage}\nTotal Fights: {total_fights}", inline = False)
-    #TODO embed.add_field(name = "")
-    embed.set_footer(text="Statistics since")
-    embed.timestamp = datetime.fromtimestamp(stat_start)
-    await ctx.followup.send(embed=embed)
-
 @minecord.command(name="setup", description="Setup for Minecord!")
 async def setup(ctx):
     await ctx.defer(ephemeral=True)
@@ -242,6 +216,32 @@ async def setup(ctx):
         await ctx.interaction.edit_original_message(embed=em, view=op1)
         return
 
+@minecord.command(name="stats", description="Your Minecord statistics!")
+async def stats(ctx):
+    await ctx.defer(ephemeral=True)
+    bot.dispatch("application_command", ctx)
+    await open_account(ctx.author)
+    user = ctx.author
+    embed = discord.Embed(title=f"{user.name}'s Statistics",
+                       color=discord.Color("OxFF7514"))
+    try:
+        all_damage = 0
+        for damage in db[str(user.id)]["damages"]:
+            all_damage += damage
+        total_fights = len(db[str(user.id)]["damages"])
+        avg_damage = all_damage/total_fights
+        avg_damage = round(avg_damage, 2)
+        
+    except:
+        db[str(user.id)]["damages"] = []
+        all_damage, avg_damage, total_fights = 0, 0, 0
+
+    embed.add_field(name = "Ender Dragon (Classic)", value = f"Total Damage: {all_damage}\nAverage Damage: {avg_damage}\nTotal Fights: {total_fights}", inline = False)
+    #TODO embed.add_field(name = "")
+    embed.set_footer(text="Statistics since")
+    embed.timestamp = datetime.fromtimestamp(stat_start)
+    await ctx.followup.send(embed=embed)
+    
 
 @bot.slash_command(
     name="config",
