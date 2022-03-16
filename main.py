@@ -223,7 +223,7 @@ async def stats(ctx):
     await open_account(ctx.author)
     user = ctx.author
     embed = discord.Embed(title=f"{user.name}'s Statistics",
-                       color=discord.Color("OxFF7514"))
+                       color=discord.Color.random())
     try:
         all_damage = 0
         for damage in db[str(user.id)]["damages"]:
