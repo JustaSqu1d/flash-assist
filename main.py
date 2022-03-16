@@ -259,7 +259,7 @@ async def config(ctx):
     while not (to):
         if view.value == "Minecord Classic":
             view = TogglesCl(ctx)
-            embed.color = discord.Color.white()
+            embed.color = discord.Color.orange()
             await ctx.interaction.edit_original_message(view=view)
         elif view.value == "Minecord":
             view = Toggles(ctx)
