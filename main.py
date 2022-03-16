@@ -21,7 +21,8 @@ intents.message_content = True
 intents.messages = True
 
 bot = discord.AutoShardedBot(
-    intents=intents, activity=discord.Game(name="Discord Bots | /setup"))
+    intents=intents, activity=discord.Game(name="Discord Bots | /setup")
+)
 
 minecord = bot.create_group("minecord", "Settings for Minecords")
 
@@ -247,9 +248,10 @@ async def setup(ctx):
     description="Edit what commands you want to be reminded upon!!")
 async def config(ctx):
     bot.dispatch("application_command", ctx)
-    embed = discord.Embed(title="Reminder Control Panel!",
-                          description="Green: ON\nRed: OFF")
+    embed = discord.Embed(title="Reminder Control Panel",
+                          description="**Green:** ON\n**Red:** OFF")
     view = Toggles(ctx)
+    embed.set_footer(text="Click the buttons to toggle between modes!")
     embed.timestamp = datetime.now()
     await ctx.respond(embed=embed, view=view, ephemeral=True)
     view.value = "Minecord"
@@ -257,15 +259,22 @@ async def config(ctx):
     while not (to):
         if view.value == "Minecord Classic":
             view = TogglesCl(ctx)
+            embed.color = discord.Color.white()
             await ctx.interaction.edit_original_message(view=view)
         elif view.value == "Minecord":
             view = Toggles(ctx)
+            embed.color = discord.Color.yellow()
             await ctx.interaction.edit_original_message(view=view)
         elif view.value == "Virtual Fisher":
             view = TogglesVf(ctx)
+            embed.color = discord.Color.blue()
             await ctx.interaction.edit_original_message(view=view)
             
         to = await view.wait()
+    for child in view.children:
+        child.disabled = True
+    embed.set_footer(text="Buttons timed-out. Use the command again.")
+    await ctx.interaction.edit_original_message(view=view)
 
 
 @bot.slash_command(
@@ -281,7 +290,7 @@ async def terms(ctx):
     embed.add_field(name="Mines Recorded", value=db["trials"], inline=False)
     embed.set_footer(
         text=
-        f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100), 3)}%'
+        f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100), 3)}%\n Or about 1 in {round(db["trials"]/db["success"])}'
     )
     embed.timestamp = datetime.now()
     await ctx.respond(embed=embed) 
