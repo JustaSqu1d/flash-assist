@@ -81,7 +81,7 @@ async def droprate(ctx):
     embed.add_field(name="Mines Recorded", value=db["trials"], inline=False)
     embed.set_footer(
         text=
-        f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100), 3)}%'
+        f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100), 3)}% (1 in {round(db["trials"]/db["success"])+1})'
     )
     embed.timestamp = datetime.now()
     await ctx.respond(embed=embed)
