@@ -93,24 +93,24 @@ async def stats(ctx):
     bot.dispatch("application_command", ctx)
     await open_account(ctx.author)
     user = ctx.author
-    em = discord.Embed(title=f"{user.name}'s Statistics",
-                       color=ctx.author.color)
+    embed = discord.Embed(title=f"{user.name}'s Statistics",
+                       color=discord.Color("OxFF7514"))
     try:
         all_damage = 0
         for damage in db[str(user.id)]["damages"]:
             all_damage += damage
         total_fights = len(db[str(user.id)]["damages"])
         avg_damage = all_damage/total_fights
+        avg_damage = round(avg_damage, 2)
         
     except:
         db[str(user.id)]["damages"] = []
         all_damage, avg_damage, total_fights = 0, 0, 0
 
-    em.add_field(name = "Total Ender Dragon Damage", value = f'{all_damage}')
-    em.add_field(name = "Average Ender Dragon Damage", value = f'{avg_damage}')
-    em.add_field(name = "Ender Dragon Fights", value = f'{total_fights}')
-    em.set_footer(text="Statistics since")
-    em.timestamp = datetime.fromtimestamp(stat_start)
+    embed.add_field(name = "Ender Dragon (Classic)", value = f"Total Damage: {all_damage}\nAverage Damage: {avg_damage}\nTotal Fights: {total_fights}", inline = False)
+    #TODO embed.add_field(name = "")
+    embed.set_footer(text="Statistics since")
+    embed.timestamp = datetime.fromtimestamp(stat_start)
     await ctx.followup.send(embed=em)
 
 @minecord.command(name="setup", description="Setup for Minecord!")
