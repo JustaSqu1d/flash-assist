@@ -1,0 +1,3 @@
+statcord.py
+sentry-sdk
+py-cord==2.0.0b5
