@@ -3,4 +3,4 @@
 - [ ] More statistics for other bots
 - [ ] Start Virtual Farmer implementation
 - [x] Complete basic Virtual Fisher implementation
-- [ ] Message Content Intent
+- [x] Message Content Intent
