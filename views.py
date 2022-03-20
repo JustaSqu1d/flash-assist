@@ -40,6 +40,15 @@ class Invite4(discord.ui.Button):
             "https://discord.com/invite/fJt6yFeD5v",
             row=2)
 
+class Status(discord.ui.Button):
+    def __init__(self):
+        super().__init__(
+            label='Bot Status',
+            style=discord.ButtonStyle.link,
+            url=
+            "https://flashassist.statuspage.io/",
+            row=2)
+
 class Option1(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=60)
