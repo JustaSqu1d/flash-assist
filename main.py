@@ -23,7 +23,7 @@ intents.message_content = True
 intents.messages = True
 
 bot = discord.AutoShardedBot(
-    intents=intents, activity=discord.Game(name="Discord Bots | /setup")
+    intents=intents, activity=discord.Game(name="Discord Bots | /invite")
 )
 
 minecord = bot.create_group("minecord", "Settings for Minecords")
