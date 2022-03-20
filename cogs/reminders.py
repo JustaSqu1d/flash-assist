@@ -304,7 +304,7 @@ class Reminders(commands.Cog):
         except discord.errors.Forbidden:
             pass
 
-        except: 
+        except:
             traceback.print_exc()
 
 

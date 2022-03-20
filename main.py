@@ -6,11 +6,9 @@ from discord.commands import Option
 from discord.ext import tasks
 from replit import db
 from datetime import datetime
-from helpers import open_account, post_ping, api_key, page_id, metric_id
+from helpers import open_account, api_key, page_id, metric_id
 from keepalive import keep_alive
 from views import *
-from threading import Thread
-from asyncio import run
 import time
 
 sentry_sdk.init(
@@ -69,7 +67,7 @@ async def on_message(msg) -> None:
             await msg.channel.send("Reload success!")
         
     elif msg.content == "<@!836581672811495465>" or msg.content == "<@!836581672811495465>\n":
-        ping = int((bot.latencies[msg.guild.shard_id][1])*1000)   
+        ping = int((bot.latencies[msg.guild.shard_id][1])*1000)
         embed = discord.Embed(title="Latency", description=f"**Gateway:** {ping} ms\n**Shard**: {msg.guild.shard_id}")
 
         if ping >= 1000:
@@ -80,6 +78,12 @@ async def on_message(msg) -> None:
             embed.color = discord.Color.yellow()
         else:
             embed.color = discord.Color.green()
+
+        if ping >= 100:
+            view = discord.ui.View()
+            view.add_item(Status())
+            await msg.reply("Ping!", embed=embed, mention_author=False, view=view)
+            return
 
         await msg.reply("Ping!", embed=embed, mention_author=False)
 

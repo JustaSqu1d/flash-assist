@@ -10,7 +10,6 @@ class Invite(discord.ui.Button):
             "https://discord.com/api/oauth2/authorize?client_id=836581672811495465&permissions=321536&redirect_uri=https%3A%2F%2Fflash-assist.squidsquidsquid.repl.co%2F&response_type=code&scope=identify%20bot%20applications.commands",
             row=1)
 
-
 class Invite2(discord.ui.Button):
     def __init__(self):
         super().__init__(
@@ -20,7 +19,6 @@ class Invite2(discord.ui.Button):
             "https://discord.com/api/oauth2/authorize?client_id=836581672811495465&permissions=321536&redirect_uri=https%3A%2F%2Fdiscord.com%2Finvite%2FfJt6yFeD5v&response_type=code&scope=identify%20bot%20applications.commands",
             row=1)
 
-
 class Invite3(discord.ui.Button):
     def __init__(self):
         super().__init__(
@@ -28,8 +26,7 @@ class Invite3(discord.ui.Button):
             style=discord.ButtonStyle.link,
             url=
             "https://flash-assist.squidsquidsquid.repl.co/",
-            row=2)
-
+            row=1)
 
 class Invite4(discord.ui.Button):
     def __init__(self):
@@ -47,6 +44,15 @@ class Status(discord.ui.Button):
             style=discord.ButtonStyle.link,
             url=
             "https://flashassist.statuspage.io/",
+            row=2)
+
+class Vote(discord.ui.Button):
+    def __init__(self):
+        super().__init__(
+            label='Top.gg Vote',
+            style=discord.ButtonStyle.link,
+            url=
+            "https://top.gg/bot/836581672811495465/vote",
             row=2)
 
 class Option1(discord.ui.View):
