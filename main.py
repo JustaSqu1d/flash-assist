@@ -52,14 +52,17 @@ async def on_ready():
 
 @bot.event
 async def on_message(msg) -> None:
+    global bot
     if msg.author.id in bots: 
         bot.dispatch("reminder", msg)
         
-    elif msg.author.id == 586743480651350063 and msg.content == "%reload cogs":
-        for filename in os.listdir("cogs"):
-            if filename.endswith(".py"):
-                bot.reload_extension(f"cogs.{filename[:-3]}")
-        await msg.channel.send("Reload success!")
+    elif msg.author.id == bot.owner_id:
+        bot.owner = msg.author
+        if msg.content == "%reload cogs":
+            for filename in os.listdir("cogs"):
+                if filename.endswith(".py"):
+                    bot.reload_extension(f"cogs.{filename[:-3]}")
+            await msg.channel.send("Reload success!")
         
     elif msg.content == "<@!836581672811495465>" or msg.content == "<@!836581672811495465>\n":
         ping = int((bot.latencies[msg.guild.shard_id][1])*1000)   
@@ -297,14 +300,10 @@ async def terms(ctx):
     await ctx.defer()
     bot.dispatch("application_command", ctx)
 
-    embed = discord.Embed(title="Boss Key Drop Rates",
+    embed = discord.Embed(title="Flash Assist",
                           color=discord.Color.orange())
-    embed.add_field(name="Boss Key Drops", value=db["success"], inline=False)
-    embed.add_field(name="Mines Recorded", value=db["trials"], inline=False)
-    embed.set_footer(
-        text=
-        f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100), 3)}% (1 in {round(db["trials"]/db["success"])})'
-    )
+    embed.description = "[Terms of Service](https://flash-assist.squidsquidsquid.repl.co/terms)\n[Privacy Policy](https://flash-assist.squidsquidsquid.repl.co/privacy-policy)\n[Status Page](https://flashassist.statuspage.io/)\n[Website](https://flash-assist.squidsquidsquid.repl.co/)"
+    embed.set_footer(text="Flash Assist is not affiliated with any of the Discord bots it supports.")
     embed.timestamp = datetime.now()
     await ctx.respond(embed=embed) 
 
@@ -329,6 +328,7 @@ async def _response(ctx, response: Option(
         
         await ctx.respond(embed=failed)
         return
+        
     user = ctx.author
     response = discord.utils.escape_mentions(response)
     db[str(user.id)]["response"] = response
