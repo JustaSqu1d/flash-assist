@@ -43,6 +43,10 @@ async def post_latency():
     os.system(f""" curl https://api.statuspage.io/v1/pages/{page_id}/metrics/data -H \"Authorization: OAuth {api_key}\" -X POST -d \"data[{metric_id}][][timestamp]={ts}\" -d \"data[{metric_id}][][value]={value}\" """)
     os.system("clear")
 
+@tasks.loop(seconds=1)
+async def daily():
+    pass
+
 @bot.event
 async def on_ready():
     global bot
