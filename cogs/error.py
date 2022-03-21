@@ -1,8 +1,7 @@
 import discord
 from discord.ext import commands
-from replit import db
 from datetime import datetime
-
+from views import Status
 
 class Error(commands.Cog):
     def __init__(self, bot):
@@ -36,7 +35,7 @@ class Error(commands.Cog):
         error.add_field(name="Permissions", value = f"{ctx.interaction.permissions}")
         error.add_field(name="Data", value = f"{ctx.interaction.data}")
         error.timestamp = datetime.now()
-        await bot.owner.send(embed=embed)
+        await self.bot.owner.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Error(bot))

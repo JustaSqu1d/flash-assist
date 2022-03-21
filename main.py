@@ -3,13 +3,11 @@ import os
 import discord
 import sentry_sdk
 from discord.commands import Option
-from discord.ext import tasks
 from replit import db
 from datetime import datetime
-from helpers import open_account, api_key, page_id, metric_id
+from helpers import open_account
 from keepalive import keep_alive
 from views import *
-import time
 
 sentry_sdk.init(
     os.environ['SDKKEY'],
@@ -23,7 +21,7 @@ intents.message_content = True
 intents.messages = True
 
 bot = discord.AutoShardedBot(
-    intents=intents, activity=discord.Game(name="Discord Bots | /invite")
+    intents=intents, activity=discord.Game(name="Discord Bots | /invite"), owner_id = 586743480651350063
 )
 
 minecord = bot.create_group("minecord", "Settings for Minecords")
@@ -34,23 +32,12 @@ for filename in os.listdir("cogs"):
     if filename.endswith(".py"):
         bot.load_extension(f"cogs.{filename[:-3]}")
 
-@tasks.loop(minutes=1)
-async def post_latency():
-    ts = time.time()
-    value = int(bot.latency*1000)
-    os.system(f""" curl https://api.statuspage.io/v1/pages/{page_id}/metrics/data -H \"Authorization: OAuth {api_key}\" -X POST -d \"data[{metric_id}][][timestamp]={ts}\" -d \"data[{metric_id}][][value]={value}\" """)
-    os.system("clear")
-
-@tasks.loop(seconds=1)
-async def daily():
-    pass
 
 @bot.event
 async def on_ready():
     global bot
     print("Logged in as {0.user}".format(bot))
     print(f"{len(bot.guilds)} servers")
-    post_latency.start()
 
 @bot.event
 async def on_message(msg) -> None:
