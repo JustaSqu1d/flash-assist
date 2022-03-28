@@ -1,5 +1,5 @@
 *.pyc
-.replit
-poetry.lock
-pyproject.toml
-__pycache__/
+*.replit
+^.lock
+^.toml
+__pycache__/^
