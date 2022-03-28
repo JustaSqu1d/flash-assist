@@ -1,11 +1,13 @@
 from replit import db
-import time, random, os, asyncio
+import os
 
 api_key = os.environ['SPKEY']
 page_id = 'm4j4kdx61gkt'
 metric_id = 'btv9x2yn5b90'
 api_base = 'api.statuspage.io/v1'        
-        
+
+in_progress = 0
+
 async def open_account(user):
 
     if str(user.id) in db:
@@ -30,6 +32,7 @@ async def open_account(user):
         db[str(user.id)]["treasure"] = True
         db[str(user.id)]["fish"] = True
         db[str(user.id)]["worker"] = True
+        db[str(user.id)]["vfdaily"] = True
         
         db[str(
             user.id

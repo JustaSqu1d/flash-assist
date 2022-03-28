@@ -3,8 +3,8 @@ from discord.ext import commands
 import asyncio
 from replit import db
 import random
-from helpers import open_account
-from views import Invite
+from helpers import open_account, in_progress
+from views import Vote
 import traceback
 
 
@@ -14,6 +14,7 @@ class Reminders(commands.Cog):
 
     @commands.Cog.listener()
     async def on_reminder(self, msg):
+        global in_progress
         try:
             ctx = msg.channel
             msg.content = msg.content.lower()
@@ -240,6 +241,7 @@ class Reminders(commands.Cog):
                     db[str(user.id)]["treasure"] = True
                     db[str(user.id)]["fish"] = True
                     db[str(user.id)]["worker"] = True
+                    db[str(user.id)]["vfdaily"] = True
 
 
                 for embed in msg.embeds:
@@ -289,11 +291,14 @@ class Reminders(commands.Cog):
                 response = response.replace("$", f"{cooldown}")
             except:
                 pass
+            in_progress += 1
             await asyncio.sleep(cooldown)
+            in_progress -= 1
+            
             
             if random.randint(1, 10) == random.randint(1, 10):
                 view = discord.ui.View()
-                view.add_item(Invite())
+                view.add_item(Vote())
                 await ctx.send(response, view=view)
             else:
                 await ctx.send(response)

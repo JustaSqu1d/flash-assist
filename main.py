@@ -38,22 +38,28 @@ async def on_ready():
     global bot
     print("Logged in as {0.user}".format(bot))
     print(f"{len(bot.guilds)} servers")
+    
+    bot.owner = await bot.fetch_user(bot.owner_id)
+    await bot.owner.send("Online!")
 
 @bot.event
 async def on_message(msg) -> None:
-    global bot
+    print(msg.clean_content)
     if msg.author.id in bots: 
         bot.dispatch("reminder", msg)
-        
+
+    elif not(msg.author.bot):
+        await open_account(msg.author)
+    
     elif msg.author.id == bot.owner_id:
         bot.owner = msg.author
-        if msg.content == "%reload cogs":
+        if msg.content == "%reload":
             for filename in os.listdir("cogs"):
                 if filename.endswith(".py"):
                     bot.reload_extension(f"cogs.{filename[:-3]}")
             await msg.channel.send("Reload success!")
-        
-    elif msg.content == "<@!836581672811495465>" or msg.content == "<@!836581672811495465>\n":
+    
+    elif f"@{msg.guild.me.display_name}" == msg.clean_content:
         ping = int((bot.latencies[msg.guild.shard_id][1])*1000)
         embed = discord.Embed(title="Latency", description=f"**Gateway:** {ping} ms\n**Shard**: {msg.guild.shard_id}")
 
@@ -227,6 +233,7 @@ async def setup(ctx):
         await ctx.interaction.edit_original_message(embed=em, view=op1)
         return
 
+
 @minecord.command(name="stats", description="Your Minecord statistics!")
 async def stats(ctx):
     await ctx.defer(ephemeral=True)
@@ -285,12 +292,12 @@ async def config(ctx):
     for child in view.children:
         child.disabled = True
     embed.set_footer(text="Buttons timed-out. Use the command again.")
-    await ctx.interaction.edit_original_message(view=view)
+    await ctx.interaction.edit_original_message(embed=embed, view=view)
 
 
 @bot.slash_command(
     name="terms",
-    description="You can view our Terms of Service and Privacy Policy here.")
+    description="You can view our Terms of Service and Privacy Policy here, along with some additional information.")
 async def terms(ctx):
     await ctx.defer()
     bot.dispatch("application_command", ctx)
@@ -327,7 +334,21 @@ async def _response(ctx, response: Option(
     user = ctx.author
     response = discord.utils.escape_mentions(response)
     db[str(user.id)]["response"] = response
-    success = discord.Embed(title="Success!", color=discord.Color.green())
+        
+    try:
+        response = response.replace("%",ctx.author.mention)
+    except:
+        pass
+    try:
+        response = response.replace("&","`command`")
+    except:
+        pass
+    try:
+        response = response.replace("$","3")
+    except:
+        pass
+        
+    success = discord.Embed(title="Success!", description = response, color=discord.Color.green())
     success.timestamp = datetime.now()
     await ctx.respond(embed=success)
 
