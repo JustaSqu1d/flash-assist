@@ -149,6 +149,7 @@ class OptionMin(discord.ui.View):
     @discord.ui.button(label='5', style=discord.ButtonStyle.success)
     async def callback5(self, button, interaction):
         self.value = 5
+        self.stop()
 
 
 class TogglesCl(discord.ui.View):

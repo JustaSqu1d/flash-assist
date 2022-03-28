@@ -192,7 +192,6 @@ async def setup(ctx):
 
         for child in opmin.children:
             child.disabled = True
-        await ctx.interaction.edit_original_message(view=opmin)
 
         await ctx.interaction.edit_original_message(embed=em, view=opmin)
         return
