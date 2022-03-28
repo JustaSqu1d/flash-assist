@@ -44,22 +44,13 @@ async def on_ready():
 
 @bot.event
 async def on_message(msg) -> None:
-    print(msg.clean_content)
     if msg.author.id in bots: 
         bot.dispatch("reminder", msg)
 
-    elif not(msg.author.bot):
+    if not(msg.author.bot):
         await open_account(msg.author)
     
-    elif msg.author.id == bot.owner_id:
-        bot.owner = msg.author
-        if msg.content == "%reload":
-            for filename in os.listdir("cogs"):
-                if filename.endswith(".py"):
-                    bot.reload_extension(f"cogs.{filename[:-3]}")
-            await msg.channel.send("Reload success!")
-    
-    elif f"@{msg.guild.me.display_name}" == msg.clean_content:
+    if bot.user.id in msg.raw_mentions:
         ping = int((bot.latencies[msg.guild.shard_id][1])*1000)
         embed = discord.Embed(title="Latency", description=f"**Gateway:** {ping} ms\n**Shard**: {msg.guild.shard_id}")
 
@@ -80,8 +71,15 @@ async def on_message(msg) -> None:
 
         await msg.reply("Ping!", embed=embed, mention_author=False)
 
-    else:
-        return
+    if msg.author.id == bot.owner_id:
+        bot.owner = msg.author
+        if msg.content == "%reload":
+            for filename in os.listdir("cogs"):
+                if filename.endswith(".py"):
+                    bot.reload_extension(f"cogs.{filename[:-3]}")
+            await msg.channel.send("Reload success!")
+
+    return
 
 @bot.event
 async def on_interaction(itx):
