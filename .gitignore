@@ -1,5 +1,5 @@
 *.pyc
 *.replit
-^.lock
-^.toml
-__pycache__/^
+*.lock
+*.toml
+__pycache__/*
