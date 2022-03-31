@@ -13,6 +13,7 @@ class Ed(commands.Cog):
             return m.channel == msg.channel and m.author.id == 878007103460089886
 
         msg.content = msg.content.lower()
+        msg.content = msg.content.replace(" ","")
         user = msg.author
 
         if msg.content in "m!ed" or msg.content in "m!enderdragon" or msg.content in "m!bf" or msg.content in "m!bossfight":
@@ -39,7 +40,6 @@ class Ed(commands.Cog):
             except:
                 pass
             
-
 
 def setup(bot):
     bot.add_cog(Ed(bot))

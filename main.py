@@ -110,7 +110,7 @@ async def setup(ctx):
     view = Option1()
     em = discord.Embed(title="What are your settings for?",
                        color=ctx.author.color)
-    em.set_footer(text=f"© Flash Assist 2022 | /invite | {ctx.author}")
+    em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
     em.timestamp = datetime.now()
     await ctx.followup.send(embed=em, view=view)
 
@@ -127,7 +127,7 @@ async def setup(ctx):
         em = discord.Embed(title="Do you have efficiency?",
                            description="Yes | No",
                            color=ctx.author.color)
-        em.set_footer(text=f"© Flash Assist 2022 | /invite | {ctx.author}")
+        em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
         em.timestamp = datetime.now()
         op1 = Option2()
         await ctx.interaction.edit_original_message(embed=em, view=op1)
@@ -151,7 +151,7 @@ async def setup(ctx):
         em = discord.Embed(title="What armor do you have?",
                            color=ctx.author.color)
         em.timestamp = datetime.now()
-        em.set_footer(text=f"© Flash Assist 2022 | %setup | {ctx.author}")
+        em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
         await ctx.interaction.edit_original_message(embed=em, view=opar)
 
         timedout = await opar.wait()
@@ -169,7 +169,7 @@ async def setup(ctx):
             description="Select a number!",
             color=ctx.author.color)
         em.timestamp = datetime.now()
-        em.set_footer(text=f"© Flash Assist 2022 | /invite | {ctx.author}")
+        em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
 
         opmin = OptionMin()
 
@@ -188,7 +188,7 @@ async def setup(ctx):
         em = discord.Embed(title="Setup Complete!",
                            color=discord.Color.green())
         em.timestamp = datetime.now()
-        em.set_footer(text=f"© Flash Assist 2022 | /invite | {ctx.author}")
+        em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
 
         for child in opmin.children:
             child.disabled = True
@@ -201,7 +201,7 @@ async def setup(ctx):
                            description="Yes | No",
                            color=ctx.author.color)
         em.timestamp = datetime.now()
-        em.set_footer(text=f"© Flash Assist 2022 | /invite | {ctx.author}")
+        em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
 
         op1 = Option2()
         await ctx.interaction.edit_original_message(embed=em, view=op1)
@@ -222,7 +222,7 @@ async def setup(ctx):
 
         em = discord.Embed(title="Setup Complete!",
                            color=discord.Color.green())
-        em.set_footer(text=f"© Flash Assist 2022 | /invite | {ctx.author}")
+        em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
 
         for child in op1.children:
             child.disabled = True

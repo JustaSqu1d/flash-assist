@@ -1,6 +1,6 @@
+import os
 import discord
 from discord.ext import commands
-from helpers import in_progress
 from replit import db
 import sys
 
@@ -13,12 +13,12 @@ class Dev(commands.Cog):
     async def on_message(self, msg):
         if msg.author.id != self.bot.owner_id:
             return
-        try:
-            if msg.content == "%current":
-                await msg.channel.send(in_progress+"")
-                
-        except:
-            self.bot.dispatch("error", "on_message", msg)
+
+        if msg.content == "%create webhook":
+            await msg.channel.create_webhook(name="Flash Assist Statuses")
+
+
+
 
 def setup(bot):
     bot.add_cog(Dev(bot))
