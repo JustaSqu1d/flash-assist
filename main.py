@@ -51,7 +51,10 @@ async def on_message(msg) -> None:
         await open_account(msg.author)
     
     if bot.user.id in msg.raw_mentions and "ping" in msg.content.lower():
-        ping = int((bot.latencies[msg.guild.shard_id][1])*1000)
+        try:
+            ping = int((bot.latencies[msg.guild.shard_id][1])*1000)
+        except:
+            ping = int(bot.latency*1000)
         embed = discord.Embed(title="Latency", description=f"**Gateway:** {ping} ms\n**Shard**: {msg.guild.shard_id}")
 
         if ping >= 1000:
