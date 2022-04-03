@@ -13,12 +13,12 @@ from asyncio import run
 class Tasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.post_latency.start()
+        #self.post_latency.start()
         self.update_status.start()
 
     def cog_unload(self):
         self.update_status.cancel()
-        self.post_latency.cancel()
+        #self.post_latency.cancel()
 
     
     

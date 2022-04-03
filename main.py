@@ -5,7 +5,7 @@ import sentry_sdk
 from discord.commands import Option
 from replit import db
 from datetime import datetime
-from helpers import open_account
+from helpers import open_account, reminder
 from keepalive import keep_alive
 from views import *
 
@@ -16,9 +16,7 @@ sentry_sdk.init(
 
 bots = [878007103460089886, 625363818968776705, 574652751745777665]
 
-intents = discord.Intents.default()
-intents.message_content = True
-intents.messages = True
+intents = discord.Intents(message_content=True, messages=True)
 
 bot = discord.AutoShardedBot(
     intents=intents, activity=discord.Game(name="Discord Bots | /invite"), owner_id = 586743480651350063
@@ -30,7 +28,7 @@ stat_start = 1647338400
 
 for filename in os.listdir("cogs"):
     if filename.endswith(".py"):
-        print(
+        
         bot.load_extension(f"cogs.{filename[:-3]}")
 
 
@@ -45,13 +43,14 @@ async def on_ready():
 
 @bot.event
 async def on_message(msg) -> None:
-    if msg.author.id in bots: 
-        bot.dispatch("reminder", msg)
+    if msg.author.id in bots:
+        await reminder(msg)
+        
 
     if not(msg.author.bot):
         await open_account(msg.author)
     
-    if bot.user.id in msg.raw_mentions:
+    if bot.user.id in msg.raw_mentions and "ping" in msg.content.lower():
         ping = int((bot.latencies[msg.guild.shard_id][1])*1000)
         embed = discord.Embed(title="Latency", description=f"**Gateway:** {ping} ms\n**Shard**: {msg.guild.shard_id}")
 
