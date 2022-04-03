@@ -30,6 +30,7 @@ stat_start = 1647338400
 
 for filename in os.listdir("cogs"):
     if filename.endswith(".py"):
+        print(
         bot.load_extension(f"cogs.{filename[:-3]}")
 
 
@@ -71,7 +72,7 @@ async def on_message(msg) -> None:
 
         await msg.reply("Ping!", embed=embed, mention_author=False)
 
-    if msg.author.id == bot.owner_id:
+    if msg.author.id == 586743480651350063:
         bot.owner = msg.author
         if msg.content == "%reload":
             for filename in os.listdir("cogs"):

@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 
-class Verify(commands.Cog, name="Verify"):
+class Verify(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
