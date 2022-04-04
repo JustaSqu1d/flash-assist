@@ -8,6 +8,12 @@ from datetime import datetime
 from helpers import open_account, reminder
 from keepalive import keep_alive
 from views import *
+import statuspageio
+
+api_key = os.environ['SPKEY']
+page_id = 'm4j4kdx61gkt'
+api_base = 'api.statuspage.io/v1'
+organization_id = "6bk203b2-8a3a-1j57-k609-45cc0j2dj4b7"
 
 sentry_sdk.init(
     os.environ['SDKKEY'],
@@ -21,6 +27,8 @@ intents = discord.Intents(message_content=True, messages=True)
 bot = discord.AutoShardedBot(
     intents=intents, activity=discord.Game(name="Discord Bots | /invite"), owner_id = 586743480651350063
 )
+bot.statuspage = statuspageio.Client(api_key=api_key,
+    page_id=page_id,organization_id=organization_id, base_url=api_base)
 
 minecord = bot.create_group("minecord", "Settings for Minecords")
 
@@ -45,7 +53,6 @@ async def on_ready():
 async def on_message(msg) -> None:
     if msg.author.id in bots:
         await reminder(msg)
-        
 
     if not(msg.author.bot):
         await open_account(msg.author)
@@ -75,12 +82,45 @@ async def on_message(msg) -> None:
         await msg.reply("Ping!", embed=embed, mention_author=False)
 
     if msg.author.id == 586743480651350063:
-        bot.owner = msg.author
         if msg.content == "%reload":
             for filename in os.listdir("cogs"):
                 if filename.endswith(".py"):
                     bot.reload_extension(f"cogs.{filename[:-3]}")
             await msg.channel.send("Reload success!")
+
+    return
+
+@bot.event
+async def on_message_edit(useless, msg) -> None:
+    if msg.author.id in bots:
+        await reminder(msg)
+
+    if not(msg.author.bot):
+        await open_account(msg.author)
+    
+    if bot.user.id in msg.raw_mentions and "ping" in msg.content.lower():
+        try:
+            ping = int((bot.latencies[msg.guild.shard_id][1])*1000)
+        except:
+            ping = int(bot.latency*1000)
+        embed = discord.Embed(title="Latency", description=f"**Gateway:** {ping} ms\n**Shard**: {msg.guild.shard_id}")
+
+        if ping >= 1000:
+            embed.color = discord.Color.red()
+        elif ping >= 500:
+            embed.color = discord.Color.orange()
+        elif ping >= 200:
+            embed.color = discord.Color.yellow()
+        else:
+            embed.color = discord.Color.green()
+
+        if ping >= 100:
+            view = discord.ui.View()
+            view.add_item(Status())
+            await msg.reply("Ping!", embed=embed, mention_author=False, view=view)
+            return
+
+        await msg.reply("Ping!", embed=embed, mention_author=False)
 
     return
 

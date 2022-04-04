@@ -297,9 +297,6 @@ class TogglesVf(discord.ui.View):
                 if child.label == "Worker":
                     if not (db[str(user.id)]["worker"]):
                         child.style = discord.ButtonStyle.danger
-                if child.label == "Daily":
-                    if not (db[str(user.id)]["vfdaily"]):
-                        child.style = discord.ButtonStyle.danger
             except:
                 pass
 
@@ -325,14 +322,6 @@ class TogglesVf(discord.ui.View):
 
         db[str(self.ctx.author.id)]["worker"] = not (db[str(
             self.ctx.author.id)]["worker"])
-        await interaction.response.edit_message(view=self)
-
-    @discord.ui.button(label='Daily', style=discord.ButtonStyle.success)
-    async def callback4(self, button, interaction):
-        button.style = discord.ButtonStyle.danger if button.style == discord.ButtonStyle.success else discord.ButtonStyle.success
-
-        db[str(self.ctx.author.id)]["vfdaily"] = not (db[str(
-            self.ctx.author.id)]["vfdaily"])
         await interaction.response.edit_message(view=self)
 
     @discord.ui.select(placeholder='Currently editing: Virtual Fisher', min_values=1, max_values=1, options=[

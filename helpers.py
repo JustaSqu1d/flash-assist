@@ -6,10 +6,7 @@ import random
 from views import Vote
 import traceback
 
-api_key = os.environ['SPKEY']
-page_id = 'm4j4kdx61gkt'
-metric_id = 'btv9x2yn5b90'
-api_base = 'api.statuspage.io/v1'        
+      
 
 in_progress = 0
 
@@ -141,9 +138,9 @@ async def reminder(msg : discord.Message):
                     or db[str(user.id)]["chop2"] or db[str(user.id)]["ed2"]):
                 return
 
-            if "youmined" in msg.content:
+            if "youmined" in msg.content or "you mined" in msg.content:
                 db["trials"] += 1
-                if "bosskey" in msg.content:
+                if "bosskey" in msg.content or "boss key" in msg.content:
                     db["success"] += 1
                 if db[str(user.id)]["mine2"]:
                     if db[str(user.id)]["efficiency2"] == 1:
@@ -152,14 +149,14 @@ async def reminder(msg : discord.Message):
                         cooldown = 5
                     command = "mine"
 
-            elif "youchopped" in msg.content and db[str(user.id)]["chop2"]:
+            elif ("youchopped" in msg.content or "you chopped" in msg.content) and db[str(user.id)]["chop2"]:
                 if db[str(user.id)]["efficiency2"] == 1:
                     cooldown = 45
                 else:
                     cooldown = 60
                 command = "chop"
 
-            elif "youkilled" in msg.content and db[str(user.id)]["fight2"]:
+            elif ("youkilled" in msg.content or "you killed" in msg.content) and db[str(user.id)]["fight2"]:
                 if db[str(user.id)]["efficiency2"] == 1:
                     cooldown = 35
                 else:
@@ -190,7 +187,6 @@ async def reminder(msg : discord.Message):
                 db[str(user.id)]["treasure"] = True
                 db[str(user.id)]["fish"] = True
                 db[str(user.id)]["worker"] = True
-                db[str(user.id)]["vfdaily"] = True
 
 
             for embed in msg.embeds:
