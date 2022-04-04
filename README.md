@@ -2,7 +2,7 @@
 
 ## What is this?
 
-[![Discord Bots](https://top.gg/api/widget/upvotes/836581672811495465.svg)(https://top.gg/bot/836581672811495465)
+[![Discord Bots](https://top.gg/api/widget/upvotes/836581672811495465.svg)](https://top.gg/bot/836581672811495465)
 
 Flash Assist is an assistant Discord bot where it can remind players once their cooldowns have elapsed! No more using channels with designated cooldowns; no more estimating the cooldown remaining, because Flash Assist does it for you!
 
