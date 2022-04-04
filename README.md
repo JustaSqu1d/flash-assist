@@ -19,4 +19,8 @@ Flash Assist supports functionality for the following bots:
 
 You can also change your configurations with the `/config` command!
 
+## Questions?
+
+Feel free to join our [Discord Support Server](https://discord.com/invite/fJt6yFeD5v) and ask them!
+
 ## Your perfect grinding partner here to help!
