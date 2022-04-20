@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from replit import db
+#from replit import db
 
 
 class Ed(commands.Cog):

@@ -1,5 +1,5 @@
 import discord
-from replit import db
+#from replit import db
 
 class Invite(discord.ui.Button):
     def __init__(self):

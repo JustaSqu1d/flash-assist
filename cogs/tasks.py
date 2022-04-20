@@ -18,23 +18,17 @@ class Tasks(commands.Cog):
         
         if not(self.bot.is_ready()):
             await self.bot.wait_until_ready()
-        ts = t.time()
-        value = int(self.bot.latency*1000)
-        self.bot.statuspage.metrics.submit_data(
-            metric_id = metric_id,
-            timestamp = ts,
-            value = value
-        )
+        #TODO 
 
     @tasks.loop(hours=1)
-     async def post_logs(self):
-         if not(self.bot.is_ready()):
-             await self.bot.wait_until_ready()
-36	-         await sleep(2)
-37	-         channel = await self.bot.fetch_channel(966024569444008076)
-38	-         with open('discord.log', 'rb') as fp:
-39	-             print(fp)
-40	-             await channel.send("Logs:",file=File(fp, '..discord.log'))
+    async def post_logs(self):
+        if not(self.bot.is_ready()):
+            await self.bot.wait_until_ready()
+        await sleep(2)
+        channel = await self.bot.fetch_channel(966024569444008076)
+        with open('discord.log', 'rb') as fp:
+            print(fp)
+            await channel.send("Logs:",file=File(fp, '..discord.log'))
 
 def setup(bot):
     bot.add_cog(Tasks(bot))

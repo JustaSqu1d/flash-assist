@@ -4,3 +4,4 @@
 *.toml
 __pycache__/*
 *.log
+env.*

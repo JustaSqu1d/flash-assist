@@ -3,29 +3,27 @@ import os
 import discord
 from sentry_sdk import init
 from discord.commands import Option
-from replit import db
+#from replit import db
 from datetime import datetime
 from helpers import open_account
 from keepalive import keep_alive
 from views import *
-from statuspageio import Client
-from asyncio import sleep
+from asyncio import sleep, ensure_future, wait
 from random import randint
 from logging import getLogger, DEBUG, FileHandler, Formatter
+#from dotenv import load_dotenv
+import aiosqlite
+from env import *
+
 
 logger = getLogger('discord')
 logger.setLevel(DEBUG)
 handler = FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+handler.setFormatter(Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
-api_key = os.environ['SPKEY']
-page_id = 'm4j4kdx61gkt'
-api_base = 'api.statuspage.io/v1'
-organization_id = "6bk203b2-8a3a-1j57-k609-45cc0j2dj4b7"
-
 init(
-    os.environ['SDKKEY'],
+    SDKKEY,
     traces_sample_rate=1.0
 )
 
@@ -36,8 +34,6 @@ intents = discord.Intents(message_content=True, messages=True, guilds=True, guil
 bot = discord.AutoShardedBot(
     intents=intents, activity=discord.Game(name="Discord Bots | /invite"), owner_id = 586743480651350063
 )
-bot.statuspage = Client(api_key=api_key,
-    page_id=page_id,organization_id=organization_id, base_url=api_base)
 
 minecord = bot.create_group("minecord", "Settings for Minecords")
 
@@ -45,13 +41,13 @@ stat_start = 1647338400
 
 for filename in os.listdir("cogs"):
     if filename.endswith(".py"):
-        
         bot.load_extension(f"cogs.{filename[:-3]}")
-
 
 @bot.event
 async def on_ready():
     global bot
+    bot.db = await aiosqlite.connect("users.db")
+    await bot.db.execute(table)
     print("Logged in as {0.user}".format(bot))
     print(f"{len(bot.guilds)} servers")
     
@@ -192,7 +188,7 @@ async def on_message(msg) -> None:
                     db[str(user.id)]["fish"]
                     db[str(user.id)]["worker"]
                 except:
-                    await open_account(user)
+                    await open_account(user, bot)
                     
                     db[str(user.id)]["treasure"] = True
                     db[str(user.id)]["fish"] = True
@@ -265,7 +261,7 @@ async def on_message(msg) -> None:
             print(Exception)
 
     if not(msg.author.bot):
-        await open_account(msg.author)
+        await open_account(msg.author, bot)
     
     if bot.user.id in msg.raw_mentions and "ping" in msg.content.lower():
         try:
@@ -302,7 +298,7 @@ async def on_message(msg) -> None:
 
 @bot.event
 async def on_interaction(itx):
-    await open_account(itx.user)
+    await open_account(itx.user, bot)
     await bot.process_application_commands(itx)
 
 @minecord.command(name="droprate",
@@ -324,7 +320,7 @@ async def droprate(ctx):
 async def setup(ctx):
     await ctx.defer(ephemeral=True)
     bot.dispatch("application_command", ctx)
-    await open_account(ctx.author)
+    await open_account(ctx.author, bot)
     user = ctx.author
     view = Option1()
     em = discord.Embed(title="What are your settings for?",
@@ -449,12 +445,11 @@ async def setup(ctx):
         await ctx.interaction.edit_original_message(embed=em, view=op1)
         return
 
-
 @minecord.command(name="stats", description="Your Minecord statistics!")
 async def stats(ctx):
     await ctx.defer(ephemeral=True)
     bot.dispatch("application_command", ctx)
-    await open_account(ctx.author)
+    await open_account(ctx.author, bot)
     user = ctx.author
     embed = discord.Embed(title=f"{user.name}'s Statistics",
                        color=discord.Color.random())
@@ -475,7 +470,6 @@ async def stats(ctx):
     embed.set_footer(text="Statistics since")
     embed.timestamp = datetime.fromtimestamp(stat_start)
     await ctx.followup.send(embed=embed)
-    
 
 @bot.slash_command(
     name="config",
@@ -596,4 +590,4 @@ async def guide(ctx):
     await ctx.respond(embed=embed)
 
 keep_alive()
-bot.run(os.environ['BOTTOKEN'], reconnect=True)
+bot.run(BOTTOKEN, reconnect=True)

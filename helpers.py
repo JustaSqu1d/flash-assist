@@ -1,4 +1,4 @@
-from replit import db
+#from replit import db
 import os
 import discord
 import asyncio
@@ -6,16 +6,23 @@ import random
 from views import Vote
 import traceback
 
-      
 
-in_progress = 0
+async def open_account(user, bot):
+    conn = await bot.db.cursor()
+    rows = await conn.fetchall()
+    for row in rows:
+        print(row)
 
-async def open_account(user):
-
-    if str(user.id) in db:
+    if False:#str(user.id) in db:
         return False
+    
 
     else:
+        await bot.db.execute(
+        ''' INSERT INTO minecord(id,mines,fights,chops,dragon)
+              VALUES(0,1,1,1,1) '''
+        )
+        """
         db[str(user.id)] = {}
         db[str(user.id)]["efficiency"] = 0
         db[str(user.id)]["armor"] = 0
@@ -39,7 +46,7 @@ async def open_account(user):
         db[str(
             user.id
         )]["response"] = "% & boost/command cooldown elapsed! \nCurrent cooldown is `$ seconds`!"
-
+        """
     return True
 
 async def reminder(msg : discord.Message):
