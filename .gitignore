@@ -3,3 +3,4 @@
 *.lock
 *.toml
 __pycache__/*
+*.log

@@ -1,33 +1,42 @@
 import os
 
 import discord
-import sentry_sdk
+from sentry_sdk import init
 from discord.commands import Option
 from replit import db
 from datetime import datetime
-from helpers import open_account, reminder
+from helpers import open_account
 from keepalive import keep_alive
 from views import *
-import statuspageio
+from statuspageio import Client
+from asyncio import sleep
+from random import randint
+from logging import getLogger, DEBUG, FileHandler, Formatter
+
+logger = getLogger('discord')
+logger.setLevel(DEBUG)
+handler = FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 api_key = os.environ['SPKEY']
 page_id = 'm4j4kdx61gkt'
 api_base = 'api.statuspage.io/v1'
 organization_id = "6bk203b2-8a3a-1j57-k609-45cc0j2dj4b7"
 
-sentry_sdk.init(
+init(
     os.environ['SDKKEY'],
     traces_sample_rate=1.0
 )
 
 bots = [878007103460089886, 625363818968776705, 574652751745777665]
 
-intents = discord.Intents(message_content=True, messages=True)
+intents = discord.Intents(message_content=True, messages=True, guilds=True, guild_messages=True)
 
 bot = discord.AutoShardedBot(
     intents=intents, activity=discord.Game(name="Discord Bots | /invite"), owner_id = 586743480651350063
 )
-bot.statuspage = statuspageio.Client(api_key=api_key,
+bot.statuspage = Client(api_key=api_key,
     page_id=page_id,organization_id=organization_id, base_url=api_base)
 
 minecord = bot.create_group("minecord", "Settings for Minecords")
@@ -52,7 +61,208 @@ async def on_ready():
 @bot.event
 async def on_message(msg) -> None:
     if msg.author.id in bots:
-        await reminder(msg)
+        try:
+            ctx = msg.channel
+            msg.content = msg.content.lower()
+            
+            if msg.author.id == 878007103460089886:
+                try:
+                    try:
+                        msg3 = msg
+                        msg2 = await msg3.channel.fetch_message(
+                            msg3.reference.message_id)
+                        user = msg2.author
+                    except:
+                        user = msg.mentions[0]
+                except:
+                    return
+                
+                if not (db[str(user.id)]["mine"] or db[str(user.id)]["fight"]
+                        or db[str(user.id)]["chop"] or db[str(user.id)]["ed"]):
+                    return
+        
+                if ("you mined" in msg.content or "you mined" in msg.content) and ("in the nether" not in msg.content and "inthenether" not in msg.content) and db[
+                        str(user.id)]["mine"]:
+                    if db[str(user.id)]["efficiency"] == 1:
+                        cooldown = 4
+                    else:
+                        cooldown = 5
+                    command = "mine (classic)"
+                elif ("you chopped" in msg.content or "youchopped" in msg.content) and ("in the nether" not in msg.content and "inthenether" not in msg.content) and db[
+                        str(user.id)]["chop"]:
+                    command = "chop"
+                    if db[str(user.id)]["efficiency"] == 1:
+                        cooldown = 45
+                    else:
+                        cooldown = 60
+                elif ("you killed" in msg.content or "youkilled" in msg.content) and ("in the nether" not in msg.content and "inthenether" not in msg.content) and db[
+                        str(user.id)]["fight"]:
+                    cooldown = 40
+                    command = "fight (classic)"
+                    if db[str(user.id)]["armor"] == 1:
+                        cooldown = 40
+                    elif db[str(user.id)]["armor"] == 2:
+                        cooldown = 37
+                    elif db[str(user.id)]["armor"] == 3:
+                        cooldown = 35
+                    elif db[str(user.id)]["armor"] == 4:
+                        cooldown = 30
+                    elif db[str(user.id)]["armor"] == 5:
+                        cooldown = 25
+                    elif db[str(user.id)]["armor"] == 6:
+                        cooldown = 20
+                    if db[str(user.id)]["efficiency"] == 1:
+                        cooldown -= 10
+                elif ("you dealt" in msg.content) and db[str(user.id)]["ed"]:
+                    times = db[str(user.id)]["dragon"]
+                    cooldown = 60 * times
+                    command = "enderdragon (classc)"
+                elif ("you mined" in msg.content or "youmined" in msg.content) and ("in the nether" in msg.content or "inthenether" in msg.content) and db[
+                        str(user.id)]["mine"]:
+                    cooldown = 5
+                    command = "nether mine (classic)"
+                elif ("you chopped" in msg.content or "youchopped" in msg.content) and ("in the nether" in msg.content or "inthenether" in msg.content) and db[
+                        str(user.id)]["chop"]:
+                    cooldown = 60
+                    command = "nether chop (classic)"
+                elif  ("you killed" in msg.content or "youkilled" in msg.content) and ("in the nether" in msg.content or "inthenether" in msg.content) and db[
+                        str(user.id)]["fight"]: 
+                    cooldown = 45
+                    command = "nether fight (classic)"
+                else:
+                    return
+    
+            if msg.author.id == 625363818968776705:
+                
+                try:
+                    try:
+                        msg2 = await msg.channel.fetch_message(
+                            msg.reference.message_id)
+                        user = msg2.author
+                    except:
+                        user = msg.mentions[0]
+                except:
+                    return
+    
+                if not (db[str(user.id)]["mine2"] or db[str(user.id)]["fight2"]
+                        or db[str(user.id)]["chop2"] or db[str(user.id)]["ed2"]):
+                    return
+    
+                if ("you mined" in msg.content or "youmined" in msg.content):
+                    db["trials"] += 1
+                    if ("bosskey" in msg.content or "boss key" in msg.content):
+                        db["success"] += 1
+                    if db[str(user.id)]["mine2"]:
+                        if db[str(user.id)]["efficiency2"] == 1:
+                            cooldown = 4
+                        else:
+                            cooldown = 5
+                        command = "mine"
+    
+                elif ("you chopped" in msg.content or "youchopped" in msg.content) and db[str(user.id)]["chop2"]:
+                    if db[str(user.id)]["efficiency2"] == 1:
+                        cooldown = 48
+                    else:
+                        cooldown = 60
+                    command = "chop"
+    
+                elif ("you killed" in msg.content or "youkilled" in msg.content) and db[str(user.id)]["fight2"]:
+                    if db[str(user.id)]["efficiency2"] == 1:
+                        cooldown = 32
+                    else:
+                        cooldown = 45
+                    command = "fight"
+                else:
+                    return
+    
+            if msg.author.id == 574652751745777665:
+                try:
+                    try:
+                        msg2 = await msg.channel.fetch_message(
+                            msg.reference.message_id)
+                        user = msg2.author
+                    except:
+                        user = msg.interaction.user
+                except:
+                    return
+                
+                
+                try:
+                    db[str(user.id)]["treasure"]
+                    db[str(user.id)]["fish"]
+                    db[str(user.id)]["worker"]
+                except:
+                    await open_account(user)
+                    
+                    db[str(user.id)]["treasure"] = True
+                    db[str(user.id)]["fish"] = True
+                    db[str(user.id)]["worker"] = True
+    
+    
+                for embed in msg.embeds:
+                    embed = embed.to_dict()
+    
+                    try:
+                        if "You will now find more treasure for the next" in embed[
+                                "description"] and db[str(user.id)]["treasure"]:
+                            minutes = int(embed["description"].split(" ")[10])
+                            command = "treasure"
+                            cooldown = minutes * 60
+                            break
+    
+                        elif "You will now catch more fish for the next" in embed[
+                                "description"] and db[str(user.id)]["fish"] :
+                            minutes = int(embed["description"].split(" ")[10])
+                            command = "fish"
+                            cooldown = minutes * 60
+                            break
+    
+                        elif "You hired a worker for the next" in embed[
+                                "description"] and "catches will automatically be added to your inventory." and db[str(user.id)]["worker"] :
+                            minutes = int(
+                                embed["description"].split(" ")[8].split("**")[1]
+                            )
+                            command = "worker"
+                            cooldown = minutes * 60
+                            break
+    
+                        else:
+                            continue
+    
+                    except:
+                        raise Exception
+                
+    
+            response = db[str(user.id)]["response"]
+            try:
+                response = response.replace("%", f"{user.mention}")
+            except:
+                pass
+            try:
+                response = response.replace("&", command)
+            except:
+                pass
+            try:
+                response = response.replace("$", f"{cooldown}")
+            except:
+                pass
+            await sleep(cooldown)
+    
+            view = discord.ui.View()
+            
+            if randint(1, 10) == randint(1, 10):
+                view.add_item(Vote())
+                
+            await ctx.send(response, view=view)
+    
+        except UnboundLocalError:
+            pass
+        
+        except discord.errors.Forbidden:
+            pass
+
+        except:
+            print(Exception)
 
     if not(msg.author.bot):
         await open_account(msg.author)
@@ -87,40 +297,6 @@ async def on_message(msg) -> None:
                 if filename.endswith(".py"):
                     bot.reload_extension(f"cogs.{filename[:-3]}")
             await msg.channel.send("Reload success!")
-
-    return
-
-@bot.event
-async def on_message_edit(useless, msg) -> None:
-    if msg.author.id in bots:
-        await reminder(msg)
-
-    if not(msg.author.bot):
-        await open_account(msg.author)
-    
-    if bot.user.id in msg.raw_mentions and "ping" in msg.content.lower():
-        try:
-            ping = int((bot.latencies[msg.guild.shard_id][1])*1000)
-        except:
-            ping = int(bot.latency*1000)
-        embed = discord.Embed(title="Latency", description=f"**Gateway:** {ping} ms\n**Shard**: {msg.guild.shard_id}")
-
-        if ping >= 1000:
-            embed.color = discord.Color.red()
-        elif ping >= 500:
-            embed.color = discord.Color.orange()
-        elif ping >= 200:
-            embed.color = discord.Color.yellow()
-        else:
-            embed.color = discord.Color.green()
-
-        if ping >= 100:
-            view = discord.ui.View()
-            view.add_item(Status())
-            await msg.reply("Ping!", embed=embed, mention_author=False, view=view)
-            return
-
-        await msg.reply("Ping!", embed=embed, mention_author=False)
 
     return
 
