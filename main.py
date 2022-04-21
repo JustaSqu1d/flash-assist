@@ -5,16 +5,15 @@ from sentry_sdk import init
 from discord.commands import Option
 #from replit import db
 from datetime import datetime
-from helpers import open_account
+from helpers import open_account, fetch_user
 from keepalive import keep_alive
 from views import *
 from asyncio import sleep, ensure_future, wait
 from random import randint
 from logging import getLogger, DEBUG, FileHandler, Formatter
-#from dotenv import load_dotenv
-import aiosqlite
 from env import *
-
+import pymongo
+from pymongo import MongoClient
 
 logger = getLogger('discord')
 logger.setLevel(DEBUG)
@@ -35,6 +34,13 @@ bot = discord.AutoShardedBot(
     intents=intents, activity=discord.Game(name="Discord Bots | /invite"), owner_id = 586743480651350063
 )
 
+cluster = MongoClient(DBCONN)
+bot.db = cluster["discord"]
+bot.minecord = bot.db["minecord"]
+bot.minecordclassic = bot.db["minecord-classic"]
+bot.virtualfisher = bot.db["virtual-fisher"]
+bot.stats = bot.db["statistics"]
+
 minecord = bot.create_group("minecord", "Settings for Minecords")
 
 stat_start = 1647338400
@@ -46,13 +52,14 @@ for filename in os.listdir("cogs"):
 @bot.event
 async def on_ready():
     global bot
-    bot.db = await aiosqlite.connect("users.db")
-    await bot.db.execute(table)
     print("Logged in as {0.user}".format(bot))
     print(f"{len(bot.guilds)} servers")
     
     bot.owner = await bot.fetch_user(bot.owner_id)
     await bot.owner.send("Online!")
+
+    post1 = {"_id": 1, "success": 0, "trials": 0}
+    bot.stats.insert_one(post1)
 
 @bot.event
 async def on_message(msg) -> None:
@@ -73,60 +80,57 @@ async def on_message(msg) -> None:
                 except:
                     return
                 
-                if not (db[str(user.id)]["mine"] or db[str(user.id)]["fight"]
-                        or db[str(user.id)]["chop"] or db[str(user.id)]["ed"]):
+                db = await fetch_user(msg.author, bot)
+                
+                if not (db["minecordclassic"]["mine"] or db["minecordclassic"]["fight"]
+                        or db["minecordclassic"]["chop"] or db["minecordclassic"]["dragon"]):
                     return
         
-                if ("you mined" in msg.content or "you mined" in msg.content) and ("in the nether" not in msg.content and "inthenether" not in msg.content) and db[
-                        str(user.id)]["mine"]:
-                    if db[str(user.id)]["efficiency"] == 1:
+                if ("you mined" in msg.content or "youmined" in msg.content) and ("in the nether" not in msg.content and "inthenether" not in msg.content) and db["minecordclassic"]["mine"]:
+                    if db["minecordclassic"]["efficiency"]:
                         cooldown = 4
                     else:
                         cooldown = 5
                     command = "mine (classic)"
-                elif ("you chopped" in msg.content or "youchopped" in msg.content) and ("in the nether" not in msg.content and "inthenether" not in msg.content) and db[
-                        str(user.id)]["chop"]:
+                elif ("you chopped" in msg.content or "youchopped" in msg.content) and ("in the nether" not in msg.content and "inthenether" not in msg.content) and db["minecordclassic"]["chop"]:
                     command = "chop"
-                    if db[str(user.id)]["efficiency"] == 1:
+                    if db["minecordclassic"]["efficiency"]:
                         cooldown = 45
                     else:
                         cooldown = 60
-                elif ("you killed" in msg.content or "youkilled" in msg.content) and ("in the nether" not in msg.content and "inthenether" not in msg.content) and db[
-                        str(user.id)]["fight"]:
+                elif ("you killed" in msg.content or "youkilled" in msg.content) and ("in the nether" not in msg.content and "inthenether" not in msg.content) and db["minecordclassic"]["fight"]:
                     cooldown = 40
                     command = "fight (classic)"
-                    if db[str(user.id)]["armor"] == 1:
+                    if db["minecordclassic"]["armor"] == 1:
                         cooldown = 40
-                    elif db[str(user.id)]["armor"] == 2:
+                    elif db["minecordclassic"]["armor"] == 2:
                         cooldown = 37
-                    elif db[str(user.id)]["armor"] == 3:
+                    elif db["minecordclassic"]["armor"] == 3:
                         cooldown = 35
-                    elif db[str(user.id)]["armor"] == 4:
+                    elif db["minecordclassic"]["armor"] == 4:
                         cooldown = 30
-                    elif db[str(user.id)]["armor"] == 5:
+                    elif db["minecordclassic"]["armor"] == 5:
                         cooldown = 25
-                    elif db[str(user.id)]["armor"] == 6:
+                    elif db["minecordclassic"]["armor"] == 6:
                         cooldown = 20
-                    if db[str(user.id)]["efficiency"] == 1:
+                    if db["minecordclassic"]["efficiency"] == 1:
                         cooldown -= 10
-                elif ("you dealt" in msg.content) and db[str(user.id)]["ed"]:
-                    times = db[str(user.id)]["dragon"]
+                elif ("you dealt" in msg.content) and db["minecordclassic"]["dragon"]:
+                    times = db["minecordclassic"]["dragon"]
                     cooldown = 60 * times
                     command = "enderdragon (classc)"
-                elif ("you mined" in msg.content or "youmined" in msg.content) and ("in the nether" in msg.content or "inthenether" in msg.content) and db[
-                        str(user.id)]["mine"]:
+                elif ("you mined" in msg.content or "youmined" in msg.content) and ("in the nether" in msg.content or "inthenether" in msg.content) and db["minecordclassic"]["mine"]:
                     cooldown = 5
                     command = "nether mine (classic)"
-                elif ("you chopped" in msg.content or "youchopped" in msg.content) and ("in the nether" in msg.content or "inthenether" in msg.content) and db[
-                        str(user.id)]["chop"]:
+                elif ("you chopped" in msg.content or "youchopped" in msg.content) and ("in the nether" in msg.content or "inthenether" in msg.content) and db["minecordclassic"]["chop"]:
                     cooldown = 60
                     command = "nether chop (classic)"
-                elif  ("you killed" in msg.content or "youkilled" in msg.content) and ("in the nether" in msg.content or "inthenether" in msg.content) and db[
-                        str(user.id)]["fight"]: 
+                elif  ("you killed" in msg.content or "youkilled" in msg.content) and ("in the nether" in msg.content or "inthenether" in msg.content) and db["minecordclassic"]["fight"]: 
                     cooldown = 45
                     command = "nether fight (classic)"
                 else:
                     return
+                response = db["minecordclassic"]["response"]
     
             if msg.author.id == 625363818968776705:
                 
@@ -140,37 +144,41 @@ async def on_message(msg) -> None:
                 except:
                     return
     
-                if not (db[str(user.id)]["mine2"] or db[str(user.id)]["fight2"]
-                        or db[str(user.id)]["chop2"] or db[str(user.id)]["ed2"]):
+                if not (db["minecord"]["mine"] or db["minecord"]["fight"]
+                        or db["minecord"]["chop"] or db["minecord"]["ed"]):
                     return
     
                 if ("you mined" in msg.content or "youmined" in msg.content):
-                    db["trials"] += 1
+                    stats = bot.stats.find_one({"_id": 1})
+                    stats["trials"] += 1
+                    bot.stats.update_one({"_id":1}, {"$set": {"trials": stats["trials"]}})
                     if ("bosskey" in msg.content or "boss key" in msg.content):
-                        db["success"] += 1
-                    if db[str(user.id)]["mine2"]:
-                        if db[str(user.id)]["efficiency2"] == 1:
+                        stats["success"] += 1
+                        bot.stats.update_one({"_id":1}, {"$set": {"success": stats["success"]}})
+                    if db["minecord"]["mine"]:
+                        if db["minecord"]["efficiency"] == 1:
                             cooldown = 4
                         else:
                             cooldown = 5
                         command = "mine"
     
-                elif ("you chopped" in msg.content or "youchopped" in msg.content) and db[str(user.id)]["chop2"]:
-                    if db[str(user.id)]["efficiency2"] == 1:
+                elif ("you chopped" in msg.content or "youchopped" in msg.content) and db["minecord"]["chop"]:
+                    if db["minecord"]["efficiency"] == 1:
                         cooldown = 48
                     else:
                         cooldown = 60
                     command = "chop"
     
-                elif ("you killed" in msg.content or "youkilled" in msg.content) and db[str(user.id)]["fight2"]:
-                    if db[str(user.id)]["efficiency2"] == 1:
+                elif ("you killed" in msg.content or "youkilled" in msg.content) and db["minecord"]["fight"]:
+                    if db["minecord"]["efficiency"] == 1:
                         cooldown = 32
                     else:
                         cooldown = 45
                     command = "fight"
                 else:
                     return
-    
+                response = db["minecord"]["response"]
+
             if msg.author.id == 574652751745777665:
                 try:
                     try:
@@ -182,39 +190,27 @@ async def on_message(msg) -> None:
                 except:
                     return
                 
-                
-                try:
-                    db[str(user.id)]["treasure"]
-                    db[str(user.id)]["fish"]
-                    db[str(user.id)]["worker"]
-                except:
-                    await open_account(user, bot)
-                    
-                    db[str(user.id)]["treasure"] = True
-                    db[str(user.id)]["fish"] = True
-                    db[str(user.id)]["worker"] = True
-    
-    
                 for embed in msg.embeds:
                     embed = embed.to_dict()
     
                     try:
+                        response = db["virtualfisher"]["response"]
                         if "You will now find more treasure for the next" in embed[
-                                "description"] and db[str(user.id)]["treasure"]:
+                                "description"] and db["virtualfisher"]["treasure"]:
                             minutes = int(embed["description"].split(" ")[10])
                             command = "treasure"
                             cooldown = minutes * 60
                             break
     
                         elif "You will now catch more fish for the next" in embed[
-                                "description"] and db[str(user.id)]["fish"] :
+                                "description"] and db["virtualfisher"]["fish"] :
                             minutes = int(embed["description"].split(" ")[10])
                             command = "fish"
                             cooldown = minutes * 60
                             break
     
                         elif "You hired a worker for the next" in embed[
-                                "description"] and "catches will automatically be added to your inventory." and db[str(user.id)]["worker"] :
+                                "description"] and "catches will automatically be added to your inventory." and db["virtualfisher"]["worker"] :
                             minutes = int(
                                 embed["description"].split(" ")[8].split("**")[1]
                             )
@@ -224,12 +220,12 @@ async def on_message(msg) -> None:
     
                         else:
                             continue
-    
+                        
                     except:
                         raise Exception
                 
     
-            response = db[str(user.id)]["response"]
+            
             try:
                 response = response.replace("%", f"{user.mention}")
             except:
@@ -258,7 +254,7 @@ async def on_message(msg) -> None:
             pass
 
         except:
-            print(Exception)
+            raise Exception
 
     if not(msg.author.bot):
         await open_account(msg.author, bot)
@@ -304,14 +300,16 @@ async def on_interaction(itx):
 @minecord.command(name="droprate",
                    description="Find the drop-rate of boss keys!")
 async def droprate(ctx):
+    success = (bot.stats.find_one({"_id": 1}))["success"]
+    trials = (bot.stats.find_one({"_id": 1}))["trials"]
     bot.dispatch("application_command", ctx)
     embed = discord.Embed(title="Boss Key Drop Rates",
                           color=discord.Color.orange())
-    embed.add_field(name="Boss Key Drops", value=db["success"], inline=False)
-    embed.add_field(name="Mines Recorded", value=db["trials"], inline=False)
+    embed.add_field(name="Boss Key Drops", value=success, inline=False)
+    embed.add_field(name="Mines Recorded", value=trials, inline=False)
     embed.set_footer(
         text=
-        f'Estimated chance of Boss Key drop: {round((db["success"]/db["trials"]*100), 3)}% (1 in {round(db["trials"]/db["success"])+1})'
+        f'Estimated chance of Boss Key drop: {round(success/(trials*100), 3)}% (1 in {round(trials/success)+1})'
     )
     embed.timestamp = datetime.now()
     await ctx.respond(embed=embed)
@@ -444,32 +442,6 @@ async def setup(ctx):
         em.timestamp = datetime.now()
         await ctx.interaction.edit_original_message(embed=em, view=op1)
         return
-
-@minecord.command(name="stats", description="Your Minecord statistics!")
-async def stats(ctx):
-    await ctx.defer(ephemeral=True)
-    bot.dispatch("application_command", ctx)
-    await open_account(ctx.author, bot)
-    user = ctx.author
-    embed = discord.Embed(title=f"{user.name}'s Statistics",
-                       color=discord.Color.random())
-    try:
-        all_damage = 0
-        for damage in db[str(user.id)]["damages"]:
-            all_damage += damage
-        total_fights = len(db[str(user.id)]["damages"])
-        avg_damage = all_damage/total_fights
-        avg_damage = round(avg_damage, 2)
-        
-    except:
-        db[str(user.id)]["damages"] = []
-        all_damage, avg_damage, total_fights = 0, 0, 0
-
-    embed.add_field(name = "Ender Dragon (Classic)", value = f"Total Damage: {all_damage}\nAverage Damage: {avg_damage}\nTotal Fights: {total_fights}", inline = False)
-    #TODO embed.add_field(name = "")
-    embed.set_footer(text="Statistics since")
-    embed.timestamp = datetime.fromtimestamp(stat_start)
-    await ctx.followup.send(embed=embed)
 
 @bot.slash_command(
     name="config",

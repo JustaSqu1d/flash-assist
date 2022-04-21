@@ -2,5 +2,5 @@ statcord.py
 sentry-sdk
 py-cord==2.0.0b7
 aiohttp
-aiosqlite
+pymongo
 flask
