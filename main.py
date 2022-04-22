@@ -6,7 +6,6 @@ from discord.commands import Option
 #from replit import db
 from datetime import datetime
 from helpers import open_account, fetch_user
-from keepalive import keep_alive
 from views import *
 from asyncio import sleep
 from random import randint
@@ -482,7 +481,7 @@ async def terms(ctx):
 
     embed = discord.Embed(title="Flash Assist",
                           color=discord.Color.orange())
-    embed.description = "[Terms of Service](https://flash-assist.squidsquidsquid.repl.co/terms)\n[Privacy Policy](https://flash-assist.squidsquidsquid.repl.co/privacy-policy)\n[Status Page](https://flashassist.statuspage.io/)\n[Website](https://flash-assist.squidsquidsquid.repl.co/)"
+    embed.description = "[Terms of Service](https://flash-assist.glitch.me/tos.html)\n[Privacy Policy](https://flash-assist.glitch.me/policy.html\n[Status Page](https://flashassist.statuspage.io/)\n[Website](https://flash-assist.glitch.me/)"
     embed.set_footer(text="Flash Assist is not affiliated with any of the Discord bots it supports.")
     embed.timestamp = datetime.now()
     await ctx.respond(embed=embed) 
@@ -560,6 +559,4 @@ async def guide(ctx):
     embed.timestamp = datetime.now()
     embed.set_footer(text="Flash Assist is not affiliated with any of the Discord bots it supports.")
     await ctx.respond(embed=embed)
-
-keep_alive()
 bot.run(BOTTOKEN, reconnect=True)

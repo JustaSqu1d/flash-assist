@@ -7,7 +7,7 @@ class Invite(discord.ui.Button):
             label='Invite me!',
             style=discord.ButtonStyle.link,
             url=
-            "https://discord.com/api/oauth2/authorize?client_id=836581672811495465&permissions=321536&redirect_uri=https%3A%2F%2Fflash-assist.squidsquidsquid.repl.co%2F&response_type=code&scope=identify%20bot%20applications.commands",
+            "https://discord.com/api/oauth2/authorize?client_id=836581672811495465&permissions=0&redirect_uri=https%3A%2F%2Fflash-assist.glitch.me%2F&response_type=code&scope=identify%20bot%20applications.commands",
             row=1)
 
 class Invite2(discord.ui.Button):
@@ -25,7 +25,7 @@ class Invite3(discord.ui.Button):
             label='Website',
             style=discord.ButtonStyle.link,
             url=
-            "https://flash-assist.squidsquidsquid.repl.co/",
+            "https://flash-assist.glitch.me/",
             row=1)
 
 class Invite4(discord.ui.Button):
