@@ -1,12 +1,3 @@
-#from replit import db
-import os
-import discord
-import asyncio
-import random
-from views import Vote
-import traceback
-
-
 async def open_account(user, bot):
     
     if bot.minecord.count_documents({"_id": user.id}) != 0:
@@ -22,9 +13,8 @@ async def open_account(user, bot):
         bot.virtualfisher.insert_one(post3)
     return True
 
-async def fetch_user(user, bot):
+def fetch_user(user, bot):
 
-    await open_account(user, bot)
     settings = {}
     settings["minecord"] = bot.minecord.find_one({"_id": user.id})
     settings["minecordclassic"] = bot.minecordclassic.find_one({"_id": user.id})

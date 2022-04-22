@@ -8,11 +8,10 @@ from datetime import datetime
 from helpers import open_account, fetch_user
 from keepalive import keep_alive
 from views import *
-from asyncio import sleep, ensure_future, wait
+from asyncio import sleep
 from random import randint
 from logging import getLogger, DEBUG, FileHandler, Formatter
 from env import *
-import pymongo
 from pymongo import MongoClient
 
 logger = getLogger('discord')
@@ -77,10 +76,10 @@ async def on_message(msg) -> None:
                 except:
                     return
                 
-                db = await fetch_user(msg.author, bot)
+                db = fetch_user(msg.author, bot)
                 
                 if not (db["minecordclassic"]["mine"] or db["minecordclassic"]["fight"]
-                        or db["minecordclassic"]["chop"] or db["minecordclassic"]["dragon"]):
+                        or db["minecordclassic"]["chop"] or db["minecordclassic"]["ed"]):
                     return
         
                 if ("you mined" in msg.content or "youmined" in msg.content) and ("in the nether" not in msg.content and "inthenether" not in msg.content) and db["minecordclassic"]["mine"]:
@@ -112,8 +111,8 @@ async def on_message(msg) -> None:
                         cooldown = 20
                     if db["minecordclassic"]["efficiency"] == 1:
                         cooldown -= 10
-                elif ("you dealt" in msg.content) and db["minecordclassic"]["dragon"]:
-                    times = db["minecordclassic"]["dragon"]
+                elif ("you dealt" in msg.content) and db["minecordclassic"]["ed"]:
+                    times = db["minecordclassic"]["ed"]
                     cooldown = 60 * times
                     command = "enderdragon (classc)"
                 elif ("you mined" in msg.content or "youmined" in msg.content) and ("in the nether" in msg.content or "inthenether" in msg.content) and db["minecordclassic"]["mine"]:
@@ -141,10 +140,10 @@ async def on_message(msg) -> None:
                 except:
                     return
                 
-                db = await fetch_user(msg.author, bot)
+                db = fetch_user(msg.author, bot)
     
                 if not (db["minecord"]["mine"] or db["minecord"]["fight"]
-                        or db["minecord"]["chop"] or db["minecord"]["dragon"]):
+                        or db["minecord"]["chop"] or db["minecord"]["ed"]):
                     return
 
                 if ("you mined" in msg.content or "youmined" in msg.content):
@@ -188,7 +187,7 @@ async def on_message(msg) -> None:
                 except:
                     return
                 
-                db = await fetch_user(msg.author, bot)
+                db = fetch_user(msg.author, bot)
 
                 for embed in msg.embeds:
                     embed = embed.to_dict()
@@ -205,7 +204,7 @@ async def on_message(msg) -> None:
                         elif "You will now catch more fish for the next" in embed[
                                 "description"] and db["virtualfisher"]["fish"] :
                             minutes = int(embed["description"].split(" ")[10])
-                            command = "fish"
+                            command = "fishing"
                             cooldown = minutes * 60
                             break
     
@@ -264,7 +263,10 @@ async def on_message(msg) -> None:
             ping = int((bot.latencies[msg.guild.shard_id][1])*1000)
         except:
             ping = int(bot.latency*1000)
-        embed = discord.Embed(title="Latency", description=f"**Gateway:** {ping} ms\n**Shard**: {msg.guild.shard_id}")
+        try:
+            embed = discord.Embed(title="Latency", description=f"**Gateway:** {ping} ms\n**Shard**: {msg.guild.shard_id}")
+        except:
+            embed = discord.Embed(title="Latency", description=f"**Gateway:** {ping} ms\n**Shard**: n/a")
 
         if ping >= 1000:
             embed.color = discord.Color.red()
@@ -327,7 +329,7 @@ async def setup(ctx):
     em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
     em.timestamp = datetime.now()
     await ctx.followup.send(embed=em, view=view)
-
+    db = fetch_user(ctx.user, bot)
     timedout = await view.wait()
 
     if timedout:
@@ -354,8 +356,8 @@ async def setup(ctx):
             await ctx.interaction.edit_original_message(view=op1)
             return
 
-        db[str(user.id)]["efficiency"] = op1.value
-        
+        bot.minecordclassic.update_one({"_id":1}, {"$set": {"efficiency": op1.value}})
+
         opar = OptionAr()
 
         em = discord.Embed(title="What armor do you have?",
@@ -372,7 +374,7 @@ async def setup(ctx):
             await ctx.interaction.edit_original_message(view=opar)
             return
 
-        db[str(user.id)]["armor"] = opar.value
+        bot.minecordclassic.update_one({"_id":1}, {"$set": {"armor": opar.value}})
 
         em = discord.Embed(
             title="What is your Ender Dragon cooldown (In minutes)?",
@@ -393,9 +395,9 @@ async def setup(ctx):
             await ctx.interaction.edit_original_message(view=opmin)
             return
 
-        db[str(user.id)]["armor"] = opmin.value
+        bot.minecordclassic.update_one({"_id":1}, {"$set": {"ed": opmin.value}})
 
-        em = discord.Embed(title="Setup Complete!",
+        em = discord.Embed(title="Setup Complete!",description="You can edit the commands you want to be reminded upon with `/config`!",
                            color=discord.Color.green())
         em.timestamp = datetime.now()
         em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
@@ -424,14 +426,11 @@ async def setup(ctx):
             await ctx.interaction.edit_original_message(view=op1)
             return
 
-        if op1.value:
-            db[str(user.id)]["efficiency2"] = 1
+        bot.minecord.update_one({"_id":1}, {"$set": {"efficiency": op1.value}})
 
-        else:
-            db[str(user.id)]["efficiency2"] = 0
-
-        em = discord.Embed(title="Setup Complete!",
+        em = discord.Embed(title="Setup Complete!",description="You can edit the commands you want to be reminded upon with `/config`!",
                            color=discord.Color.green())
+        em.timestamp = datetime.now()
         em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
 
         for child in op1.children:
@@ -492,7 +491,9 @@ async def terms(ctx):
 @bot.slash_command(name="response",
                    description="Use your own custom reminder messages!")
 async def _response(ctx, response: Option(
-    str, description="Use custom response messages!", required=True)):
+    str, description="Use custom response messages!", required=True), 
+    bot = Option(str, "Choose the bot you want to edit reminder responses for.", choices=["Minecord", "Minecord Classic", "Virtual Fisher"])
+    ):
     bot.dispatch("application_command", ctx)
     if "%" not in response:
         failed = discord.Embed(
@@ -509,13 +510,15 @@ async def _response(ctx, response: Option(
         
         await ctx.respond(embed=failed)
         return
-        
+    
+    db = fetch_user(ctx.author, bot)
     user = ctx.author
     response = discord.utils.escape_mentions(response)
-    db[str(user.id)]["response"] = response
+    bot = bot.lower().replace(" ", "")
+    db[bot]["response"] = response
         
     try:
-        response = response.replace("%",ctx.author.mention)
+        response = response.replace("%",user.mention)
     except:
         pass
     try:

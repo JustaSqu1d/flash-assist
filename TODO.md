@@ -4,6 +4,6 @@
 - [ ] Larger variety of bots
 - [x] Bug fixes
 - [x] Status page
-- [ ] Discord support/help channel
+- [x] Discord support/help channel
 - [x] Complete basic Virtual Fisher implementation
 - [x] Message Content Intent
