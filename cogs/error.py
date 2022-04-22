@@ -17,7 +17,7 @@ class Error(commands.Cog):
         embed.timestamp = datetime.now()
         
         await self.bot.owner.send(embed=embed)
-
+    """
     @commands.Cog.listener()
     async def on_application_command_error(self, ctx, exception):
         embed = discord.Embed(title = "A superduper rare error occured.",description="Meanwhile, we have begun to debug this bug. Everything should work iceman perfect. You can also check our status page if there is an outage.")
@@ -28,16 +28,19 @@ class Error(commands.Cog):
         else:
             await ctx.respond(embed=embed, view=view)
 
-        error = discord.Embed(title=f"Error at {ctx.command.qualified_name}!")
-        error.add_field(name="User", value = f"{ctx.author}")
-        error.add_field(name="Guild/Channel", value = f"{ctx.guild.name}/{ctx.channel.mention}")
+        error = discord.Embed(title=f"Error at {ctx.command.qualified_name}!", color=discord.Color.red())
+        error.add_field(name="User", value = f"{ctx.author} ({ctx.author.id})")
+        try:
+            error.add_field(name="Guild/Channel", value = f"{ctx.guild.name}/{ctx.channel.mention}")
+        except:
+            pass
         error.add_field(name="Message", value = f"{ctx.message}")
         error.add_field(name="Command/Component", value = f"{ctx.interaction.is_command()}/{ctx.interaction.is_component()}")
         error.add_field(name="Permissions", value = f"{ctx.interaction.permissions}")
         error.add_field(name="Data", value = f"{ctx.interaction.data}")
-        embed.set_footer(text = sys.exc_info())
+        error.set_footer(text = sys.exc_info())
         error.timestamp = datetime.now()
-        await self.bot.owner.send(embed=embed)
-
+        await self.bot.owner.send(embed=error)
+    """
 def setup(bot):
     bot.add_cog(Error(bot))

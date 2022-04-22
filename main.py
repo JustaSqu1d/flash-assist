@@ -58,9 +58,6 @@ async def on_ready():
     bot.owner = await bot.fetch_user(bot.owner_id)
     await bot.owner.send("Online!")
 
-    post1 = {"_id": 1, "success": 0, "trials": 0}
-    bot.stats.insert_one(post1)
-
 @bot.event
 async def on_message(msg) -> None:
     if msg.author.id in bots:
@@ -132,7 +129,7 @@ async def on_message(msg) -> None:
                     return
                 response = db["minecordclassic"]["response"]
     
-            if msg.author.id == 625363818968776705:
+            elif msg.author.id == 625363818968776705:
                 
                 try:
                     try:
@@ -143,18 +140,19 @@ async def on_message(msg) -> None:
                         user = msg.mentions[0]
                 except:
                     return
+                
+                db = await fetch_user(msg.author, bot)
     
                 if not (db["minecord"]["mine"] or db["minecord"]["fight"]
-                        or db["minecord"]["chop"] or db["minecord"]["ed"]):
+                        or db["minecord"]["chop"] or db["minecord"]["dragon"]):
                     return
-    
+
                 if ("you mined" in msg.content or "youmined" in msg.content):
                     stats = bot.stats.find_one({"_id": 1})
-                    stats["trials"] += 1
-                    bot.stats.update_one({"_id":1}, {"$set": {"trials": stats["trials"]}})
+                    bot.stats.update_one({"_id":1}, {"$inc": {"trials": 1}})
+                    stats = bot.stats.find_one({"_id": 1})
                     if ("bosskey" in msg.content or "boss key" in msg.content):
-                        stats["success"] += 1
-                        bot.stats.update_one({"_id":1}, {"$set": {"success": stats["success"]}})
+                        bot.stats.update_one({"_id":1}, {"$inc": {"success": 1}})
                     if db["minecord"]["mine"]:
                         if db["minecord"]["efficiency"] == 1:
                             cooldown = 4
@@ -179,7 +177,7 @@ async def on_message(msg) -> None:
                     return
                 response = db["minecord"]["response"]
 
-            if msg.author.id == 574652751745777665:
+            elif msg.author.id == 574652751745777665:
                 try:
                     try:
                         msg2 = await msg.channel.fetch_message(
@@ -190,6 +188,8 @@ async def on_message(msg) -> None:
                 except:
                     return
                 
+                db = await fetch_user(msg.author, bot)
+
                 for embed in msg.embeds:
                     embed = embed.to_dict()
     
@@ -302,6 +302,7 @@ async def on_interaction(itx):
 async def droprate(ctx):
     success = (bot.stats.find_one({"_id": 1}))["success"]
     trials = (bot.stats.find_one({"_id": 1}))["trials"]
+
     bot.dispatch("application_command", ctx)
     embed = discord.Embed(title="Boss Key Drop Rates",
                           color=discord.Color.orange())
@@ -353,12 +354,8 @@ async def setup(ctx):
             await ctx.interaction.edit_original_message(view=op1)
             return
 
-        if op1.value:
-            db[str(user.id)]["efficiency"] = 1
-
-        else:
-            db[str(user.id)]["efficiency"] = 0
-
+        db[str(user.id)]["efficiency"] = op1.value
+        
         opar = OptionAr()
 
         em = discord.Embed(title="What armor do you have?",

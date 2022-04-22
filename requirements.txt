@@ -4,3 +4,4 @@ py-cord==2.0.0b7
 aiohttp
 pymongo
 flask
+dnspython
