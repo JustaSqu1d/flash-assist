@@ -43,7 +43,7 @@ minecord = bot.create_group("minecord", "Settings for Minecords")
 
 stat_start = 1647338400
 
-for filename in os.listdir("cogs"):
+for filename in os.listdir("flash-assist-bot/cogs"):
     if filename.endswith(".py"):
         bot.load_extension(f"cogs.{filename[:-3]}")
 
@@ -218,9 +218,8 @@ async def on_message(msg) -> None:
     
                         else:
                             continue
-                        
                     except:
-                        raise Exception
+                        pass
                 
     
             
@@ -250,9 +249,6 @@ async def on_message(msg) -> None:
         
         except discord.errors.Forbidden:
             pass
-
-        except:
-            raise Exception
 
     if not(msg.author.bot):
         await open_account(msg.author, bot)
