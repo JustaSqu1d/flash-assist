@@ -1,4 +1,4 @@
-# [Flash Assist](https://flash-assist.squidsquidsquid.repl.co/)
+# [Flash Assist](https://flash-assist.glitch.me)
 
 ## What is this?
 
