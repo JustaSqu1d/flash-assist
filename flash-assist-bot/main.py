@@ -75,7 +75,8 @@ async def on_message(msg) -> None:
                 except:
                     return
                 
-                db = fetch_user(msg.author, bot)
+                await open_account(user, bot)
+                db = fetch_user(user, bot)
                 
                 if not (db["minecordclassic"]["mine"] or db["minecordclassic"]["fight"]
                         or db["minecordclassic"]["chop"] or db["minecordclassic"]["ed"]):
@@ -139,7 +140,8 @@ async def on_message(msg) -> None:
                 except:
                     return
                 
-                db = fetch_user(msg.author, bot)
+                await open_account(user, bot)
+                db = fetch_user(user, bot)
     
                 if not (db["minecord"]["mine"] or db["minecord"]["fight"]
                         or db["minecord"]["chop"] or db["minecord"]["ed"]):
@@ -186,7 +188,8 @@ async def on_message(msg) -> None:
                 except:
                     return
                 
-                db = fetch_user(msg.author, bot)
+                await open_account(user, bot)
+                db = fetch_user(user, bot)
 
                 for embed in msg.embeds:
                     embed = embed.to_dict()
