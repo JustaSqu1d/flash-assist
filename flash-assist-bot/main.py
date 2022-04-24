@@ -109,7 +109,7 @@ async def on_message(msg) -> None:
                         cooldown = 25
                     elif db["minecordclassic"]["armor"] == 6:
                         cooldown = 20
-                    if db["minecordclassic"]["efficiency"] == 1:
+                    if db["minecordclassic"]["efficiency"]:
                         cooldown -= 10
                 elif ("you dealt" in msg.content) and db["minecordclassic"]["ed"]:
                     times = db["minecordclassic"]["ed"]
@@ -154,21 +154,21 @@ async def on_message(msg) -> None:
                     if ("bosskey" in msg.content or "boss key" in msg.content):
                         bot.stats.update_one({"_id":1}, {"$inc": {"success": 1}})
                     if db["minecord"]["mine"]:
-                        if db["minecord"]["efficiency"] == 1:
+                        if db["minecord"]["efficiency"]:
                             cooldown = 4
                         else:
                             cooldown = 5
                         command = "mine"
     
                 elif ("you chopped" in msg.content or "youchopped" in msg.content) and db["minecord"]["chop"]:
-                    if db["minecord"]["efficiency"] == 1:
+                    if db["minecord"]["efficiency"]:
                         cooldown = 48
                     else:
                         cooldown = 60
                     command = "chop"
     
                 elif ("you killed" in msg.content or "youkilled" in msg.content) and db["minecord"]["fight"]:
-                    if db["minecord"]["efficiency"] == 1:
+                    if db["minecord"]["efficiency"]:
                         cooldown = 32
                     else:
                         cooldown = 45
@@ -354,7 +354,7 @@ async def setup(ctx):
             await ctx.interaction.edit_original_message(view=op1)
             return
 
-        bot.minecordclassic.update_one({"_id":1}, {"$set": {"efficiency": op1.value}})
+        bot.minecordclassic.update_one({"_id":ctx.author.id}, {"$set": {"efficiency": op1.value}})
 
         opar = OptionAr()
 
@@ -372,7 +372,7 @@ async def setup(ctx):
             await ctx.interaction.edit_original_message(view=opar)
             return
 
-        bot.minecordclassic.update_one({"_id":1}, {"$set": {"armor": opar.value}})
+        bot.minecordclassic.update_one({"_id":ctx.author.id}, {"$set": {"armor": opar.value}})
 
         em = discord.Embed(
             title="What is your Ender Dragon cooldown (In minutes)?",
@@ -393,7 +393,7 @@ async def setup(ctx):
             await ctx.interaction.edit_original_message(view=opmin)
             return
 
-        bot.minecordclassic.update_one({"_id":1}, {"$set": {"ed": opmin.value}})
+        bot.minecordclassic.update_one({"_id":ctx.author.id}, {"$set": {"ed": opmin.value}})
 
         em = discord.Embed(title="Setup Complete!",description="You can edit the commands you want to be reminded upon with `/config`!",
                            color=discord.Color.green())
@@ -424,7 +424,7 @@ async def setup(ctx):
             await ctx.interaction.edit_original_message(view=op1)
             return
 
-        bot.minecord.update_one({"_id":1}, {"$set": {"efficiency": op1.value}})
+        bot.minecord.update_one({"_id":ctx.author.id}, {"$set": {"efficiency": op1.value}})
 
         em = discord.Embed(title="Setup Complete!",description="You can edit the commands you want to be reminded upon with `/config`!",
                            color=discord.Color.green())
@@ -480,10 +480,10 @@ async def terms(ctx):
 
     embed = discord.Embed(title="Flash Assist",
                           color=discord.Color.orange())
-    embed.description = "[Terms of Service](https://flash-assist.glitch.me/tos.html)\n[Privacy Policy](https://flash-assist.glitch.me/policy.html\n[Status Page](https://flashassist.statuspage.io/)\n[Website](https://flash-assist.glitch.me/)"
+    embed.description = "[Terms of Service](https://flash-assist.glitch.me/tos.html)\n[Privacy Policy](https://flash-assist.glitch.me/policy.html)\n[Status Page](https://flashassist.statuspage.io/)\n[Website](https://flash-assist.glitch.me/)"
     embed.set_footer(text="Flash Assist is not affiliated with any of the Discord bots it supports.")
     embed.timestamp = datetime.now()
-    await ctx.respond(embed=embed) 
+    await ctx.respond(embed=embed)
 
 
 @bot.slash_command(name="response",

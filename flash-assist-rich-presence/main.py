@@ -10,8 +10,9 @@ while 1:
         if bot in range(0,3):
             break
     except:
-        print("Invalid! Please type an actual value.")
-        bot_raw = input("Select a Discord Bot for your Rich Presence!\n 0: Minecord\n1: Minecord Classic\n2: Virtual Fisher\n")
+        pass
+    print("Invalid! Please type an actual value.")
+    bot_raw = input("Select a Discord Bot for your Rich Presence!\n 0: Minecord\n1: Minecord Classic\n2: Virtual Fisher\n")
 
 if bot == 0: large_image = "https://cdn.discordapp.com/avatars/625363818968776705/e358ecca8de0be6227e31a2e71ed3fd4.png?size=1024"; client_id = '953016872419356712'; name = "Minecord"
 if bot == 1: large_image = "https://cdn.discordapp.com/avatars/878007103460089886/5a2ff049dfff59b0b8c6347a5db2f0cc.png?size=1024"; client_id = '925612595271065622'; name = "Minecord Classic"
