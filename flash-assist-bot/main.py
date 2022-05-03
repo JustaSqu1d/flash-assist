@@ -1,5 +1,4 @@
 import os
-
 import discord
 from sentry_sdk import init
 from discord.commands import Option
