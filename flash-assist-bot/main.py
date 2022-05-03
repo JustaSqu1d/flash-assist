@@ -512,7 +512,7 @@ async def _response(ctx, response: Option(
     db = fetch_user(ctx.author, bot)
     user = ctx.author
     response = discord.utils.escape_mentions(response)
-    bot = bot.lower().replace(" ", "")
+    bot = bot.lower().replace(" ", "-")
     db[bot]["response"] = response
         
     try:
