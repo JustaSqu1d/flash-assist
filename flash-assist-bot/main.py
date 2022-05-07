@@ -113,7 +113,7 @@ async def on_message(msg) -> None:
                 elif ("you dealt" in msg.content) and db["minecordclassic"]["ed"]:
                     times = db["minecordclassic"]["ed"]
                     cooldown = 60 * times
-                    command = "enderdragon (classc)"
+                    command = "enderdragon (classic)"
                 elif ("you mined" in msg.content or "youmined" in msg.content) and ("in the nether" in msg.content or "inthenether" in msg.content) and db["minecordclassic"]["mine"]:
                     cooldown = 5
                     command = "nether mine (classic)"
