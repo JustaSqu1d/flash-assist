@@ -12,6 +12,8 @@ from logging import getLogger, DEBUG, FileHandler, Formatter
 from env import *
 from pymongo import MongoClient
 
+
+
 logger = getLogger('discord')
 logger.setLevel(DEBUG)
 handler = FileHandler(filename='discord.log', encoding='utf-8', mode='w')
@@ -88,7 +90,7 @@ async def on_message(msg) -> None:
                         cooldown = 5
                     command = "mine (classic)"
                 elif ("you chopped" in msg.content or "youchopped" in msg.content) and ("in the nether" not in msg.content and "inthenether" not in msg.content) and db["minecordclassic"]["chop"]:
-                    command = "chop"
+                    command = "chop (classic)"
                     if db["minecordclassic"]["efficiency"]:
                         cooldown = 45
                     else:
@@ -223,8 +225,6 @@ async def on_message(msg) -> None:
                     except:
                         pass
                 
-    
-            
             try:
                 response = response.replace("%", f"{user.mention}")
             except:
@@ -489,7 +489,7 @@ async def terms(ctx):
                    description="Use your own custom reminder messages!")
 async def _response(ctx, response: Option(
     str, description="Use custom response messages!", required=True), 
-    bot = Option(str, "Choose the bot you want to edit reminder responses for.", choices=["Minecord", "Minecord Classic", "Virtual Fisher"])
+    bot2 : Option(str, "Choose the bot you want to edit reminder responses for.", choices=["Minecord", "Minecord Classic", "Virtual Fisher"], required=True)
     ):
     bot.dispatch("application_command", ctx)
     if "%" not in response:
@@ -508,12 +508,12 @@ async def _response(ctx, response: Option(
         await ctx.respond(embed=failed)
         return
     
-    db = fetch_user(ctx.author, bot)
+
     user = ctx.author
     response = discord.utils.escape_mentions(response)
-    bot = bot.lower().replace(" ", "-")
-    db[bot]["response"] = response
-        
+    bot2 = bot2.lower().replace(" ", "-")
+    bot.db[bot2].update_one({"_id":ctx.author.id}, {"$set": {"response": response}})
+
     try:
         response = response.replace("%",user.mention)
     except:
