@@ -10,7 +10,6 @@ from logging import getLogger, DEBUG, FileHandler, Formatter
 from env import *
 from pymongo import MongoClient
 
-
 logger = getLogger('discord')
 logger.setLevel(DEBUG)
 handler = FileHandler(filename='discord.log', encoding='utf-8', mode='w')
