@@ -1,8 +1,6 @@
 import os
 import discord
 from sentry_sdk import init
-from discord.commands import Option
-#from replit import db
 from datetime import datetime
 from helpers import open_account, fetch_user
 from views import *
@@ -11,7 +9,6 @@ from random import randint
 from logging import getLogger, DEBUG, FileHandler, Formatter
 from env import *
 from pymongo import MongoClient
-
 
 
 logger = getLogger('discord')
@@ -487,9 +484,9 @@ async def terms(ctx):
 
 @bot.slash_command(name="response",
                    description="Use your own custom reminder messages!")
-async def _response(ctx, response: Option(
+async def response1(ctx, response: discord.Option(
     str, description="Use custom response messages!", required=True), 
-    bot2 : Option(str, "Choose the bot you want to edit reminder responses for.", choices=["Minecord", "Minecord Classic", "Virtual Fisher"], required=True)
+    bot2 : discord.Option(str, "Choose the bot you want to edit reminder responses for.", choices=["Minecord", "Minecord Classic", "Virtual Fisher"], required=True)
     ):
     bot.dispatch("application_command", ctx)
     if "%" not in response:
