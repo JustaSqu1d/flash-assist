@@ -5,3 +5,4 @@ aiohttp
 pymongo
 flask
 dnspython
+bson

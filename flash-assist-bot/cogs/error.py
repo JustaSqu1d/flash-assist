@@ -17,9 +17,13 @@ class Error(commands.Cog):
         embed.timestamp = datetime.now()
         
         await self.bot.owner.send(embed=embed)
-    """
+
     @commands.Cog.listener()
     async def on_application_command_error(self, ctx, exception):
+
+        if isinstance(exception,discord.HTTPException):
+            await ctx.respond("Missing Permissions. Re-invite the bot with `/invite`.")
+
         embed = discord.Embed(title = "A superduper rare error occured.",description="Meanwhile, we have begun to debug this bug. Everything should work iceman perfect. You can also check our status page if there is an outage.")
         view = discord.ui.View()
         view.add_item(Status())
@@ -38,9 +42,10 @@ class Error(commands.Cog):
         error.add_field(name="Command/Component", value = f"{ctx.interaction.is_command()}/{ctx.interaction.is_component()}")
         error.add_field(name="Permissions", value = f"{ctx.interaction.permissions}")
         error.add_field(name="Data", value = f"{ctx.interaction.data}")
+        error.add_field(name="Exception", value = f"{exception}")
         error.set_footer(text = sys.exc_info())
         error.timestamp = datetime.now()
         await self.bot.owner.send(embed=error)
-    """
+
 def setup(bot):
     bot.add_cog(Error(bot))

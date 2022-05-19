@@ -2,6 +2,8 @@ from discord.ext import commands, tasks
 import time as t
 import os
 from datetime import time
+from asyncio import sleep
+from discord import File
 
 metric_id = 'btv9x2yn5b90'
 

@@ -24,7 +24,11 @@ class Verify(commands.Cog):
                 color=discord.Color.brand_red())
 
             user = msg.mentions[0]
-            await user.send(f"""{msg.jump_url}""")
+            try:
+                await user.send(f"""{msg.jump_url}""")
+            except discord.HTTPException:
+                await msg.channel.send("Missing Permissions. Check your discord settings to allow direct messages.")
+                
             for i in range(0, 5):
 
                 await msg.channel.send(user.mention, embed=em)

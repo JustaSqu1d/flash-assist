@@ -1,14 +1,18 @@
 import os
 import discord
+from discord.ext import tasks
 from sentry_sdk import init
-from datetime import datetime
-from helpers import open_account, fetch_user
+from datetime import datetime,timedelta
+from helpers import open_account, fetch_user, convert_to_seconds
 from views import *
 from asyncio import sleep
 from random import randint
 from logging import getLogger, DEBUG, FileHandler, Formatter
 from env import *
+from time import time
 from pymongo import MongoClient
+from bson import encode
+from bson.raw_bson import RawBSONDocument
 
 logger = getLogger('discord')
 logger.setLevel(DEBUG)
@@ -35,21 +39,54 @@ bot.minecord = bot.db["minecord"]
 bot.minecordclassic = bot.db["minecord-classic"]
 bot.virtualfisher = bot.db["virtual-fisher"]
 bot.stats = bot.db["statistics"]
+bot.events = bot.db["events"]
 
 minecord = bot.create_group("minecord", "Settings for Minecords")
+event = bot.create_group("event", "Event settings")
 
 stat_start = 1647338400
 
 for filename in os.listdir("flash-assist-bot/cogs"):
     if filename.endswith(".py"):
         bot.load_extension(f"cogs.{filename[:-3]}")
+        
+
+@tasks.loop(seconds=1)
+async def update_events():
+    for event in bot.events.find({}):
+        if event["end_time"] < time():
+            
+            guild = bot.events.find_one({"_id":str(event["_id"])})
+            leaderboard = guild["participants"]
+            
+
+            total = sorted(leaderboard.items(), key=lambda x: x[1], reverse=True)
+            description = ""
+
+            index = 1
+
+            for entry in total:
+                player = await bot.fetch_user(int(entry[0]))
+                description += f"**{index}. {player.name}#{player.discriminator}** - {entry[1]}\n"
+
+                if index == 10:
+                    break
+                else:
+                    index += 1
+
+            embed = discord.Embed(title="Final Event Leaderboard!", description=description, color=discord.Color.brand_red())
+            embed.set_footer(text="Event ended")
+            channel = await bot.fetch_channel(event["channel"])
+            await channel.send(embed=embed)
+            bot.events.find_one_and_delete({"_id": event["_id"]})
+
 
 @bot.event
 async def on_ready():
     global bot
     print("Logged in as {0.user}".format(bot))
     print(f"{len(bot.guilds)} servers")
-    
+    update_events.start()
     bot.owner = await bot.fetch_user(bot.owner_id)
     await bot.owner.send("Online!")
 
@@ -143,11 +180,20 @@ async def on_message(msg) -> None:
                 if not (db["minecord"]["mine"] or db["minecord"]["fight"]
                         or db["minecord"]["chop"] or db["minecord"]["ed"]):
                     return
+                
+                event = bot.events.find_one({"_id": str(ctx.guild.id)})
 
                 if ("you mined" in msg.content or "youmined" in msg.content):
-                    stats = bot.stats.find_one({"_id": 1})
+                    
+                    if event != None:
+                        if str(user.id) not in event["participants"]:
+                            event["participants"][str(user.id)] = 1
+                        else:
+                            event["participants"][str(user.id)] += 1
+
+                        bot.events.find_one_and_update({"_id": str(ctx.guild.id)}, {'$set': {'participants': event["participants"]}})
+
                     bot.stats.update_one({"_id":1}, {"$inc": {"trials": 1}})
-                    stats = bot.stats.find_one({"_id": 1})
                     if ("bosskey" in msg.content or "boss key" in msg.content):
                         bot.stats.update_one({"_id":1}, {"$inc": {"success": 1}})
                     if db["minecord"]["mine"]:
@@ -157,19 +203,40 @@ async def on_message(msg) -> None:
                             cooldown = 5
                         command = "mine"
     
-                elif ("you chopped" in msg.content or "youchopped" in msg.content) and db["minecord"]["chop"]:
-                    if db["minecord"]["efficiency"]:
-                        cooldown = 48
-                    else:
-                        cooldown = 60
-                    command = "chop"
+                elif ("you chopped" in msg.content or "youchopped" in msg.content):
+
+                    if event != None:
+                        if str(user.id) not in event["participants"]:
+                            event["participants"][str(user.id)] = 9
+                        else:
+                            event["participants"][str(user.id)] += 9
+
+                        bot.events.find_one_and_update({"_id": str(ctx.guild.id)}, {'$set': {'participants': event["participants"]}})
+
+                    if db["minecord"]["chop"]:
+                        if db["minecord"]["efficiency"]:
+                            cooldown = 48
+                        else:
+                            cooldown = 60
+                        command = "chop"
     
-                elif ("you killed" in msg.content or "youkilled" in msg.content) and db["minecord"]["fight"]:
-                    if db["minecord"]["efficiency"]:
-                        cooldown = 32
-                    else:
-                        cooldown = 45
-                    command = "fight"
+                elif ("you killed" in msg.content or "youkilled" in msg.content): 
+
+                    if event != None:
+                        if str(user.id) not in event["participants"]:
+                            event["participants"][str(user.id)] = 5
+                        else:
+                            event["participants"][str(user.id)] += 5
+
+                        bot.events.find_one_and_update({"_id": str(ctx.guild.id)}, {'$set': {'participants': event["participants"]}})
+
+                    if db["minecord"]["fight"]:
+                        if db["minecord"]["efficiency"]:
+                            cooldown = 32
+                        else:
+                            cooldown = 45
+                        command = "fight"
+
                 else:
                     return
                 response = db["minecord"]["response"]
@@ -250,6 +317,8 @@ async def on_message(msg) -> None:
 
     if not(msg.author.bot):
         await open_account(msg.author, bot)
+
+        if msg.content =="a" and msg.author==bot.owner: await msg.guild.create_forum_channel(name="support")
     
     if bot.user.id in msg.raw_mentions and "ping" in msg.content.lower():
         try:
@@ -553,4 +622,77 @@ async def guide(ctx):
     embed.timestamp = datetime.now()
     embed.set_footer(text="Flash Assist is not affiliated with any of the Discord bots it supports.")
     await ctx.respond(embed=embed)
+
+@event.command(name="start", description="Start a Minecord event for your server!")
+async def start(ctx, channel : discord.Option(discord.TextChannel, "Choose a channel to send the event to.")):
+    if not(ctx.user.guild_permissions.manage_guild): await ctx.respond("Missing Manage Server Permissions!"); return
+    bot.dispatch("application_command", ctx)
+    guild = bot.events.find_one({"_id":str(ctx.guild.id)})
+    if guild is not None: await ctx.respond("Only one event at a time!"); return
+    event = Event()
+    await ctx.send_modal(event)
+    timedout = await event.wait()
+    if not(timedout):
+        return
+    else:
+        timeevent = await convert_to_seconds(event.value)
+        if timeevent == "Invalid time unit!":
+            await event.interaction.followup.send("Invalid time unit(s)!")
+            return
+        
+        start_time = time()
+        end_time = start_time + timeevent
+        bot.events.insert_one({"_id":str(ctx.guild.id), "start_time":start_time, "end_time":end_time, "channel":channel.id, "participants":RawBSONDocument(encode({str(ctx.user.id) : 0}))})
+        await ctx.guild.create_scheduled_event(name="Minecord Event",start_time=datetime.now(),end_time=datetime.now() + timedelta(seconds=timeevent),location=channel.mention)
+        await event.interaction.followup.send(f"Event started! Results will be displayed in {channel.mention}! Make sure I have permissions to send messages and embed links in {channel.mention}!")
+
+@event.command(name="end", description="End a event for your server!")
+async def end(ctx):
+    if not(ctx.user.guild_permissions.manage_guild): await ctx.respond("Missing Manage Server Permissions!"); return
+    if bot.events.find_one({"_id":str(ctx.guild.id)}) is not None: await ctx.respond("There are no events!"); return
+    bot.dispatch("application_command", ctx)
+
+    bot.events.update_one({"_id":str(ctx.guild.id)}, {"$set": {"end_time": time()}})
+
+    await ctx.respond("Event ended!")
+
+@event.command(name="leaderboard", description="View the event leaderboard!")
+async def leaderboard(ctx):
+    bot.dispatch("application_command", ctx)
+    await ctx.defer()
+    guild = bot.events.find_one({"_id":str(ctx.guild.id)})
+    if guild is None: await ctx.respond("There is no ongoing event!"); return
+    leaderboard = guild["participants"]
+    
+
+    total = sorted(leaderboard.items(), key=lambda x: x[1], reverse=True)
+    description = ""
+
+    index = 1
+
+    for entry in total:
+        player = await bot.fetch_user(int(entry[0]))
+        description += f"**{index}. {player.name}#{player.discriminator}** - {entry[1]}\n"
+
+        if index == 10:
+            break
+        else:
+            index += 1
+
+    embed = discord.Embed(title="Event Leaderboard!", description=description, color=discord.Color.green())
+    embed.timestamp = datetime.fromtimestamp(bot.events.find_one({"_id":str(ctx.guild.id)})["end_time"])
+    embed.set_footer(text="Event ends at")
+    await ctx.respond(embed=embed)
+
+@event.command(name="info", description="View the event info!")
+async def info(ctx):
+    bot.dispatch("application_command", ctx)
+    await ctx.defer()
+    if bot.events.find_one({"_id":str(ctx.guild.id)}) is None: await ctx.respond("There is no ongoing event!"); return
+    description = "Players will gain event points for participating in the event.\n\nMines: 1 Point\nFights: 5 Points\nChops: 9 Points\nNote: All commands must be used in the event server!"
+    embed = discord.Embed(title="Event Info!", description=description, color=discord.Color.green())
+    embed.timestamp = datetime.fromtimestamp(bot.events.find_one({"_id":str(ctx.guild.id)})["end_time"])
+    embed.set_footer(text="Event ends at")
+    await ctx.respond(embed=embed)
+
 bot.run(BOTTOKEN, reconnect=True)

@@ -1,5 +1,6 @@
 import discord
 from helpers import fetch_user
+from discord.ui import Modal, InputText
 
 class Invite(discord.ui.Button):
     def __init__(self):
@@ -319,4 +320,16 @@ class TogglesVf(discord.ui.View):
     ])
     async def select_callback(self, select, interaction):
         self.value = select.values[0]
+        self.stop()
+
+class Event(Modal):
+    def __init__(self) -> None:
+        super().__init__(title = "Event")
+        self.title = "Event"
+        self.add_item(InputText(label="How long do you want the event to last?", placeholder="1d 2h 3m 4s"))
+    
+    async def callback(self, interaction: discord.Interaction):
+        self.value = self.children[0].value
+        await interaction.response.defer()
+        self.interaction = interaction
         self.stop()
