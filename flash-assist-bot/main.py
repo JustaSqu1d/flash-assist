@@ -30,7 +30,7 @@ bots = [878007103460089886, 625363818968776705, 574652751745777665]
 intents = discord.Intents(message_content=True, messages=True, guilds=True, guild_messages=True)
 
 bot = discord.AutoShardedBot(
-    intents=intents, activity=discord.Game(name="Discord Bots | /invite"), owner_id = 586743480651350063
+    intents=intents, activity=discord.Game(name="Discord Bots | /config"), owner_id = 586743480651350063
 )
 
 cluster = MongoClient(DBCONN)
@@ -320,8 +320,6 @@ async def on_message(msg) -> None:
 
     if not(msg.author.bot):
         await open_account(msg.author, bot)
-
-        if msg.content =="a" and msg.author==bot.owner: await msg.guild.create_forum_channel(name="support")
     
     if bot.user.id in msg.raw_mentions and "ping" in msg.content.lower():
         try:
@@ -352,7 +350,7 @@ async def on_message(msg) -> None:
 
     if msg.author.id == 586743480651350063:
         if msg.content == "%reload":
-            for filename in os.listdir("cogs"):
+            for filename in os.listdir("/cogs"):
                 if filename.endswith(".py"):
                     bot.reload_extension(f"cogs.{filename[:-3]}")
             await msg.channel.send("Reload success!")
