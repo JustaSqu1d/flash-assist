@@ -54,31 +54,34 @@ for filename in os.listdir("flash-assist-bot/cogs"):
 @tasks.loop(seconds=1)
 async def update_events():
     for event in bot.events.find({}):
-        if event["end_time"] < time():
-            
-            guild = bot.events.find_one({"_id":str(event["_id"])})
-            leaderboard = guild["participants"]
-            
+        try:
+            if event["end_time"] < time():
+                
+                guild = bot.events.find_one({"_id":str(event["_id"])})
+                leaderboard = guild["participants"]
+                
 
-            total = sorted(leaderboard.items(), key=lambda x: x[1], reverse=True)
-            description = ""
+                total = sorted(leaderboard.items(), key=lambda x: x[1], reverse=True)
+                description = ""
 
-            index = 1
+                index = 1
 
-            for entry in total:
-                player = await bot.fetch_user(int(entry[0]))
-                description += f"**{index}. {player.name}#{player.discriminator}** - {entry[1]}\n"
+                for entry in total:
+                    player = await bot.fetch_user(int(entry[0]))
+                    description += f"**{index}. {player.name}#{player.discriminator}** - {entry[1]}\n"
 
-                if index == 10:
-                    break
-                else:
-                    index += 1
+                    if index == 10:
+                        break
+                    else:
+                        index += 1
 
-            embed = discord.Embed(title="Final Event Leaderboard!", description=description, color=discord.Color.brand_red())
-            embed.set_footer(text="Event ended")
-            channel = await bot.fetch_channel(event["channel"])
-            await channel.send(embed=embed)
-            bot.events.find_one_and_delete({"_id": event["_id"]})
+                embed = discord.Embed(title="Final Event Leaderboard!", description=description, color=discord.Color.brand_red())
+                embed.set_footer(text="Event ended")
+                channel = await bot.fetch_channel(event["channel"])
+                await channel.send(embed=embed)
+                bot.events.find_one_and_delete({"_id": event["_id"]})
+        except:
+            pass
 
 
 @bot.event
@@ -636,6 +639,9 @@ async def start(ctx, channel : discord.Option(discord.TextChannel, "Choose a cha
         return
     else:
         timeevent = await convert_to_seconds(event.value)
+        if timeevent > 60:
+            await event.interaction.followup.send("Event is too short!")
+            return
         if timeevent == "Invalid time unit!":
             await event.interaction.followup.send("Invalid time unit(s)!")
             return
@@ -643,7 +649,16 @@ async def start(ctx, channel : discord.Option(discord.TextChannel, "Choose a cha
         start_time = time()
         end_time = start_time + timeevent
         bot.events.insert_one({"_id":str(ctx.guild.id), "start_time":start_time, "end_time":end_time, "channel":channel.id, "participants":RawBSONDocument(encode({str(ctx.user.id) : 0}))})
-        await ctx.guild.create_scheduled_event(name="Minecord Event",start_time=datetime.now(),end_time=datetime.now() + timedelta(seconds=timeevent),location=channel.mention)
+        try:
+            await ctx.guild.create_scheduled_event(name="Minecord Event",start_time=discord.utils.utcnow() + timedelta(seconds=5),end_time=datetime.now() + timedelta(seconds=timeevent),location=channel.mention)
+        except discord.HTTPException:
+            await event.interaction.followup.send("I am missing permissions. Use the \"Add to server\" button on my profile to correct the permissions.")
+            return
+        
+        try:
+            await bot.fetch_channel(channel.id)
+        except:
+            await event.interaction.followup.send("Invalid channel! Make sure I have permissions to send messages in that channel.")
         await event.interaction.followup.send(f"Event started! Results will be displayed in {channel.mention}! Make sure I have permissions to send messages and embed links in {channel.mention}!")
 
 @event.command(name="end", description="End a event for your server!")
