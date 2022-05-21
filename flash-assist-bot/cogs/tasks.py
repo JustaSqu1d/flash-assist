@@ -11,6 +11,7 @@ class Tasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.post_latency.start()
+        post_logs.start()
 
     def cog_unload(self):
         self.post_latency.cancel()

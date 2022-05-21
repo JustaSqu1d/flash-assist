@@ -12,7 +12,7 @@ class Dev(commands.Cog):
                 if role.id == 882120373582315540:
                     member_role = role
                     break
-            await msg.mentions[0].add_roles(roles = [member_role])
+            await msg.mentions[0].add_roles([member_role])
 
 def setup(bot):
     bot.add_cog(Dev(bot))
