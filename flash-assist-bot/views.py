@@ -211,6 +211,7 @@ class TogglesCl(discord.ui.View):
     ])
     async def select_callback(self, select, interaction):
         self.value = select.values[0]
+        await interaction.response.edit_message(view=self)
         self.stop()
 
 
@@ -271,6 +272,7 @@ class Toggles(discord.ui.View):
     ])
     async def select_callback(self, select, interaction):
         self.value = select.values[0]
+        await interaction.response.edit_message(view=self)
         self.stop()
 
 class TogglesVf(discord.ui.View):
@@ -280,7 +282,7 @@ class TogglesVf(discord.ui.View):
         self.ctx = ctx
         self.db = fetch_user(self.ctx.author, self.ctx.bot)
         for child in self.children:
-            try:
+            if child.row == 0:
                 if child.label == "Treasure":
                     if not (self.db["virtualfisher"]["treasure"]):
                         child.style = discord.ButtonStyle.danger
@@ -290,8 +292,6 @@ class TogglesVf(discord.ui.View):
                 if child.label == "Worker":
                     if not (self.db["virtualfisher"]["worker"]):
                         child.style = discord.ButtonStyle.danger
-            except:
-                pass
 
     @discord.ui.button(label='Treasure', style=discord.ButtonStyle.success)
     async def callback(self, button, interaction):
@@ -320,6 +320,7 @@ class TogglesVf(discord.ui.View):
     ])
     async def select_callback(self, select, interaction):
         self.value = select.values[0]
+        await interaction.response.edit_message(view=self)
         self.stop()
 
 class Event(Modal):
