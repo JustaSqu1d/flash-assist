@@ -18,7 +18,7 @@ def fetch_user(user, bot):
     settings = {}
     settings["minecord"] = bot.minecord.find_one({"_id": user.id})
     settings["minecordclassic"] = bot.minecordclassic.find_one({"_id": user.id})
-    settings["virtualfisher"] = bot.minecordclassic.find_one({"_id": user.id})
+    settings["virtualfisher"] = bot.virtualfisher.find_one({"_id": user.id})
     return settings
 
 def fetch_event(guild, bot):
