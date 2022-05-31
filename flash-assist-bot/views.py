@@ -297,21 +297,21 @@ class TogglesVf(discord.ui.View):
     async def callback(self, button, interaction):
         button.style = discord.ButtonStyle.danger if button.style == discord.ButtonStyle.success else discord.ButtonStyle.success
 
-        self.ctx.bot.minecord.update_one({"_id":self.ctx.author.id}, {"$set": {"treasure": not (self.db["virtualfisher"]["treasure"])}})
+        self.ctx.bot.virtualfisher.update_one({"_id":self.ctx.author.id}, {"$set": {"treasure": not (self.db["virtualfisher"]["treasure"])}})
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label='Fishing', style=discord.ButtonStyle.success)
     async def callback2(self, button, interaction):
         button.style = discord.ButtonStyle.danger if button.style == discord.ButtonStyle.success else discord.ButtonStyle.success
 
-        self.ctx.bot.minecord.update_one({"_id":self.ctx.author.id}, {"$set": {"fish": not (self.db["virtualfisher"]["fish"])}})
+        self.ctx.bot.virtualfisher.update_one({"_id":self.ctx.author.id}, {"$set": {"fish": not (self.db["virtualfisher"]["fish"])}})
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label='Worker', style=discord.ButtonStyle.success)
     async def callback3(self, button, interaction):
         button.style = discord.ButtonStyle.danger if button.style == discord.ButtonStyle.success else discord.ButtonStyle.success
 
-        self.ctx.bot.minecord.update_one({"_id":self.ctx.author.id}, {"$set": {"worker": not (self.db["virtualfisher"]["worker"])}})
+        self.ctx.bot.virtualfisher.update_one({"_id":self.ctx.author.id}, {"$set": {"worker": not (self.db["virtualfisher"]["worker"])}})
         await interaction.response.edit_message(view=self)
 
     @discord.ui.select(placeholder='Currently editing: Virtual Fisher', min_values=1, max_values=1, options=[

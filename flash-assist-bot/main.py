@@ -51,7 +51,7 @@ for filename in os.listdir("flash-assist-bot/cogs"):
         bot.load_extension(f"cogs.{filename[:-3]}")
         
 
-@tasks.loop(seconds=1)
+@tasks.loop(seconds=10)
 async def update_events():
     for event in bot.events.find({}):
         try:
@@ -237,7 +237,7 @@ async def on_message(msg) -> None:
                         if db["minecord"]["efficiency"]:
                             cooldown = 32
                         else:
-                            cooldown = 45
+                            cooldown = 40
                         command = "fight"
 
                 else:
@@ -637,11 +637,11 @@ async def start(ctx, channel : discord.Option(discord.TextChannel, "Choose a cha
         return
     else:
         timeevent = await convert_to_seconds(event.value)
-        if timeevent > 60:
-            await event.interaction.followup.send("Event is too short!")
-            return
         if timeevent == "Invalid time unit!":
             await event.interaction.followup.send("Invalid time unit(s)!")
+            return
+        if timeevent > 60:
+            await event.interaction.followup.send("Event is too short!")
             return
         
         start_time = time()

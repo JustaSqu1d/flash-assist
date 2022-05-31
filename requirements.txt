@@ -1,6 +1,6 @@
 statcord.py
 sentry-sdk
-py-cord==2.0.0b7
+py-cord[speed]==2.0.0rc1
 aiohttp
 pymongo
 flask

@@ -42,7 +42,7 @@ class Error(commands.Cog):
         error.add_field(name="Command/Component", value = f"{ctx.interaction.is_command()}/{ctx.interaction.is_component()}")
         error.add_field(name="Permissions", value = f"{ctx.interaction.permissions}")
         error.add_field(name="Data", value = f"{ctx.interaction.data}")
-        error.add_field(name="Exception", value = f"{exception}")
+        error.add_field(name="Exception", value = f"{exception}: {exception.__traceback__}")
         error.set_footer(text = sys.exc_info())
         error.timestamp = datetime.now()
         await self.bot.owner.send(embed=error)
