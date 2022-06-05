@@ -1,16 +1,14 @@
 import os
 from discord.ext import commands
-from env import SCKEY
 
 import statcord
 
 class StatcordPost(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.key = SCKEY
+        self.key = os.environ.get("SCKEY")
         self.api = statcord.Client(self.bot,self.key)
         self.api.start_loop()
-
 
     @commands.Cog.listener()
     async def on_application_command(self,ctx):

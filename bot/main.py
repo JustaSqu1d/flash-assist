@@ -8,7 +8,7 @@ from views import *
 from asyncio import sleep
 from random import randint
 from logging import getLogger, DEBUG, FileHandler, Formatter
-from env import *
+#from env import *
 from time import time
 from pymongo import MongoClient
 from bson import encode
@@ -21,7 +21,7 @@ handler.setFormatter(Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'
 logger.addHandler(handler)
 
 init(
-    SDKKEY,
+    os.environ.get("SDKKEY"),
     traces_sample_rate=1.0
 )
 
@@ -33,7 +33,7 @@ bot = discord.AutoShardedBot(
     intents=intents, activity=discord.Game(name="Discord Bots | /config"), owner_id = 586743480651350063
 )
 
-cluster = MongoClient(DBCONN)
+cluster = MongoClient(os.environ.get("DBCONN"))
 bot.db = cluster["discord"]
 bot.minecord = bot.db["minecord"]
 bot.minecordclassic = bot.db["minecord-classic"]
@@ -46,7 +46,7 @@ event = bot.create_group("event", "Event settings")
 
 stat_start = 1647338400
 
-for filename in os.listdir("flash-assist-bot/cogs"):
+for filename in os.listdir("bot/cogs"):
     if filename.endswith(".py"):
         bot.load_extension(f"cogs.{filename[:-3]}")
         
@@ -708,4 +708,4 @@ async def info(ctx):
     embed.set_footer(text="Event ends at")
     await ctx.respond(embed=embed)
 
-bot.run(BOTTOKEN, reconnect=True)
+bot.run(os.environ.get("BOTTOKEN"), reconnect=True)

@@ -1,4 +1,4 @@
-# Todos before April 30th, 2022:
+# Todos before June 30th, 2022:
 - [x] Move database to main database
 - [ ] More statistics for other bots
 - [ ] Larger variety of bots
