@@ -15,7 +15,7 @@ Flash Assist supports functionality for the following bots:
 
 ## How to use Flash Assist?
 
-[Invite Flash Assist](https://discord.com/api/oauth2/authorize?client_id=836581672811495465&permissions=321536&redirect_uri=https%3A%2F%2Fdiscord.com%2Finvite%2FfJt6yFeD5v&response_type=code&scope=identify%20bot%20applications.commands) and use your favorite commands and Flash Assist will remind you to use the command once the timer has elapsed!
+[Invite Flash Assist](https://discord.com/api/oauth2/authorize?client_id=836581672811495465&permissions=321536&redirect_uri=https%3A%2F%2Fdiscord.com%2Finvite%2FfJt6yFeD5v&response_type=code&scope=identify%20bot%20applications.commands) and use your favorite commands and Flash Assist will remind you to use the command once the time has elapsed!
 
 You can also change your configurations with the `/config` command!
 
