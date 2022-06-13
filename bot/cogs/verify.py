@@ -9,6 +9,7 @@ class Verify(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, msg):
         msg.content = msg.content.lower()
+        msg.content = msg.content.replace(" ","")
 
         if 'antibotcheck.completethisaddition:' in msg.content and msg.author.id in [
                 625363818968776705, 878007103460089886
