@@ -1,6 +1,6 @@
-from pypresence import Presence
 from time import time, sleep
 from os import system
+from pypresence import Presence
 
 bot_raw = input("Select a Discord Bot for your Rich Presence!\n0: Minecord\n1: Minecord Classic\n2: Virtual Fisher\n")
 
@@ -25,7 +25,7 @@ RPC.connect()
 print("Rich Presence started!")
 
 sleep(5)
-
+print("You can minimize this window, but closing the window will stop the Rich Presence.")
 while True: # The presence will stay on as long as the program is running
     RPC.update(
         details=f"Grinding {name}!",
@@ -37,7 +37,4 @@ while True: # The presence will stay on as long as the program is running
         buttons=[{"label": "Invite", "url": "https://discord.com/api/oauth2/authorize?client_id=836581672811495465&permissions=321536&redirect_uri=https%3A%2F%2Fdiscord.com%2Finvite%2FfJt6yFeD5v&response_type=code&scope=identify%20bot%20applications.commands"},
         {"label": "Download", "url": "https://github.com/JustaSqu1d/flash-assist/releases"}]
     )
-    system('cls')
-    print("You can minimize this window, but closing the window will stop the Rich Presence.")
     sleep(15)
-
