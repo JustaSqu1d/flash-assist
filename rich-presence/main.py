@@ -20,7 +20,7 @@ b: Virtual Fisher
 bot_raw = input(inputText)
 
 while 1:
-    if bot_raw not in range(0, 10) and bot_raw not in ["a", "b"]:
+    if bot_raw not in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b"]:
         print("Invalid! Please type an actual value.")
         bot_raw = input(inputText)
     else:
