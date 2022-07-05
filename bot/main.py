@@ -2,35 +2,37 @@ import os
 import discord
 from discord.ext import tasks
 from sentry_sdk import init
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 from helpers import open_account, fetch_user, convert_to_seconds
 from views import *
 from asyncio import sleep
 from random import randint
 from logging import getLogger, DEBUG, FileHandler, Formatter
-#from env import *
+
+
 from time import time
 from pymongo import MongoClient
 from bson import encode
 from bson.raw_bson import RawBSONDocument
 
-logger = getLogger('discord')
+logger = getLogger("discord")
 logger.setLevel(DEBUG)
-handler = FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-handler.setFormatter(Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+handler = FileHandler(filename="discord.log", encoding="utf-8", mode="w")
+handler.setFormatter(Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
 logger.addHandler(handler)
 
-init(
-    os.environ.get("SDKKEY"),
-    traces_sample_rate=1.0
-)
+init(os.environ.get("SDKKEY"), traces_sample_rate=1.0)
 
 bots = [878007103460089886, 625363818968776705, 574652751745777665]
 
-intents = discord.Intents(message_content=True, messages=True, guilds=True, guild_messages=True)
+intents = discord.Intents(
+    message_content=True, messages=True, guilds=True, guild_messages=True
+)
 
 bot = discord.AutoShardedBot(
-    intents=intents, activity=discord.Game(name="Discord Bots | /config"), owner_id = 586743480651350063
+    intents=intents,
+    activity=discord.Game(name="Discord Bots | /config"),
+    owner_id=586743480651350063,
 )
 
 cluster = MongoClient(os.environ.get("DBCONN"))
@@ -49,17 +51,16 @@ stat_start = 1647338400
 for filename in os.listdir("cogs/"):
     if filename.endswith(".py"):
         bot.load_extension(f"cogs.{filename[:-3]}")
-        
+
 
 @tasks.loop(seconds=10)
 async def update_events():
     for event in bot.events.find({}):
         try:
             if event["end_time"] < time():
-                
-                guild = bot.events.find_one({"_id":str(event["_id"])})
+
+                guild = bot.events.find_one({"_id": str(event["_id"])})
                 leaderboard = guild["participants"]
-                
 
                 total = sorted(leaderboard.items(), key=lambda x: x[1], reverse=True)
                 description = ""
@@ -75,7 +76,11 @@ async def update_events():
                     else:
                         index += 1
 
-                embed = discord.Embed(title="Final Event Leaderboard!", description=description, color=discord.Color.brand_red())
+                embed = discord.Embed(
+                    title="Final Event Leaderboard!",
+                    description=description,
+                    color=discord.Color.brand_red(),
+                )
                 embed.set_footer(text="Event ended")
                 channel = await bot.fetch_channel(event["channel"])
                 await channel.send(embed=embed)
@@ -93,45 +98,72 @@ async def on_ready():
     bot.owner = await bot.fetch_user(bot.owner_id)
     await bot.owner.send("Online!")
 
+
 @bot.event
 async def on_message(msg) -> None:
     if msg.author.id in bots:
         try:
             ctx = msg.channel
             msg.content = msg.content.lower()
-            
+
             if msg.author.id == 878007103460089886:
                 try:
                     try:
                         msg3 = msg
                         msg2 = await msg3.channel.fetch_message(
-                            msg3.reference.message_id)
+                            msg3.reference.message_id
+                        )
                         user = msg2.author
                     except:
                         user = msg.mentions[0]
                 except:
                     return
-                
+
                 await open_account(user, bot)
                 db = fetch_user(user, bot)
-                
-                if not (db["minecordclassic"]["mine"] or db["minecordclassic"]["fight"]
-                        or db["minecordclassic"]["chop"] or db["minecordclassic"]["ed"]):
+
+                if not (
+                    db["minecordclassic"]["mine"]
+                    or db["minecordclassic"]["fight"]
+                    or db["minecordclassic"]["chop"]
+                    or db["minecordclassic"]["ed"]
+                ):
                     return
-        
-                if ("you mined" in msg.content or "youmined" in msg.content) and ("in the nether" not in msg.content and "inthenether" not in msg.content) and db["minecordclassic"]["mine"]:
+
+                if (
+                    ("you mined" in msg.content or "youmined" in msg.content)
+                    and (
+                        "in the nether" not in msg.content
+                        and "inthenether" not in msg.content
+                    )
+                    and db["minecordclassic"]["mine"]
+                ):
                     if db["minecordclassic"]["efficiency"]:
                         cooldown = 4
                     else:
                         cooldown = 5
                     command = "mine (classic)"
-                elif ("you chopped" in msg.content or "youchopped" in msg.content) and ("in the nether" not in msg.content and "inthenether" not in msg.content) and db["minecordclassic"]["chop"]:
+                elif (
+                    ("you chopped" in msg.content or "youchopped" in msg.content)
+                    and (
+                        "in the nether" not in msg.content
+                        and "inthenether" not in msg.content
+                    )
+                    and db["minecordclassic"]["chop"]
+                ):
                     command = "chop (classic)"
                     if db["minecordclassic"]["efficiency"]:
                         cooldown = 45
                     else:
                         cooldown = 60
-                elif ("you killed" in msg.content or "youkilled" in msg.content) and ("in the nether" not in msg.content and "inthenether" not in msg.content) and db["minecordclassic"]["fight"]:
+                elif (
+                    ("you killed" in msg.content or "youkilled" in msg.content)
+                    and (
+                        "in the nether" not in msg.content
+                        and "inthenether" not in msg.content
+                    )
+                    and db["minecordclassic"]["fight"]
+                ):
                     cooldown = 40
                     command = "fight (classic)"
                     if db["minecordclassic"]["armor"] == 1:
@@ -152,61 +184,79 @@ async def on_message(msg) -> None:
                     times = db["minecordclassic"]["ed"]
                     cooldown = 60 * times
                     command = "enderdragon (classic)"
-                elif ("you mined" in msg.content or "youmined" in msg.content) and ("in the nether" in msg.content or "inthenether" in msg.content) and db["minecordclassic"]["mine"]:
+                elif (
+                    ("you mined" in msg.content or "youmined" in msg.content)
+                    and ("in the nether" in msg.content or "inthenether" in msg.content)
+                    and db["minecordclassic"]["mine"]
+                ):
                     cooldown = 5
                     command = "nether mine (classic)"
-                elif ("you chopped" in msg.content or "youchopped" in msg.content) and ("in the nether" in msg.content or "inthenether" in msg.content) and db["minecordclassic"]["chop"]:
+                elif (
+                    ("you chopped" in msg.content or "youchopped" in msg.content)
+                    and ("in the nether" in msg.content or "inthenether" in msg.content)
+                    and db["minecordclassic"]["chop"]
+                ):
                     cooldown = 60
                     command = "nether chop (classic)"
-                elif  ("you killed" in msg.content or "youkilled" in msg.content) and ("in the nether" in msg.content or "inthenether" in msg.content) and db["minecordclassic"]["fight"]: 
+                elif (
+                    ("you killed" in msg.content or "youkilled" in msg.content)
+                    and ("in the nether" in msg.content or "inthenether" in msg.content)
+                    and db["minecordclassic"]["fight"]
+                ):
                     cooldown = 45
                     command = "nether fight (classic)"
                 else:
                     return
                 response = db["minecordclassic"]["response"]
-    
+
             elif msg.author.id == 625363818968776705:
-                
+
                 try:
                     try:
-                        msg2 = await msg.channel.fetch_message(
-                            msg.reference.message_id)
+                        msg2 = await msg.channel.fetch_message(msg.reference.message_id)
                         user = msg2.author
                     except:
                         user = msg.mentions[0]
                 except:
                     return
-                
+
                 await open_account(user, bot)
                 db = fetch_user(user, bot)
-    
-                if not (db["minecord"]["mine"] or db["minecord"]["fight"]
-                        or db["minecord"]["chop"] or db["minecord"]["ed"]):
+
+                if not (
+                    db["minecord"]["mine"]
+                    or db["minecord"]["fight"]
+                    or db["minecord"]["chop"]
+                    or db["minecord"]["ed"]
+                ):
                     return
-                
+
                 event = bot.events.find_one({"_id": str(ctx.guild.id)})
 
-                if ("you mined" in msg.content or "youmined" in msg.content):
-                    
+                if "you mined" in msg.content or "youmined" in msg.content:
+
                     if event != None:
                         if str(user.id) not in event["participants"]:
                             event["participants"][str(user.id)] = 1
                         else:
                             event["participants"][str(user.id)] += 1
 
-                        bot.events.find_one_and_update({"_id": str(ctx.guild.id)}, {'$set': {'participants': event["participants"]}})
+                        bot.events.find_one_and_update(
+                            {"_id": str(ctx.guild.id)},
+                            {"$set": {"participants": event["participants"]}},
+                        )
 
-                    bot.stats.update_one({"_id":1}, {"$inc": {"trials": 1}})
-                    if ("bosskey" in msg.content or "boss key" in msg.content):
-                        bot.stats.update_one({"_id":1}, {"$inc": {"success": 1}})
+                    bot.stats.update_one({"_id": 1}, {"$inc": {"trials": 1}})
+                    if "bosskey" in msg.content or "boss key" in msg.content:
+                        bot.stats.update_one({"_id": 1}, {"$inc": {"success": 1}})
                     if db["minecord"]["mine"]:
                         if db["minecord"]["efficiency"]:
                             cooldown = 4
                         else:
                             cooldown = 5
                         command = "mine"
-    
-                elif ("you chopped" in msg.content or "youchopped" in msg.content):
+
+                elif "you chopped" in msg.content or "youchopped" in msg.content:
 
                     if event != None:
                         if str(user.id) not in event["participants"]:
@@ -214,7 +264,10 @@ async def on_message(msg) -> None:
                         else:
                             event["participants"][str(user.id)] += 9
 
-                        bot.events.find_one_and_update({"_id": str(ctx.guild.id)}, {'$set': {'participants': event["participants"]}})
+                        bot.events.find_one_and_update(
+                            {"_id": str(ctx.guild.id)},
+                            {"$set": {"participants": event["participants"]}},
+                        )
 
                     if db["minecord"]["chop"]:
                         if db["minecord"]["efficiency"]:
@@ -222,8 +275,8 @@ async def on_message(msg) -> None:
                         else:
                             cooldown = 60
                         command = "chop"
-    
-                elif ("you killed" in msg.content or "youkilled" in msg.content): 
+
+                elif "you killed" in msg.content or "youkilled" in msg.content:
 
                     if event != None:
                         if str(user.id) not in event["participants"]:
@@ -231,7 +284,10 @@ async def on_message(msg) -> None:
                         else:
                             event["participants"][str(user.id)] += 5
 
-                        bot.events.find_one_and_update({"_id": str(ctx.guild.id)}, {'$set': {'participants': event["participants"]}})
+                        bot.events.find_one_and_update(
+                            {"_id": str(ctx.guild.id)},
+                            {"$set": {"participants": event["participants"]}},
+                        )
 
                     if db["minecord"]["fight"]:
                         if db["minecord"]["efficiency"]:
@@ -247,50 +303,58 @@ async def on_message(msg) -> None:
             elif msg.author.id == 574652751745777665:
                 try:
                     try:
-                        msg2 = await msg.channel.fetch_message(
-                            msg.reference.message_id)
+                        msg2 = await msg.channel.fetch_message(msg.reference.message_id)
                         user = msg2.author
                     except:
                         user = msg.interaction.user
                 except:
                     return
-                
+
                 await open_account(user, bot)
                 db = fetch_user(user, bot)
 
                 for embed in msg.embeds:
                     embed = embed.to_dict()
-    
+
                     try:
                         response = db["virtualfisher"]["response"]
-                        if "You will now find more treasure for the next" in embed[
-                                "description"] and db["virtualfisher"]["treasure"]:
+                        if (
+                            "You will now find more treasure for the next"
+                            in embed["description"]
+                            and db["virtualfisher"]["treasure"]
+                        ):
                             minutes = int(embed["description"].split(" ")[10])
                             command = "treasure"
                             cooldown = minutes * 60
                             break
-    
-                        elif "You will now catch more fish for the next" in embed[
-                                "description"] and db["virtualfisher"]["fish"] :
+
+                        elif (
+                            "You will now catch more fish for the next"
+                            in embed["description"]
+                            and db["virtualfisher"]["fish"]
+                        ):
                             minutes = int(embed["description"].split(" ")[10])
                             command = "fishing"
                             cooldown = minutes * 60
                             break
-    
-                        elif "You hired a worker for the next" in embed[
-                                "description"] and "catches will automatically be added to your inventory." and db["virtualfisher"]["worker"] :
+
+                        elif (
+                            "You hired a worker for the next" in embed["description"]
+                            and "catches will automatically be added to your inventory."
+                            and db["virtualfisher"]["worker"]
+                        ):
                             minutes = int(
                                 embed["description"].split(" ")[8].split("**")[1]
                             )
                             command = "worker"
                             cooldown = minutes * 60
                             break
-    
+
                         else:
                             continue
                     except:
                         pass
-                
+
             try:
                 response = response.replace("%", f"{user.mention}")
             except:
@@ -304,32 +368,37 @@ async def on_message(msg) -> None:
             except:
                 pass
             await sleep(cooldown)
-    
+
             view = discord.ui.View()
-            
+
             if randint(1, 10) == randint(1, 10):
                 view.add_item(Vote())
-                
+
             await ctx.send(response, view=view)
-    
+
         except UnboundLocalError:
             pass
-        
+
         except discord.errors.Forbidden:
             pass
 
-    if not(msg.author.bot):
+    if not (msg.author.bot):
         await open_account(msg.author, bot)
-    
+
     if bot.user.id in msg.raw_mentions and "ping" in msg.content.lower():
         try:
-            ping = int((bot.latencies[msg.guild.shard_id][1])*1000)
+            ping = int((bot.latencies[msg.guild.shard_id][1]) * 1000)
         except:
-            ping = int(bot.latency*1000)
+            ping = int(bot.latency * 1000)
         try:
-            embed = discord.Embed(title="Latency", description=f"**Gateway:** {ping} ms\n**Shard**: {msg.guild.shard_id}")
+            embed = discord.Embed(
+                title="Latency",
+                description=f"**Gateway:** {ping} ms\n**Shard**: {msg.guild.shard_id}",
+            )
         except:
-            embed = discord.Embed(title="Latency", description=f"**Gateway:** {ping} ms\n**Shard**: n/a")
+            embed = discord.Embed(
+                title="Latency", description=f"**Gateway:** {ping} ms\n**Shard**: n/a"
+            )
 
         if ping >= 1000:
             embed.color = discord.Color.red()
@@ -357,28 +426,28 @@ async def on_message(msg) -> None:
 
     return
 
+
 @bot.event
 async def on_interaction(itx):
     await open_account(itx.user, bot)
     await bot.process_application_commands(itx)
 
-@minecord.command(name="droprate",
-                   description="Find the drop-rate of boss keys!")
+
+@minecord.command(name="droprate", description="Find the drop-rate of boss keys!")
 async def droprate(ctx):
     success = (bot.stats.find_one({"_id": 1}))["success"]
     trials = (bot.stats.find_one({"_id": 1}))["trials"]
 
     bot.dispatch("application_command", ctx)
-    embed = discord.Embed(title="Boss Key Drop Rates",
-                          color=discord.Color.orange())
+    embed = discord.Embed(title="Boss Key Drop Rates", color=discord.Color.orange())
     embed.add_field(name="Boss Key Drops", value=success, inline=False)
     embed.add_field(name="Mines Recorded", value=trials, inline=False)
     embed.set_footer(
-        text=
-        f'Estimated chance of Boss Key drop: {round(success/(trials*100), 3)}% (1 in {round(trials/success)+1})'
+        text=f"Estimated chance of Boss Key drop: {round(success/(trials*100), 3)}% (1 in {round(trials/success)+1})"
     )
     embed.timestamp = datetime.now()
     await ctx.respond(embed=embed)
+
 
 @minecord.command(name="setup", description="Setup for Minecord!")
 async def setup(ctx):
@@ -387,9 +456,10 @@ async def setup(ctx):
     await open_account(ctx.author, bot)
     user = ctx.author
     view = Option1()
-    em = discord.Embed(title="What are your settings for?",
-                       color=ctx.author.color)
-    em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
+    em = discord.Embed(title="What are your settings for?", color=ctx.author.color)
+    em.set_footer(
+        text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
+    )
     em.timestamp = datetime.now()
     await ctx.followup.send(embed=em, view=view)
     db = fetch_user(ctx.user, bot)
@@ -403,10 +473,14 @@ async def setup(ctx):
 
     if view.value:
 
-        em = discord.Embed(title="Do you have efficiency?",
-                           description="Yes | No",
-                           color=ctx.author.color)
-        em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
+        em = discord.Embed(
+            title="Do you have efficiency?",
+            description="Yes | No",
+            color=ctx.author.color,
+        )
+        em.set_footer(
+            text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
+        )
         em.timestamp = datetime.now()
         op1 = Option2()
         await ctx.interaction.edit_original_message(embed=em, view=op1)
@@ -419,14 +493,17 @@ async def setup(ctx):
             await ctx.interaction.edit_original_message(view=op1)
             return
 
-        bot.minecordclassic.update_one({"_id":ctx.author.id}, {"$set": {"efficiency": op1.value}})
+        bot.minecordclassic.update_one(
+            {"_id": ctx.author.id}, {"$set": {"efficiency": op1.value}}
+        )
 
         opar = OptionAr()
 
-        em = discord.Embed(title="What armor do you have?",
-                           color=ctx.author.color)
+        em = discord.Embed(title="What armor do you have?", color=ctx.author.color)
         em.timestamp = datetime.now()
-        em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
+        em.set_footer(
+            text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
+        )
         await ctx.interaction.edit_original_message(embed=em, view=opar)
 
         timedout = await opar.wait()
@@ -437,14 +514,19 @@ async def setup(ctx):
             await ctx.interaction.edit_original_message(view=opar)
             return
 
-        bot.minecordclassic.update_one({"_id":ctx.author.id}, {"$set": {"armor": opar.value}})
+        bot.minecordclassic.update_one(
+            {"_id": ctx.author.id}, {"$set": {"armor": opar.value}}
+        )
 
         em = discord.Embed(
             title="What is your Ender Dragon cooldown (In minutes)?",
             description="Select a number!",
-            color=ctx.author.color)
+            color=ctx.author.color,
+        )
         em.timestamp = datetime.now()
-        em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
+        em.set_footer(
+            text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
+        )
 
         opmin = OptionMin()
 
@@ -458,12 +540,19 @@ async def setup(ctx):
             await ctx.interaction.edit_original_message(view=opmin)
             return
 
-        bot.minecordclassic.update_one({"_id":ctx.author.id}, {"$set": {"ed": opmin.value}})
+        bot.minecordclassic.update_one(
+            {"_id": ctx.author.id}, {"$set": {"ed": opmin.value}}
+        )
 
-        em = discord.Embed(title="Setup Complete!",description="You can edit the commands you want to be reminded upon with `/config`!",
-                           color=discord.Color.green())
+        em = discord.Embed(
+            title="Setup Complete!",
+            description="You can edit the commands you want to be reminded upon with `/config`!",
+            color=discord.Color.green(),
+        )
         em.timestamp = datetime.now()
-        em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
+        em.set_footer(
+            text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
+        )
 
         for child in opmin.children:
             child.disabled = True
@@ -472,11 +561,15 @@ async def setup(ctx):
         return
 
     else:
-        em = discord.Embed(title="Do you have efficiency?",
-                           description="Yes | No",
-                           color=ctx.author.color)
+        em = discord.Embed(
+            title="Do you have efficiency?",
+            description="Yes | No",
+            color=ctx.author.color,
+        )
         em.timestamp = datetime.now()
-        em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
+        em.set_footer(
+            text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
+        )
 
         op1 = Option2()
         await ctx.interaction.edit_original_message(embed=em, view=op1)
@@ -489,12 +582,19 @@ async def setup(ctx):
             await ctx.interaction.edit_original_message(view=op1)
             return
 
-        bot.minecord.update_one({"_id":ctx.author.id}, {"$set": {"efficiency": op1.value}})
+        bot.minecord.update_one(
+            {"_id": ctx.author.id}, {"$set": {"efficiency": op1.value}}
+        )
 
-        em = discord.Embed(title="Setup Complete!",description="You can edit the commands you want to be reminded upon with `/config`!",
-                           color=discord.Color.green())
+        em = discord.Embed(
+            title="Setup Complete!",
+            description="You can edit the commands you want to be reminded upon with `/config`!",
+            color=discord.Color.green(),
+        )
         em.timestamp = datetime.now()
-        em.set_footer(text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}")
+        em.set_footer(
+            text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
+        )
 
         for child in op1.children:
             child.disabled = True
@@ -502,13 +602,15 @@ async def setup(ctx):
         await ctx.interaction.edit_original_message(embed=em, view=op1)
         return
 
+
 @bot.slash_command(
-    name="config",
-    description="Edit what commands you want to be reminded upon!!")
+    name="config", description="Edit what commands you want to be reminded upon!!"
+)
 async def config(ctx):
     bot.dispatch("application_command", ctx)
-    embed = discord.Embed(title="Reminder Control Panel",
-                          description="**Green:** ON\n**Red:** OFF")
+    embed = discord.Embed(
+        title="Reminder Control Panel", description="**Green:** ON\n**Red:** OFF"
+    )
     view = Toggles(ctx)
     embed.set_footer(text="Click the buttons to toggle between modes!")
     embed.timestamp = datetime.now()
@@ -528,7 +630,7 @@ async def config(ctx):
             view = TogglesVf(ctx)
             embed.color = discord.Color.blue()
             await ctx.interaction.edit_original_message(view=view)
-            
+
         to = await view.wait()
     for child in view.children:
         child.disabled = True
@@ -538,62 +640,72 @@ async def config(ctx):
 
 @bot.slash_command(
     name="terms",
-    description="You can view our Terms of Service and Privacy Policy here, along with some additional information.")
+    description="You can view our Terms of Service and Privacy Policy here, along with some additional information.",
+)
 async def terms(ctx):
     await ctx.defer()
     bot.dispatch("application_command", ctx)
 
-    embed = discord.Embed(title="Flash Assist",
-                          color=discord.Color.orange())
+    embed = discord.Embed(title="Flash Assist", color=discord.Color.orange())
     embed.description = "[Terms of Service](https://flash-assist.glitch.me/tos.html)\n[Privacy Policy](https://flash-assist.glitch.me/policy.html)\n[Status Page](https://flashassist.statuspage.io/)\n[Website](https://flash-assist.glitch.me/)"
-    embed.set_footer(text="Flash Assist is not affiliated with any of the Discord bots it supports.")
+    embed.set_footer(
+        text="Flash Assist is not affiliated with any of the Discord bots it supports."
+    )
     embed.timestamp = datetime.now()
     await ctx.respond(embed=embed)
 
 
-@bot.slash_command(name="response",
-                   description="Use your own custom reminder messages!")
-async def response1(ctx, response: discord.Option(
-    str, description="Use custom response messages!", required=True), 
-    bot2 : discord.Option(str, "Choose the bot you want to edit reminder responses for.", choices=["Minecord", "Minecord Classic", "Virtual Fisher"], required=True)
-    ):
+@bot.slash_command(
+    name="response", description="Use your own custom reminder messages!"
+)
+async def response1(
+    ctx,
+    response: discord.Option(
+        str, description="Use custom response messages!", required=True
+    ),
+    bot2: discord.Option(
+        str,
+        "Choose the bot you want to edit reminder responses for.",
+        choices=["Minecord", "Minecord Classic", "Virtual Fisher"],
+        required=True,
+    ),
+):
     bot.dispatch("application_command", ctx)
     if "%" not in response:
         failed = discord.Embed(
             title="Missing Arguments!",
-            description=
-            "Make your own custom reminder with `/response`\nPlease use the following format in your message:\n**Put `%` on where you want you to be mentioned.**\n`&` for the name.^\n`$` for the cooldown.^\n\n*^optional*"
+            description="Make your own custom reminder with `/response`\nPlease use the following format in your message:\n**Put `%` on where you want you to be mentioned.**\n`&` for the name.^\n`$` for the cooldown.^\n\n*^optional*",
         )
         failed.add_field(
             name="Example",
-            value=
-            f"`/response % & elasped (cd:$)`\nBecomes\n\n{ctx.author.mention} command elapsed (cd:5)"
+            value=f"`/response % & elasped (cd:$)`\nBecomes\n\n{ctx.author.mention} command elapsed (cd:5)",
         )
         failed.timestamp = datetime.now()
-        
+
         await ctx.respond(embed=failed)
         return
-    
 
     user = ctx.author
     response = discord.utils.escape_mentions(response)
     bot2 = bot2.lower().replace(" ", "-")
-    bot.db[bot2].update_one({"_id":ctx.author.id}, {"$set": {"response": response}})
+    bot.db[bot2].update_one({"_id": ctx.author.id}, {"$set": {"response": response}})
 
     try:
-        response = response.replace("%",user.mention)
+        response = response.replace("%", user.mention)
     except:
         pass
     try:
-        response = response.replace("&","`command`")
+        response = response.replace("&", "`command`")
     except:
         pass
     try:
-        response = response.replace("$","3")
+        response = response.replace("$", "3")
     except:
         pass
-        
-    success = discord.Embed(title="Success!", description = response, color=discord.Color.green())
+
+    success = discord.Embed(
+        title="Success!", description=response, color=discord.Color.green()
+    )
     success.timestamp = datetime.now()
     await ctx.respond(embed=success)
 
@@ -601,7 +713,11 @@ async def response1(ctx, response: discord.Option(
 @bot.slash_command(name="invite", description="Invite me to join your server!")
 async def invite(ctx):
     bot.dispatch("application_command", ctx)
-    embed = discord.Embed(title="Flash Assist", description = "Flash Assist is a Discord bot that reminds you to use commands when the command's cooldown has elapsed or ended.\nThis service covers a couple bots, but the coverage for more bots is coming soon!\nFeatures includes custom reminders along with friendly UI for easy customization!", color=discord.Color.orange())
+    embed = discord.Embed(
+        title="Flash Assist",
+        description="Flash Assist is a Discord bot that reminds you to use commands when the command's cooldown has elapsed or ended.\nThis service covers a couple bots, but the coverage for more bots is coming soon!\nFeatures includes custom reminders along with friendly UI for easy customization!",
+        color=discord.Color.orange(),
+    )
     embed.description = ""
     view = discord.ui.View()
     view.add_item(Invite())
@@ -618,22 +734,34 @@ async def guide(ctx):
     embed = discord.Embed(
         title="Guide",
         description="**[Minecord](https://just-a-squid.gitbook.io/minecord-1/v/minecord/)**\n**[Virtual Fisher](https://virtualfisher.com/guide)**",
-        color=discord.Color.orange()
+        color=discord.Color.orange(),
     )
     embed.timestamp = datetime.now()
-    embed.set_footer(text="Flash Assist is not affiliated with any of the Discord bots it supports.")
+    embed.set_footer(
+        text="Flash Assist is not affiliated with any of the Discord bots it supports."
+    )
     await ctx.respond(embed=embed)
 
+
 @event.command(name="start", description="Start a Minecord event for your server!")
-async def start(ctx, channel : discord.Option(discord.TextChannel, "Choose a channel to send the event to.")):
-    if not(ctx.user.guild_permissions.manage_guild): await ctx.respond("Missing Manage Server Permissions!"); return
+async def start(
+    ctx,
+    channel: discord.Option(
+        discord.TextChannel, "Choose a channel to send the event to."
+    ),
+):
+    if not (ctx.user.guild_permissions.manage_guild):
+        await ctx.respond("Missing Manage Server Permissions!")
+        return
     bot.dispatch("application_command", ctx)
-    guild = bot.events.find_one({"_id":str(ctx.guild.id)})
-    if guild is not None: await ctx.respond("Only one event at a time!"); return
+    guild = bot.events.find_one({"_id": str(ctx.guild.id)})
+    if guild is not None:
+        await ctx.respond("Only one event at a time!")
+        return
     event = Event()
     await ctx.send_modal(event)
     timedout = await event.wait()
-    if not(timedout):
+    if not (timedout):
         return
     else:
         timeevent = await convert_to_seconds(event.value)
@@ -643,40 +771,66 @@ async def start(ctx, channel : discord.Option(discord.TextChannel, "Choose a cha
         if timeevent > 60:
             await event.interaction.followup.send("Event is too short!")
             return
-        
+
         start_time = time()
         end_time = start_time + timeevent
-        bot.events.insert_one({"_id":str(ctx.guild.id), "start_time":start_time, "end_time":end_time, "channel":channel.id, "participants":RawBSONDocument(encode({str(ctx.user.id) : 0}))})
+        bot.events.insert_one(
+            {
+                "_id": str(ctx.guild.id),
+                "start_time": start_time,
+                "end_time": end_time,
+                "channel": channel.id,
+                "participants": RawBSONDocument(encode({str(ctx.user.id): 0})),
+            }
+        )
         try:
-            await ctx.guild.create_scheduled_event(name="Minecord Event",start_time=discord.utils.utcnow() + timedelta(seconds=5),end_time=datetime.now() + timedelta(seconds=timeevent),location=channel.mention)
+            await ctx.guild.create_scheduled_event(
+                name="Minecord Event",
+                start_time=discord.utils.utcnow() + timedelta(seconds=5),
+                end_time=datetime.now() + timedelta(seconds=timeevent),
+                location=channel.mention,
+            )
         except discord.HTTPException:
-            await event.interaction.followup.send("I am missing permissions. Use the \"Add to server\" button on my profile to correct the permissions.")
+            await event.interaction.followup.send(
+                'I am missing permissions. Use the "Add to server" button on my profile to correct the permissions.'
+            )
             return
-        
+
         try:
             await bot.fetch_channel(channel.id)
         except:
-            await event.interaction.followup.send("Invalid channel! Make sure I have permissions to send messages in that channel.")
-        await event.interaction.followup.send(f"Event started! Results will be displayed in {channel.mention}! Make sure I have permissions to send messages and embed links in {channel.mention}!")
+            await event.interaction.followup.send(
+                "Invalid channel! Make sure I have permissions to send messages in that channel."
+            )
+        await event.interaction.followup.send(
+            f"Event started! Results will be displayed in {channel.mention}! Make sure I have permissions to send messages and embed links in {channel.mention}!"
+        )
+
 
 @event.command(name="end", description="End a event for your server!")
 async def end(ctx):
-    if not(ctx.user.guild_permissions.manage_guild): await ctx.respond("Missing Manage Server Permissions!"); return
-    if bot.events.find_one({"_id":str(ctx.guild.id)}) is not None: await ctx.respond("There are no events!"); return
+    if not (ctx.user.guild_permissions.manage_guild):
+        await ctx.respond("Missing Manage Server Permissions!")
+        return
+    if bot.events.find_one({"_id": str(ctx.guild.id)}) is not None:
+        await ctx.respond("There are no events!")
+        return
     bot.dispatch("application_command", ctx)
 
-    bot.events.update_one({"_id":str(ctx.guild.id)}, {"$set": {"end_time": time()}})
+    bot.events.update_one({"_id": str(ctx.guild.id)}, {"$set": {"end_time": time()}})
 
     await ctx.respond("Event ended!")
+
 
 @event.command(name="leaderboard", description="View the event leaderboard!")
 async def leaderboard(ctx):
     bot.dispatch("application_command", ctx)
     await ctx.defer()
-    guild = bot.events.find_one({"_id":str(ctx.guild.id)})
-    if guild is None: await ctx.respond("There is no ongoing event!"); return
+    guild = bot.events.find_one({"_id": str(ctx.guild.id)})
+    if guild is None:
+        await ctx.respond("There is no ongoing event!")
+        return
     leaderboard = guild["participants"]
-    
 
     total = sorted(leaderboard.items(), key=lambda x: x[1], reverse=True)
     description = ""
@@ -685,27 +839,41 @@ async def leaderboard(ctx):
 
     for entry in total:
         player = await bot.fetch_user(int(entry[0]))
-        description += f"**{index}. {player.name}#{player.discriminator}** - {entry[1]}\n"
+        description += (
+            f"**{index}. {player.name}#{player.discriminator}** - {entry[1]}\n"
+        )
 
         if index == 10:
             break
         else:
             index += 1
 
-    embed = discord.Embed(title="Event Leaderboard!", description=description, color=discord.Color.green())
-    embed.timestamp = datetime.fromtimestamp(bot.events.find_one({"_id":str(ctx.guild.id)})["end_time"])
+    embed = discord.Embed(
+        title="Event Leaderboard!", description=description, color=discord.Color.green()
+    )
+    embed.timestamp = datetime.fromtimestamp(
+        bot.events.find_one({"_id": str(ctx.guild.id)})["end_time"]
+    )
     embed.set_footer(text="Event ends at")
     await ctx.respond(embed=embed)
+
 
 @event.command(name="info", description="View the event info!")
 async def info(ctx):
     bot.dispatch("application_command", ctx)
     await ctx.defer()
-    if bot.events.find_one({"_id":str(ctx.guild.id)}) is None: await ctx.respond("There is no ongoing event!"); return
+    if bot.events.find_one({"_id": str(ctx.guild.id)}) is None:
+        await ctx.respond("There is no ongoing event!")
+        return
     description = "Players will gain event points for participating in the event.\n\nMines: 1 Point\nFights: 5 Points\nChops: 9 Points\nNote: All commands must be used in the event server!"
-    embed = discord.Embed(title="Event Info!", description=description, color=discord.Color.green())
-    embed.timestamp = datetime.fromtimestamp(bot.events.find_one({"_id":str(ctx.guild.id)})["end_time"])
+    embed = discord.Embed(
+        title="Event Info!", description=description, color=discord.Color.green()
+    )
+    embed.timestamp = datetime.fromtimestamp(
+        bot.events.find_one({"_id": str(ctx.guild.id)})["end_time"]
+    )
     embed.set_footer(text="Event ends at")
     await ctx.respond(embed=embed)
+
 
 bot.run(os.environ.get("BOTTOKEN"), reconnect=True)
