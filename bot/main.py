@@ -665,7 +665,8 @@ async def response1(
     ),
     bot2: discord.Option(
         str,
-        "Choose the bot you want to edit reminder responses for.",
+        name = "bot",
+        description="Choose the bot you want to edit reminder responses for.",
         choices=["Minecord", "Minecord Classic", "Virtual Fisher"],
         required=True,
     ),
