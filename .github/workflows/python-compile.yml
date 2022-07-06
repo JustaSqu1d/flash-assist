@@ -1,11 +1,18 @@
 name: PyInstaller
 
-on: [push]
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 jobs:
   build:
 
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
 
     steps:
     - uses: actions/checkout@v1
