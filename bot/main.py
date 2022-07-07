@@ -321,11 +321,11 @@ async def on_message(msg: discord.Message):
                                 try:
                                     author = embed["author"]["name"]
 
-                                    potential_people = (
+                                    potential_people = [
                                         item
                                         for item in msg.guild.members
                                         if item.name == author
-                                    )
+                                    ]
                                     await msg.channel.send(potential_people)
                                 except:
                                     continue
