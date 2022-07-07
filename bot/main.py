@@ -314,7 +314,7 @@ async def on_message(msg: discord.Message):
                 db = fetch_user(user, bot)
 
                 for rows in msg.components:
-                    for component in rows:
+                    for component in rows.children:
                         if "Fish Again" == component.label:
                             for embed in msg.embeds:
                                 embed = embed.to_dict()
