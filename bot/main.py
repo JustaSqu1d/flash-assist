@@ -313,6 +313,22 @@ async def on_message(msg: discord.Message):
                 await open_account(user, bot)
                 db = fetch_user(user, bot)
 
+                for component in msg.components:
+                    if "Fish Again" == component.label:
+                        for embed in msg.embeds:
+                            embed = embed.to_dict()
+                            try:
+                                author = embed["author"]["name"]
+
+                                potential_people = (
+                                    item
+                                    for item in msg.guild.members
+                                    if item.name == author
+                                )
+                                await msg.channel.send(potential_people)
+                            except:
+                                continue
+
                 for embed in msg.embeds:
                     embed = embed.to_dict()
 
@@ -428,26 +444,6 @@ async def on_message(msg: discord.Message):
 
 
 @bot.event
-async def on_message_edit(useless: discord.Message, msg: discord.Message):
-    if msg.author.id != 574652751745777665:
-        return
-    for component in msg.components:
-        if "Fish Again" == component.label:
-            break
-    else:
-        return
-
-    for embed in msg.embeds:
-        embed = embed.to_dict()
-        try:
-            author = embed["author"]["name"]
-            
-            potential_people = (item for item in msg.guild.members if item.name == author)
-            await msg.channel.send(potential_people)
-        except:
-            continue
-
-@bot.event
 async def on_interaction(itx: discord.Interaction):
     await open_account(itx.user, bot)
     await bot.process_application_commands(itx)
@@ -458,7 +454,6 @@ async def droprate(ctx: discord.ApplicationContext):
     success = (bot.stats.find_one({"_id": 1}))["success"]
     trials = (bot.stats.find_one({"_id": 1}))["trials"]
 
-    
     embed = discord.Embed(title="Boss Key Drop Rates", color=discord.Color.orange())
     embed.add_field(name="Boss Key Drops", value=success, inline=False)
     embed.add_field(name="Mines Recorded", value=trials, inline=False)
@@ -472,7 +467,7 @@ async def droprate(ctx: discord.ApplicationContext):
 @minecord.command(name="setup", description="Setup for Minecord!")
 async def setup(ctx: discord.ApplicationContext):
     await ctx.defer(ephemeral=True)
-    
+
     await open_account(ctx.author, bot)
     user = ctx.author
     view = Option1()
@@ -627,7 +622,7 @@ async def setup(ctx: discord.ApplicationContext):
     name="config", description="Edit what commands you want to be reminded upon!!"
 )
 async def config(ctx: discord.ApplicationContext):
-    
+
     embed = discord.Embed(
         title="Reminder Control Panel", description="**Green:** ON\n**Red:** OFF"
     )
@@ -664,7 +659,6 @@ async def config(ctx: discord.ApplicationContext):
 )
 async def terms(ctx: discord.ApplicationContext):
     await ctx.defer()
-    
 
     embed = discord.Embed(title="Flash Assist", color=discord.Color.orange())
     embed.description = "[Terms of Service](https://flash-assist.glitch.me/tos.html)\n[Privacy Policy](https://flash-assist.glitch.me/policy.html)\n[Status Page](https://flashassist.statuspage.io/)\n[Website](https://flash-assist.glitch.me/)"
@@ -691,7 +685,7 @@ async def response1(
         required=True,
     ),
 ):
-    
+
     if "%" not in response:
         failed = discord.Embed(
             title="Missing Arguments!",
@@ -733,7 +727,7 @@ async def response1(
 
 @bot.slash_command(name="invite", description="Invite me to join your server!")
 async def invite(ctx: discord.ApplicationContext):
-    
+
     embed = discord.Embed(
         title="Flash Assist",
         description="Flash Assist is a Discord bot that reminds you to use commands when the command's cooldown has elapsed or ended.\nThis service covers a couple bots, but the coverage for more bots is coming soon!\nFeatures includes custom reminders along with friendly UI for easy customization!",
@@ -751,7 +745,7 @@ async def invite(ctx: discord.ApplicationContext):
 
 @bot.slash_command(name="guide", description="A guide for the bots we support.")
 async def guide(ctx: discord.ApplicationContext):
-    
+
     embed = discord.Embed(
         title="Guide",
         description="**[Minecord](https://just-a-squid.gitbook.io/minecord-1/v/minecord/)**\n**[Virtual Fisher](https://virtualfisher.com/guide)**",
@@ -774,7 +768,7 @@ async def start(
     if not (ctx.user.guild_permissions.manage_guild):
         await ctx.respond("Missing Manage Server Permissions!")
         return
-    
+
     guild = bot.events.find_one({"_id": str(ctx.guild.id)})
     if guild is not None:
         await ctx.respond("Only one event at a time!")
@@ -836,7 +830,6 @@ async def end(ctx: discord.ApplicationContext):
     if bot.events.find_one({"_id": str(ctx.guild.id)}) is not None:
         await ctx.respond("There are no events!")
         return
-    
 
     bot.events.update_one({"_id": str(ctx.guild.id)}, {"$set": {"end_time": time()}})
 
@@ -845,7 +838,7 @@ async def end(ctx: discord.ApplicationContext):
 
 @event.command(name="leaderboard", description="View the event leaderboard!")
 async def leaderboard(ctx: discord.ApplicationContext):
-    
+
     await ctx.defer()
     guild = bot.events.find_one({"_id": str(ctx.guild.id)})
     if guild is None:
@@ -881,7 +874,7 @@ async def leaderboard(ctx: discord.ApplicationContext):
 
 @event.command(name="info", description="View the event info!")
 async def info(ctx: discord.ApplicationContext):
-    
+
     await ctx.defer()
     if bot.events.find_one({"_id": str(ctx.guild.id)}) is None:
         await ctx.respond("There is no ongoing event!")
