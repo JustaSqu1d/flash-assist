@@ -320,13 +320,9 @@ async def on_message(msg: discord.Message):
                                 embed = embed.to_dict()
                                 try:
                                     author = embed["author"]["name"]
-
-                                    potential_people = [
-                                        item
-                                        for item in msg.guild.members
-                                        if item.name == author
-                                    ]
-                                    await msg.channel.send(potential_people)
+                                    print(msg.guild.members)
+                                    
+                                    #await msg.channel.send(potential_people)
                                 except:
                                     continue
 
