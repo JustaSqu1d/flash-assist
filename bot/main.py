@@ -313,21 +313,22 @@ async def on_message(msg: discord.Message):
                 await open_account(user, bot)
                 db = fetch_user(user, bot)
 
-                for component in msg.components:
-                    if "Fish Again" == component.label:
-                        for embed in msg.embeds:
-                            embed = embed.to_dict()
-                            try:
-                                author = embed["author"]["name"]
+                for rows in msg.components:
+                    for component in rows:
+                        if "Fish Again" == component.label:
+                            for embed in msg.embeds:
+                                embed = embed.to_dict()
+                                try:
+                                    author = embed["author"]["name"]
 
-                                potential_people = (
-                                    item
-                                    for item in msg.guild.members
-                                    if item.name == author
-                                )
-                                await msg.channel.send(potential_people)
-                            except:
-                                continue
+                                    potential_people = (
+                                        item
+                                        for item in msg.guild.members
+                                        if item.name == author
+                                    )
+                                    await msg.channel.send(potential_people)
+                                except:
+                                    continue
 
                 for embed in msg.embeds:
                     embed = embed.to_dict()
