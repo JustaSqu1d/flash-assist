@@ -326,7 +326,13 @@ async def on_message(msg: discord.Message):
                                         for item in msg.guild.members
                                         if item.name == author
                                     ]
-                                    await msg.channel.send(potential_people)
+                                    if len(potential_people) > 1:
+                                        pass
+                                    else:
+                                        user = potential_people[0]
+                                        command = "fish"
+                                        cooldown = 3
+                                    break
                                 except:
                                     continue
 
