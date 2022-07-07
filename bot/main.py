@@ -26,7 +26,7 @@ init(os.environ.get("SDKKEY"), traces_sample_rate=1.0)
 bots = [878007103460089886, 625363818968776705, 574652751745777665]
 
 intents = discord.Intents(
-    message_content=True, messages=True, guilds=True, guild_messages=True
+    message_content=True, messages=True, guilds=True, guild_messages=True, members=True
 )
 
 bot = discord.AutoShardedBot(
