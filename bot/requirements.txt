@@ -6,3 +6,4 @@ pymongo
 motor
 flask
 dnspython
+nest_asyncio

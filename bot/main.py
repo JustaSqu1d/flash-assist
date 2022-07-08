@@ -12,6 +12,9 @@ from time import time
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import encode
 from bson.raw_bson import RawBSONDocument
+import nest_asyncio
+
+nest_asyncio.apply()
 
 logger = getLogger("discord")
 logger.setLevel(DEBUG)
