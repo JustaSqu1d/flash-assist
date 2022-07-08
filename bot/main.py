@@ -90,9 +90,11 @@ async def update_events():
         except:
             pass
 
+
 @tasks.loop(hours=1)
 async def clear_session():
     bot.session = {}
+
 
 @bot.event
 async def on_ready():
@@ -331,7 +333,9 @@ async def on_message(msg: discord.Message):
                                             author = embed["author"]["name"]
 
                                             if author in bot.session.keys():
-                                                user = await msg.guild.fetch_member(bot.session[author])
+                                                user = await msg.guild.fetch_member(
+                                                    bot.session[author]
+                                                )
                                                 break
 
                                             potential_people = [
@@ -389,7 +393,9 @@ async def on_message(msg: discord.Message):
                                                     return
                                                 else:
                                                     user = confirmation.author
-                                                    bot.session.update({author: user.id})
+                                                    bot.session.update(
+                                                        {author: user.id}
+                                                    )
                                             else:
                                                 user = potential_people[0]
                                             command = "Fish"
