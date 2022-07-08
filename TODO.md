@@ -1,3 +1,7 @@
 # Todos before July 30th, 2022:
-- [ ] More statistics for other bots
-- [ ] Larger variety of bots
+- [x] Virtual Fisher Implmentation
+    - [x] Virtual Fisher Start
+    - [x] Server Members Intent
+    - [ ] Virtual Fisher Dynamic Cooldown
+    - [ ] Virtual Fisher End
+- [ ] Pymongo -> Motor
