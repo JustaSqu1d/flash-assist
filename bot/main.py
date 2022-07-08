@@ -8,10 +8,8 @@ from views import *
 from asyncio import sleep
 from random import randint
 from logging import getLogger, DEBUG, FileHandler, Formatter
-
-
 from time import time
-from pymongo import MongoClient
+from motor.motor_asyncio import AsyncIOMotorClient
 from bson import encode
 from bson.raw_bson import RawBSONDocument
 
@@ -35,7 +33,7 @@ bot = discord.AutoShardedBot(
     owner_id=586743480651350063,
 )
 
-cluster = MongoClient(os.environ.get("DBCONN"))
+cluster = AsyncIOMotorClient(os.environ.get("DBCONN"))
 bot.db = cluster["discord"]
 bot.minecord = bot.db["minecord"]
 bot.minecordclassic = bot.db["minecord-classic"]
@@ -57,11 +55,11 @@ for filename in os.listdir("cogs/"):
 
 @tasks.loop(seconds=15)
 async def update_events() -> None:
-    for event in bot.events.find({}):
+    async for event in bot.events.find({}):
         try:
             if event["end_time"] < time():
 
-                guild = bot.events.find_one({"_id": str(event["_id"])})
+                guild = await bot.events.find_one({"_id": str(event["_id"])})
                 leaderboard = guild["participants"]
 
                 total = sorted(leaderboard.items(), key=lambda x: x[1], reverse=True)
@@ -86,7 +84,7 @@ async def update_events() -> None:
                 embed.set_footer(text="Event ended")
                 channel = await bot.fetch_channel(event["channel"])
                 await channel.send(embed=embed)
-                bot.events.find_one_and_delete({"_id": event["_id"]})
+                await bot.events.find_one_and_delete({"_id": event["_id"]})
         except:
             pass
 
@@ -239,7 +237,7 @@ async def on_message(msg: discord.Message) -> None:
                 ):
                     return
 
-                event = bot.events.find_one({"_id": str(msg.guild.id)})
+                event = await bot.events.find_one({"_id": str(msg.guild.id)})
 
                 if "you mined" in msg.content or "youmined" in msg.content:
 
@@ -249,14 +247,14 @@ async def on_message(msg: discord.Message) -> None:
                         else:
                             event["participants"][str(user.id)] += 1
 
-                        bot.events.find_one_and_update(
+                        await bot.events.find_one_and_update(
                             {"_id": str(msg.guild.id)},
                             {"$set": {"participants": event["participants"]}},
                         )
 
-                    bot.stats.update_one({"_id": 1}, {"$inc": {"trials": 1}})
+                    await bot.stats.update_one({"_id": 1}, {"$inc": {"trials": 1}})
                     if "bosskey" in msg.content or "boss key" in msg.content:
-                        bot.stats.update_one({"_id": 1}, {"$inc": {"success": 1}})
+                        await bot.stats.update_one({"_id": 1}, {"$inc": {"success": 1}})
                     if db["minecord"]["mine"]:
                         if db["minecord"]["efficiency"]:
                             cooldown = 4
@@ -272,7 +270,7 @@ async def on_message(msg: discord.Message) -> None:
                         else:
                             event["participants"][str(user.id)] += 9
 
-                        bot.events.find_one_and_update(
+                        await bot.events.find_one_and_update(
                             {"_id": str(msg.guild.id)},
                             {"$set": {"participants": event["participants"]}},
                         )
@@ -292,7 +290,7 @@ async def on_message(msg: discord.Message) -> None:
                         else:
                             event["participants"][str(user.id)] += 5
 
-                        bot.events.find_one_and_update(
+                        await bot.events.find_one_and_update(
                             {"_id": str(msg.guild.id)},
                             {"$set": {"participants": event["participants"]}},
                         )
@@ -526,8 +524,8 @@ async def on_interaction(itx: discord.Interaction) -> None:
 
 @minecord.command(name="droprate", description="Find the drop-rate of boss keys!")
 async def droprate(ctx: discord.ApplicationContext) -> None:
-    success = (bot.stats.find_one({"_id": 1}))["success"]
-    trials = (bot.stats.find_one({"_id": 1}))["trials"]
+    success = (await bot.stats.find_one({"_id": 1}))["success"]
+    trials = (await bot.stats.find_one({"_id": 1}))["trials"]
 
     embed = discord.Embed(title="Boss Key Drop Rates", color=discord.Color.orange())
     embed.add_field(name="Boss Key Drops", value=success, inline=False)
@@ -583,7 +581,7 @@ async def setup(ctx: discord.ApplicationContext) -> None:
             await ctx.interaction.edit_original_message(view=op1)
             return
 
-        bot.minecordclassic.update_one(
+        await bot.minecordclassic.update_one(
             {"_id": ctx.author.id}, {"$set": {"efficiency": op1.value}}
         )
 
@@ -604,7 +602,7 @@ async def setup(ctx: discord.ApplicationContext) -> None:
             await ctx.interaction.edit_original_message(view=opar)
             return
 
-        bot.minecordclassic.update_one(
+        await bot.minecordclassic.update_one(
             {"_id": ctx.author.id}, {"$set": {"armor": opar.value}}
         )
 
@@ -630,7 +628,7 @@ async def setup(ctx: discord.ApplicationContext) -> None:
             await ctx.interaction.edit_original_message(view=opmin)
             return
 
-        bot.minecordclassic.update_one(
+        await bot.minecordclassic.update_one(
             {"_id": ctx.author.id}, {"$set": {"ed": opmin.value}}
         )
 
@@ -672,7 +670,7 @@ async def setup(ctx: discord.ApplicationContext) -> None:
             await ctx.interaction.edit_original_message(view=op1)
             return
 
-        bot.minecord.update_one(
+        await bot.minecord.update_one(
             {"_id": ctx.author.id}, {"$set": {"efficiency": op1.value}}
         )
 
@@ -844,7 +842,7 @@ async def start(
         await ctx.respond("Missing Manage Server Permissions!")
         return
 
-    guild = bot.events.find_one({"_id": str(ctx.guild.id)})
+    guild = await bot.events.find_one({"_id": str(ctx.guild.id)})
     if guild is not None:
         await ctx.respond("Only one event at a time!")
         return
@@ -864,7 +862,7 @@ async def start(
 
         start_time = time()
         end_time = start_time + timeevent
-        bot.events.insert_one(
+        await bot.events.insert_one(
             {
                 "_id": str(ctx.guild.id),
                 "start_time": start_time,
@@ -902,11 +900,11 @@ async def end(ctx: discord.ApplicationContext) -> None:
     if not (ctx.user.guild_permissions.manage_guild):
         await ctx.respond("Missing Manage Server Permissions!")
         return
-    if bot.events.find_one({"_id": str(ctx.guild.id)}) is not None:
+    if (await bot.events.find_one({"_id": str(ctx.guild.id)})) is not None:
         await ctx.respond("There are no events!")
         return
 
-    bot.events.update_one({"_id": str(ctx.guild.id)}, {"$set": {"end_time": time()}})
+    await bot.events.update_one({"_id": str(ctx.guild.id)}, {"$set": {"end_time": time()}})
 
     await ctx.respond("Event ended!")
 
@@ -915,7 +913,7 @@ async def end(ctx: discord.ApplicationContext) -> None:
 async def leaderboard(ctx: discord.ApplicationContext) -> None:
 
     await ctx.defer()
-    guild = bot.events.find_one({"_id": str(ctx.guild.id)})
+    guild = await bot.events.find_one({"_id": str(ctx.guild.id)})
     if guild is None:
         await ctx.respond("There is no ongoing event!")
         return
@@ -941,7 +939,7 @@ async def leaderboard(ctx: discord.ApplicationContext) -> None:
         title="Event Leaderboard!", description=description, color=discord.Color.green()
     )
     embed.timestamp = datetime.fromtimestamp(
-        bot.events.find_one({"_id": str(ctx.guild.id)})["end_time"]
+        await bot.events.find_one({"_id": str(ctx.guild.id)})["end_time"]
     )
     embed.set_footer(text="Event ends at")
     await ctx.respond(embed=embed)
@@ -951,7 +949,7 @@ async def leaderboard(ctx: discord.ApplicationContext) -> None:
 async def info(ctx: discord.ApplicationContext) -> None:
 
     await ctx.defer()
-    if bot.events.find_one({"_id": str(ctx.guild.id)}) is None:
+    if (await bot.events.find_one({"_id": str(ctx.guild.id)})) is None:
         await ctx.respond("There is no ongoing event!")
         return
     description = "Players will gain event points for participating in the event.\n\nMines: 1 Point\nFights: 5 Points\nChops: 9 Points\nNote: All commands must be used in the event server!"
@@ -959,7 +957,7 @@ async def info(ctx: discord.ApplicationContext) -> None:
         title="Event Info!", description=description, color=discord.Color.green()
     )
     embed.timestamp = datetime.fromtimestamp(
-        bot.events.find_one({"_id": str(ctx.guild.id)})["end_time"]
+        await bot.events.find_one({"_id": str(ctx.guild.id)})["end_time"]
     )
     embed.set_footer(text="Event ends at")
     await ctx.respond(embed=embed)
