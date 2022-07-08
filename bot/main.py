@@ -126,7 +126,7 @@ async def on_message(msg: discord.Message) -> None:
                     return
 
                 await open_account(user, bot)
-                db = fetch_user(user, bot)
+                db = await fetch_user(user, bot)
 
                 if not (
                     db["minecordclassic"]["mine"]
@@ -227,7 +227,7 @@ async def on_message(msg: discord.Message) -> None:
                     return
 
                 await open_account(user, bot)
-                db = fetch_user(user, bot)
+                db = await fetch_user(user, bot)
 
                 if not (
                     db["minecord"]["mine"]
@@ -317,7 +317,7 @@ async def on_message(msg: discord.Message) -> None:
                     return
 
                 await open_account(user, bot)
-                db = fetch_user(user, bot)
+                db = await fetch_user(user, bot)
 
                 if user.bot:
                     if db["virtualfisher"]["fish"]:
@@ -550,7 +550,7 @@ async def setup(ctx: discord.ApplicationContext) -> None:
     )
     em.timestamp = datetime.now()
     await ctx.followup.send(embed=em, view=view)
-    db = fetch_user(ctx.user, bot)
+    db = await fetch_user(ctx.user, bot)
     timedout = await view.wait()
 
     if timedout:
