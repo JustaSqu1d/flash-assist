@@ -70,7 +70,7 @@ async def update_events():
                 index = 1
 
                 for entry in total:
-                    player = await bot.fetch_user(int(entry[0]))
+                    player = await bot.get_or_fetch_user(int(entry[0]))
                     description += f"**{index}. {player.name}#{player.discriminator}** - {entry[1]}\n"
 
                     if index == 10:
@@ -90,6 +90,9 @@ async def update_events():
         except:
             pass
 
+@tasks.loop(hours=1)
+async def clear_session():
+    bot.session = {}
 
 @bot.event
 async def on_ready():
@@ -97,7 +100,8 @@ async def on_ready():
     print("Logged in as {0.user}".format(bot))
     print(f"{len(bot.guilds)} servers")
     update_events.start()
-    bot.owner = await bot.fetch_user(bot.owner_id)
+    clear_session.start()
+    bot.owner = await bot.get_or_fetch_user(bot.owner_id)
     await bot.owner.send("Online!")
 
 
@@ -314,18 +318,21 @@ async def on_message(msg: discord.Message):
 
                 await open_account(user, bot)
                 db = fetch_user(user, bot)
-                print(msg.interaction.user)
+
                 if user.bot:
                     if db["virtualfisher"]["fish"]:
                         for rows in msg.components:
                             for component in rows.children:
                                 if "Fish Again" == component.label:
 
-
                                     for embed in msg.embeds:
                                         embed = embed.to_dict()
                                         try:
                                             author = embed["author"]["name"]
+
+                                            if author in bot.session.keys():
+                                                user = await msg.guild.fetch_member(bot.session[author])
+                                                break
 
                                             potential_people = [
                                                 item
@@ -914,7 +921,7 @@ async def leaderboard(ctx: discord.ApplicationContext):
     index = 1
 
     for entry in total:
-        player = await bot.fetch_user(int(entry[0]))
+        player = await bot.get_or_fetch_user(int(entry[0]))
         description += (
             f"**{index}. {player.name}#{player.discriminator}** - {entry[1]}\n"
         )
