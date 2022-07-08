@@ -314,81 +314,82 @@ async def on_message(msg: discord.Message):
 
                 await open_account(user, bot)
                 db = fetch_user(user, bot)
-                print(user)
-                if db["virtualfisher"]["fish"]:
-                    for rows in msg.components:
-                        for component in rows.children:
-                            if "Fish Again" == component.label:
+                print(msg.interaction.user)
+                if user.bot:
+                    if db["virtualfisher"]["fish"]:
+                        for rows in msg.components:
+                            for component in rows.children:
+                                if "Fish Again" == component.label:
 
 
-                                for embed in msg.embeds:
-                                    embed = embed.to_dict()
-                                    try:
-                                        author = embed["author"]["name"]
+                                    for embed in msg.embeds:
+                                        embed = embed.to_dict()
+                                        try:
+                                            author = embed["author"]["name"]
 
-                                        potential_people = [
-                                            item
-                                            for item in msg.guild.members
-                                            if item.name == author
-                                        ]
-                                        if len(potential_people) > 1:
-                                            embed = discord.Embed(
-                                                title="Confirmation Button",
-                                                color=discord.Colour.brand_green(),
-                                            )
-                                            Button = discord.ui.Button(
-                                                label="Confirm",
-                                                style=discord.ButtonStyle.green,
-                                            )
-
-                                            class Confirmation(discord.ui.View):
-                                                def __init__(self) -> None:
-                                                    super().__init__(timeout=15)
-                                                    self.add_child(Button)
-                                                    self.interaction = None
-                                                    self.author = None
-
-                                                @discord.ui.button(
+                                            potential_people = [
+                                                item
+                                                for item in msg.guild.members
+                                                if item.name == author
+                                            ]
+                                            if len(potential_people) > 1:
+                                                embed = discord.Embed(
+                                                    title="Confirmation Button",
+                                                    color=discord.Colour.brand_green(),
+                                                )
+                                                Button = discord.ui.Button(
                                                     label="Confirm",
-                                                    row=0,
                                                     style=discord.ButtonStyle.green,
                                                 )
-                                                async def callback(
-                                                    self,
-                                                    button: discord.ui.Button,
-                                                    interaction: discord.Interaction,
-                                                ):
-                                                    if (
-                                                        interaction.user
-                                                        not in potential_people
-                                                    ):
-                                                        return
-                                                    self.author = interaction.user
-                                                    self.interaction = interaction
-                                                    await interaction.response.send(
-                                                        "Confirmed", ephemeral=True
+
+                                                class Confirmation(discord.ui.View):
+                                                    def __init__(self) -> None:
+                                                        super().__init__(timeout=15)
+                                                        self.add_child(Button)
+                                                        self.interaction = None
+                                                        self.author = None
+
+                                                    @discord.ui.button(
+                                                        label="Confirm",
+                                                        row=0,
+                                                        style=discord.ButtonStyle.green,
                                                     )
-                                                    self.stop()
+                                                    async def callback(
+                                                        self,
+                                                        button: discord.ui.Button,
+                                                        interaction: discord.Interaction,
+                                                    ):
+                                                        if (
+                                                            interaction.user
+                                                            not in potential_people
+                                                        ):
+                                                            return
+                                                        self.author = interaction.user
+                                                        self.interaction = interaction
+                                                        await interaction.response.send(
+                                                            "Confirmed", ephemeral=True
+                                                        )
+                                                        self.stop()
 
-                                            confirmation = Confirmation()
+                                                confirmation = Confirmation()
 
-                                            await msg.channel.send(
-                                                embed=embed, view=confirmation
-                                            )
+                                                await msg.channel.send(
+                                                    embed=embed, view=confirmation
+                                                )
 
-                                            timedout = await confirmation.wait()
-                                            if timedout:
-                                                return
+                                                timedout = await confirmation.wait()
+                                                if timedout:
+                                                    return
+                                                else:
+                                                    user = confirmation.author
+                                                    bot.session.update({author: user.id})
                                             else:
-                                                user = confirmation.author
-                                                bot.session.update({author: user.id})
-                                        else:
-                                            user = potential_people[0]
-                                        command = "Fish"
-                                        cooldown = db["virtualfisher"]["cooldown"]
-                                        break
-                                    except:
-                                        continue
+                                                user = potential_people[0]
+                                            command = "Fish"
+                                            cooldown = db["virtualfisher"]["cooldown"]
+                                            break
+                                        except:
+                                            continue
 
                 for embed in msg.embeds:
                     embed = embed.to_dict()
