@@ -3,5 +3,6 @@ sentry-sdk
 py-cord[speed]==2.0.0rc1
 aiohttp
 pymongo
+motor
 flask
 dnspython
