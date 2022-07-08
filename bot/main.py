@@ -56,7 +56,7 @@ for filename in os.listdir("cogs/"):
 
 
 @tasks.loop(seconds=15)
-async def update_events():
+async def update_events() -> None:
     for event in bot.events.find({}):
         try:
             if event["end_time"] < time():
@@ -92,12 +92,12 @@ async def update_events():
 
 
 @tasks.loop(hours=1)
-async def clear_session():
+async def clear_session() -> None:
     bot.session = {}
 
 
 @bot.event
-async def on_ready():
+async def on_ready() -> None:
     global bot
     print("Logged in as {0.user}".format(bot))
     print(f"{len(bot.guilds)} servers")
@@ -108,10 +108,10 @@ async def on_ready():
 
 
 @bot.event
-async def on_message(msg: discord.Message):
+async def on_message(msg: discord.Message) -> None:
     if msg.author.id in bots:
         try:
-            ctx = msg.channel
+
             msg.content = msg.content.lower()
 
             if msg.author.id == 878007103460089886:
@@ -239,7 +239,7 @@ async def on_message(msg: discord.Message):
                 ):
                     return
 
-                event = bot.events.find_one({"_id": str(ctx.guild.id)})
+                event = bot.events.find_one({"_id": str(msg.guild.id)})
 
                 if "you mined" in msg.content or "youmined" in msg.content:
 
@@ -250,7 +250,7 @@ async def on_message(msg: discord.Message):
                             event["participants"][str(user.id)] += 1
 
                         bot.events.find_one_and_update(
-                            {"_id": str(ctx.guild.id)},
+                            {"_id": str(msg.guild.id)},
                             {"$set": {"participants": event["participants"]}},
                         )
 
@@ -273,7 +273,7 @@ async def on_message(msg: discord.Message):
                             event["participants"][str(user.id)] += 9
 
                         bot.events.find_one_and_update(
-                            {"_id": str(ctx.guild.id)},
+                            {"_id": str(msg.guild.id)},
                             {"$set": {"participants": event["participants"]}},
                         )
 
@@ -293,7 +293,7 @@ async def on_message(msg: discord.Message):
                             event["participants"][str(user.id)] += 5
 
                         bot.events.find_one_and_update(
-                            {"_id": str(ctx.guild.id)},
+                            {"_id": str(msg.guild.id)},
                             {"$set": {"participants": event["participants"]}},
                         )
 
@@ -465,7 +465,7 @@ async def on_message(msg: discord.Message):
             if randint(1, 10) == randint(1, 10):
                 view.add_item(Vote())
 
-            await ctx.send(response, view=view)
+            await msg.reply(response, view=view)
 
         except UnboundLocalError:
             pass
@@ -519,13 +519,13 @@ async def on_message(msg: discord.Message):
 
 
 @bot.event
-async def on_interaction(itx: discord.Interaction):
+async def on_interaction(itx: discord.Interaction) -> None:
     await open_account(itx.user, bot)
     await bot.process_application_commands(itx)
 
 
 @minecord.command(name="droprate", description="Find the drop-rate of boss keys!")
-async def droprate(ctx: discord.ApplicationContext):
+async def droprate(ctx: discord.ApplicationContext) -> None:
     success = (bot.stats.find_one({"_id": 1}))["success"]
     trials = (bot.stats.find_one({"_id": 1}))["trials"]
 
@@ -540,7 +540,7 @@ async def droprate(ctx: discord.ApplicationContext):
 
 
 @minecord.command(name="setup", description="Setup for Minecord!")
-async def setup(ctx: discord.ApplicationContext):
+async def setup(ctx: discord.ApplicationContext) -> None:
     await ctx.defer(ephemeral=True)
 
     await open_account(ctx.author, bot)
@@ -696,7 +696,7 @@ async def setup(ctx: discord.ApplicationContext):
 @bot.slash_command(
     name="config", description="Edit what commands you want to be reminded upon!!"
 )
-async def config(ctx: discord.ApplicationContext):
+async def config(ctx: discord.ApplicationContext) -> None:
 
     embed = discord.Embed(
         title="Reminder Control Panel", description="**Green:** ON\n**Red:** OFF"
@@ -732,7 +732,7 @@ async def config(ctx: discord.ApplicationContext):
     name="terms",
     description="You can view our Terms of Service and Privacy Policy here, along with some additional information.",
 )
-async def terms(ctx: discord.ApplicationContext):
+async def terms(ctx: discord.ApplicationContext) -> None:
     await ctx.defer()
 
     embed = discord.Embed(title="Flash Assist", color=discord.Color.orange())
@@ -759,7 +759,7 @@ async def response1(
         choices=["Minecord", "Minecord Classic", "Virtual Fisher"],
         required=True,
     ),
-):
+) -> None:
 
     if "%" not in response:
         failed = discord.Embed(
@@ -801,7 +801,7 @@ async def response1(
 
 
 @bot.slash_command(name="invite", description="Invite me to join your server!")
-async def invite(ctx: discord.ApplicationContext):
+async def invite(ctx: discord.ApplicationContext) -> None:
 
     embed = discord.Embed(
         title="Flash Assist",
@@ -819,7 +819,7 @@ async def invite(ctx: discord.ApplicationContext):
 
 
 @bot.slash_command(name="guide", description="A guide for the bots we support.")
-async def guide(ctx: discord.ApplicationContext):
+async def guide(ctx: discord.ApplicationContext) -> None:
 
     embed = discord.Embed(
         title="Guide",
@@ -839,7 +839,7 @@ async def start(
     channel: discord.Option(
         discord.TextChannel, "Choose a channel to send the event to."
     ),
-):
+) -> None:
     if not (ctx.user.guild_permissions.manage_guild):
         await ctx.respond("Missing Manage Server Permissions!")
         return
@@ -898,7 +898,7 @@ async def start(
 
 
 @event.command(name="end", description="End a event for your server!")
-async def end(ctx: discord.ApplicationContext):
+async def end(ctx: discord.ApplicationContext) -> None:
     if not (ctx.user.guild_permissions.manage_guild):
         await ctx.respond("Missing Manage Server Permissions!")
         return
@@ -912,7 +912,7 @@ async def end(ctx: discord.ApplicationContext):
 
 
 @event.command(name="leaderboard", description="View the event leaderboard!")
-async def leaderboard(ctx: discord.ApplicationContext):
+async def leaderboard(ctx: discord.ApplicationContext) -> None:
 
     await ctx.defer()
     guild = bot.events.find_one({"_id": str(ctx.guild.id)})
@@ -948,7 +948,7 @@ async def leaderboard(ctx: discord.ApplicationContext):
 
 
 @event.command(name="info", description="View the event info!")
-async def info(ctx: discord.ApplicationContext):
+async def info(ctx: discord.ApplicationContext) -> None:
 
     await ctx.defer()
     if bot.events.find_one({"_id": str(ctx.guild.id)}) is None:

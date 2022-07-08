@@ -1,4 +1,10 @@
-async def open_account(user, bot):
+import discord
+from typing import Dict, Union
+
+
+async def open_account(
+    user: Union[discord.Member, discord.User], bot: discord.Bot
+) -> None:
 
     if bot.minecord.count_documents({"_id": user.id}) != 0:
         return
@@ -38,7 +44,7 @@ async def open_account(user, bot):
     return True
 
 
-def fetch_user(user, bot):
+def fetch_user(user: Union[discord.Member, discord.User], bot: discord.Bot) -> dict:
 
     settings = {}
     settings["minecord"] = bot.minecord.find_one({"_id": user.id})
@@ -47,15 +53,13 @@ def fetch_user(user, bot):
     return settings
 
 
-def fetch_event(guild, bot):
+def fetch_event(guild: discord.Guild, bot: discord.Bot) -> dict:
 
     return bot.minecord.find_one({"_id": guild.id})
 
 
-seconds_per_unit = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
-
-
-async def convert_to_seconds(s):
+async def convert_to_seconds(s: str) -> int:
+    seconds_per_unit = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
     try:
         return int(s[:-1]) * seconds_per_unit[s[-1]]
     except:

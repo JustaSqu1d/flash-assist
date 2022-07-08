@@ -1,12 +1,11 @@
 import discord
-from discord.ext import commands
 
 
-class VFVerify(commands.Cog):
+class VFVerify(discord.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.Cog.listener()
+    @discord.Cog.listener()
     async def on_message(self, message):
         try:
             message.content = message.content.lower()
@@ -16,8 +15,9 @@ class VFVerify(commands.Cog):
             if "Anti-bot" not in embed["title"]:
                 return
 
-            em = discord.Embed(title="A Wild Verification Appeared!",
-                               color=discord.Color.red())
+            em = discord.Embed(
+                title="A Wild Verification Appeared!", color=discord.Color.red()
+            )
             await message.reply(embed=em, tts=True, mention_author=False)
         except:
             pass

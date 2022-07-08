@@ -4,7 +4,7 @@ from discord.ui import Modal, InputText
 
 
 class Invite(discord.ui.Button):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             label="Invite me!",
             style=discord.ButtonStyle.link,
@@ -14,7 +14,7 @@ class Invite(discord.ui.Button):
 
 
 class Invite2(discord.ui.Button):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             label="Alternative link",
             style=discord.ButtonStyle.link,
@@ -24,7 +24,7 @@ class Invite2(discord.ui.Button):
 
 
 class Invite3(discord.ui.Button):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             label="Website",
             style=discord.ButtonStyle.link,
@@ -34,7 +34,7 @@ class Invite3(discord.ui.Button):
 
 
 class Invite4(discord.ui.Button):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             label="Discord Server",
             style=discord.ButtonStyle.link,
@@ -44,7 +44,7 @@ class Invite4(discord.ui.Button):
 
 
 class Status(discord.ui.Button):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             label="Bot Status",
             style=discord.ButtonStyle.link,
@@ -54,7 +54,7 @@ class Status(discord.ui.Button):
 
 
 class Vote(discord.ui.Button):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             label="Vote for me!",
             style=discord.ButtonStyle.link,
@@ -64,95 +64,123 @@ class Vote(discord.ui.Button):
 
 
 class Option1(discord.ui.View):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(timeout=60)
         self.value = None
 
     @discord.ui.button(label="Minecord", style=discord.ButtonStyle.primary)
-    async def callback(self, button, interaction):
+    async def callback(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         self.value = False
         self.stop()
 
     @discord.ui.button(label="Minecord Classic", style=discord.ButtonStyle.secondary)
-    async def callback2(self, button, interaction):
+    async def callback2(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         self.value = True
         self.stop()
 
 
 class Option2(discord.ui.View):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(timeout=60)
         self.value = None
 
     @discord.ui.button(label="Yes", style=discord.ButtonStyle.success)
-    async def callback(self, button, interaction):
+    async def callback(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         self.value = True
         self.stop()
 
     @discord.ui.button(label="No", style=discord.ButtonStyle.danger)
-    async def callback2(self, button, interaction):
+    async def callback2(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         self.value = False
         self.stop()
 
 
 class OptionAr(discord.ui.View):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(timeout=60)
         self.value = None
 
     @discord.ui.button(label="Chainmail Armor", style=discord.ButtonStyle.danger)
-    async def callback(self, button, interaction):
+    async def callback(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         self.value = 2
         self.stop()
 
     @discord.ui.button(label="Iron Armor", style=discord.ButtonStyle.primary)
-    async def callback2(self, button, interaction):
+    async def callback2(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         self.value = 3
         self.stop()
 
     @discord.ui.button(label="Gold Armor", style=discord.ButtonStyle.success)
-    async def callback3(self, button, interaction):
+    async def callback3(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         self.value = 4
         self.stop()
 
     @discord.ui.button(label="Diamond Armor", style=discord.ButtonStyle.secondary)
-    async def callback4(self, button, interaction):
+    async def callback4(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         self.value = 5
         self.stop()
 
     @discord.ui.button(label="Netherite Armor", style=discord.ButtonStyle.secondary)
-    async def callback5(self, button, interaction):
+    async def callback5(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         self.value = 6
         self.stop()
 
 
 class OptionMin(discord.ui.View):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(timeout=60)
         self.value = None
 
     @discord.ui.button(label="1", style=discord.ButtonStyle.danger)
-    async def callback(self, button, interaction):
+    async def callback(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         self.value = 1
         self.stop()
 
     @discord.ui.button(label="2", style=discord.ButtonStyle.primary)
-    async def callback2(self, button, interaction):
+    async def callback2(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         self.value = 2
         self.stop()
 
     @discord.ui.button(label="3", style=discord.ButtonStyle.primary)
-    async def callback3(self, button, interaction):
+    async def callback3(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         self.value = 3
         self.stop()
 
     @discord.ui.button(label="4", style=discord.ButtonStyle.success)
-    async def callback4(self, button, interaction):
+    async def callback4(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         self.value = 4
         self.stop()
 
     @discord.ui.button(label="5", style=discord.ButtonStyle.success)
-    async def callback5(self, button, interaction):
+    async def callback5(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         self.value = 5
         self.stop()
 
@@ -182,7 +210,9 @@ class TogglesCl(discord.ui.View):
                 pass
 
     @discord.ui.button(label="Mine", style=discord.ButtonStyle.success)
-    async def callback(self, button, interaction):
+    async def callback(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         button.style = (
             discord.ButtonStyle.danger
             if button.style == discord.ButtonStyle.success
@@ -196,7 +226,9 @@ class TogglesCl(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Fight", style=discord.ButtonStyle.success)
-    async def callback2(self, button, interaction):
+    async def callback2(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         button.style = (
             discord.ButtonStyle.danger
             if button.style == discord.ButtonStyle.success
@@ -210,7 +242,9 @@ class TogglesCl(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Chop", style=discord.ButtonStyle.success)
-    async def callback3(self, button, interaction):
+    async def callback3(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         button.style = (
             discord.ButtonStyle.danger
             if button.style == discord.ButtonStyle.success
@@ -224,7 +258,9 @@ class TogglesCl(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Enderdragon", style=discord.ButtonStyle.success)
-    async def callback4(self, button, interaction):
+    async def callback4(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         button.style = (
             discord.ButtonStyle.danger
             if button.style == discord.ButtonStyle.success
@@ -280,7 +316,9 @@ class Toggles(discord.ui.View):
                 pass
 
     @discord.ui.button(label="Mine", style=discord.ButtonStyle.success)
-    async def callback(self, button, interaction):
+    async def callback(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         button.style = (
             discord.ButtonStyle.danger
             if button.style == discord.ButtonStyle.success
@@ -294,7 +332,9 @@ class Toggles(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Fight", style=discord.ButtonStyle.success)
-    async def callback2(self, button, interaction):
+    async def callback2(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         button.style = (
             discord.ButtonStyle.danger
             if button.style == discord.ButtonStyle.success
@@ -308,7 +348,9 @@ class Toggles(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Chop", style=discord.ButtonStyle.success)
-    async def callback3(self, button, interaction):
+    async def callback3(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         button.style = (
             discord.ButtonStyle.danger
             if button.style == discord.ButtonStyle.success
@@ -322,7 +364,9 @@ class Toggles(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Enderdragon", style=discord.ButtonStyle.success)
-    async def callback4(self, button, interaction):
+    async def callback4(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         button.style = (
             discord.ButtonStyle.danger
             if button.style == discord.ButtonStyle.success
@@ -373,7 +417,9 @@ class TogglesVf(discord.ui.View):
                         child.style = discord.ButtonStyle.danger
 
     @discord.ui.button(label="Treasure", style=discord.ButtonStyle.success)
-    async def callback(self, button, interaction):
+    async def callback(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         button.style = (
             discord.ButtonStyle.danger
             if button.style == discord.ButtonStyle.success
@@ -387,7 +433,9 @@ class TogglesVf(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Fishing", style=discord.ButtonStyle.success)
-    async def callback2(self, button, interaction):
+    async def callback2(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         button.style = (
             discord.ButtonStyle.danger
             if button.style == discord.ButtonStyle.success
@@ -401,7 +449,9 @@ class TogglesVf(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Worker", style=discord.ButtonStyle.success)
-    async def callback3(self, button, interaction):
+    async def callback3(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ) -> None:
         button.style = (
             discord.ButtonStyle.danger
             if button.style == discord.ButtonStyle.success
