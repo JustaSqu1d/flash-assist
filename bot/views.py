@@ -192,8 +192,7 @@ class TogglesCl(discord.ui.View):
         self.value = None
         self.ctx = ctx
         user = self.ctx.author
-        loop = asyncio.get_event_loop()
-        self.db = loop.run_until_complete(fetch_user(self.ctx.author, self.ctx.bot))
+        self.db = asyncio.create_task(fetch_user(self.ctx.author, self.ctx.bot))
         for child in self.children:
             try:
                 if child.label == "Mine":
@@ -299,8 +298,7 @@ class Toggles(discord.ui.View):
         super().__init__(timeout=60)
         self.value = None
         self.ctx = ctx
-        loop = asyncio.get_event_loop()
-        self.db = loop.run_until_complete(fetch_user(self.ctx.author, self.ctx.bot))
+        self.db = asyncio.create_task(fetch_user(self.ctx.author, self.ctx.bot))
         for child in self.children:
             try:
                 if child.label == "Mine":
@@ -406,8 +404,7 @@ class TogglesVf(discord.ui.View):
         super().__init__(timeout=60)
         self.value = None
         self.ctx = ctx
-        loop = asyncio.get_event_loop()
-        self.db = loop.run_until_complete(fetch_user(self.ctx.author, self.ctx.bot))
+        self.db = asyncio.create_task(fetch_user(self.ctx.author, self.ctx.bot))
         for child in self.children:
             if child.row == 0:
                 if child.label == "Treasure":
