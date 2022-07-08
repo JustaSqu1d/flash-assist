@@ -43,6 +43,8 @@ bot.virtualfisher = bot.db["virtual-fisher"]
 bot.stats = bot.db["statistics"]
 bot.events = bot.db["events"]
 
+bot.session = {}
+
 minecord = bot.create_group("minecord", "Settings for Minecords")
 event = bot.create_group("event", "Event settings")
 
@@ -53,7 +55,7 @@ for filename in os.listdir("cogs/"):
         bot.load_extension(f"cogs.{filename[:-3]}")
 
 
-@tasks.loop(seconds=10)
+@tasks.loop(seconds=15)
 async def update_events():
     for event in bot.events.find({}):
         try:
@@ -312,29 +314,81 @@ async def on_message(msg: discord.Message):
 
                 await open_account(user, bot)
                 db = fetch_user(user, bot)
+                print(user)
+                if db["virtualfisher"]["fish"]:
+                    for rows in msg.components:
+                        for component in rows.children:
+                            if "Fish Again" == component.label:
 
-                for rows in msg.components:
-                    for component in rows.children:
-                        if "Fish Again" == component.label:
-                            for embed in msg.embeds:
-                                embed = embed.to_dict()
-                                try:
-                                    author = embed["author"]["name"]
 
-                                    potential_people = [
-                                        item
-                                        for item in msg.guild.members
-                                        if item.name == author
-                                    ]
-                                    if len(potential_people) > 1:
-                                        pass
-                                    else:
-                                        user = potential_people[0]
-                                        command = "fish"
-                                        cooldown = 3
-                                    break
-                                except:
-                                    continue
+                                for embed in msg.embeds:
+                                    embed = embed.to_dict()
+                                    try:
+                                        author = embed["author"]["name"]
+
+                                        potential_people = [
+                                            item
+                                            for item in msg.guild.members
+                                            if item.name == author
+                                        ]
+                                        if len(potential_people) > 1:
+                                            embed = discord.Embed(
+                                                title="Confirmation Button",
+                                                color=discord.Colour.brand_green(),
+                                            )
+                                            Button = discord.ui.Button(
+                                                label="Confirm",
+                                                style=discord.ButtonStyle.green,
+                                            )
+
+                                            class Confirmation(discord.ui.View):
+                                                def __init__(self) -> None:
+                                                    super().__init__(timeout=15)
+                                                    self.add_child(Button)
+                                                    self.interaction = None
+                                                    self.author = None
+
+                                                @discord.ui.button(
+                                                    label="Confirm",
+                                                    row=0,
+                                                    style=discord.ButtonStyle.green,
+                                                )
+                                                async def callback(
+                                                    self,
+                                                    button: discord.ui.Button,
+                                                    interaction: discord.Interaction,
+                                                ):
+                                                    if (
+                                                        interaction.user
+                                                        not in potential_people
+                                                    ):
+                                                        return
+                                                    self.author = interaction.user
+                                                    self.interaction = interaction
+                                                    await interaction.response.send(
+                                                        "Confirmed", ephemeral=True
+                                                    )
+                                                    self.stop()
+
+                                            confirmation = Confirmation()
+
+                                            await msg.channel.send(
+                                                embed=embed, view=confirmation
+                                            )
+
+                                            timedout = await confirmation.wait()
+                                            if timedout:
+                                                return
+                                            else:
+                                                user = confirmation.author
+                                                bot.session.update({author: user.id})
+                                        else:
+                                            user = potential_people[0]
+                                        command = "Fish"
+                                        cooldown = db["virtualfisher"]["cooldown"]
+                                        break
+                                    except:
+                                        continue
 
                 for embed in msg.embeds:
                     embed = embed.to_dict()
