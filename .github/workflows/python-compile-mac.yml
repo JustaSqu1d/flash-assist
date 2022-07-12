@@ -1,4 +1,4 @@
-name: PyInstaller
+name: PyInstaller Mac
 
 on:
   push:
@@ -28,4 +28,4 @@ on:
     - uses: actions/upload-artifact@v2
       with:
         name: Flash Assist Rich Presence
-        path: /rich-presence/dist/macos
+        path: /rich-presence/dist/mac
