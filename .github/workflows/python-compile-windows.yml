@@ -23,5 +23,5 @@ jobs:
           pyinstaller ./rich-presence/main.py -F --hidden-import pypresence
       - uses: actions/upload-artifact@v2
         with:
-          name: Flash Assist Rich Presence
+          name: FlashAssistRichPresence
           path: rich-presence/dist/windows
