@@ -1,3 +1,10 @@
+
+name: Compile Python Applications
+
+on:
+  push:
+    branches: [ "master" ]
+
 jobs:
   build_linux:
     runs-on: ubuntu-latest
