@@ -3,7 +3,8 @@ name: PyInstaller Windows
 on:
   push:
     branches: ["master"]
-
+    
+jobs:
   build:
     runs-on: windows-latest
 
@@ -23,4 +24,4 @@ on:
       - uses: actions/upload-artifact@v2
         with:
           name: Flash Assist Rich Presence
-          path: /rich-presence/dist/windows
+          path: flash-assist/rich-presence/dist/linux

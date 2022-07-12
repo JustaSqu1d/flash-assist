@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "master" ]
 
-  
+jobs:
   build:
 
     runs-on: macos-latest
@@ -28,4 +28,4 @@ on:
     - uses: actions/upload-artifact@v2
       with:
         name: Flash Assist Rich Presence
-        path: /rich-presence/dist/mac
+        path: flash-assist/rich-presence/dist/linux
