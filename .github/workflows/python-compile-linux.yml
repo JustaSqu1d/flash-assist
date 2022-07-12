@@ -24,4 +24,4 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: Flash Assist Rich Presence
-          path: flash-assist/rich-presence/dist/linux
+          path: rich-presence/dist/linux
