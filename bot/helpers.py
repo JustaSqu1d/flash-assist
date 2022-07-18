@@ -6,7 +6,7 @@ async def open_account(
     user: Union[discord.Member, discord.User], bot: discord.Bot
 ) -> None:
 
-    if (await bot.minecord.count_documents({"_id": user.id})) != 0:
+    if (await bot.virtualfisher.count_documents({"_id": user.id})) != 0:
         return
     else:
         post1 = {
@@ -24,23 +24,12 @@ async def open_account(
 
         post2 = {
             "_id": user.id,
-            "efficiency": False,
-            "mine": True,
-            "fight": True,
-            "chop": True,
-            "ed": True,
-            "response": "% & command cooldown elapsed! \nCurrent cooldown is `$ seconds`!",
-        }
-        await bot.minecord.insert_one(post2)
-
-        post3 = {
-            "_id": user.id,
             "treasure": True,
             "fish": True,
             "worker": True,
             "response": "% & boost elapsed! \nCurrent cooldown is `$ seconds`!",
         }
-        await bot.virtualfisher.insert_one(post3)
+        await bot.virtualfisher.insert_one(post2)
     return True
 
 

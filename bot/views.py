@@ -64,26 +64,6 @@ class Vote(discord.ui.Button):
         )
 
 
-class Option1(discord.ui.View):
-    def __init__(self) -> None:
-        super().__init__(timeout=60)
-        self.value = None
-
-    @discord.ui.button(label="Minecord", style=discord.ButtonStyle.primary)
-    async def callback(
-        self, button: discord.ui.Button, interaction: discord.Interaction
-    ) -> None:
-        self.value = False
-        self.stop()
-
-    @discord.ui.button(label="Minecord Classic", style=discord.ButtonStyle.secondary)
-    async def callback2(
-        self, button: discord.ui.Button, interaction: discord.Interaction
-    ) -> None:
-        self.value = True
-        self.stop()
-
-
 class Option2(discord.ui.View):
     def __init__(self) -> None:
         super().__init__(timeout=60)
@@ -282,124 +262,13 @@ class TogglesCl(discord.ui.View):
         options=[
             discord.SelectOption(
                 label="Virtual Fisher", description="Edit Virtual Fisher Settings"
-            ),
-            discord.SelectOption(
-                label="Minecord", description="Edit Minecord Classic Settings"
-            ),
+            )
         ],
     )
     async def select_callback(self, select, interaction):
         self.value = select.values[0]
         await interaction.response.edit_message(view=self)
         self.stop()
-
-
-class Toggles(discord.ui.View):
-    def __init__(self, ctx):
-        super().__init__(timeout=60)
-        self.value = None
-        self.ctx = ctx
-        loop = asyncio.get_event_loop()
-        self.db = loop.run_until_complete(fetch_user(self.ctx.author, self.ctx.bot))
-        for child in self.children:
-            try:
-                if child.label == "Mine":
-                    if not (self.db["minecord"]["mine"]):
-                        child.style = discord.ButtonStyle.danger
-                if child.label == "Fight":
-                    if not (self.db["minecord"]["fight"]):
-                        child.style = discord.ButtonStyle.danger
-                if child.label == "Chop":
-                    if not (self.db["minecord"]["chop"]):
-                        child.style = discord.ButtonStyle.danger
-                if child.label == "Enderdragon":
-                    if not (self.db["minecord"]["ed"]):
-                        child.style = discord.ButtonStyle.danger
-            except:
-                pass
-
-    @discord.ui.button(label="Mine", style=discord.ButtonStyle.success)
-    async def callback(
-        self, button: discord.ui.Button, interaction: discord.Interaction
-    ) -> None:
-        button.style = (
-            discord.ButtonStyle.danger
-            if button.style == discord.ButtonStyle.success
-            else discord.ButtonStyle.success
-        )
-
-        self.ctx.bot.minecord.update_one(
-            {"_id": self.ctx.author.id},
-            {"$set": {"mine": not (self.db["minecord"]["mine"])}},
-        )
-        await interaction.response.edit_message(view=self)
-
-    @discord.ui.button(label="Fight", style=discord.ButtonStyle.success)
-    async def callback2(
-        self, button: discord.ui.Button, interaction: discord.Interaction
-    ) -> None:
-        button.style = (
-            discord.ButtonStyle.danger
-            if button.style == discord.ButtonStyle.success
-            else discord.ButtonStyle.success
-        )
-
-        self.ctx.bot.minecord.update_one(
-            {"_id": self.ctx.author.id},
-            {"$set": {"fight": not (self.db["minecord"]["fight"])}},
-        )
-        await interaction.response.edit_message(view=self)
-
-    @discord.ui.button(label="Chop", style=discord.ButtonStyle.success)
-    async def callback3(
-        self, button: discord.ui.Button, interaction: discord.Interaction
-    ) -> None:
-        button.style = (
-            discord.ButtonStyle.danger
-            if button.style == discord.ButtonStyle.success
-            else discord.ButtonStyle.success
-        )
-
-        self.ctx.bot.minecord.update_one(
-            {"_id": self.ctx.author.id},
-            {"$set": {"chop": not (self.db["minecord"]["chop"])}},
-        )
-        await interaction.response.edit_message(view=self)
-
-    @discord.ui.button(label="Enderdragon", style=discord.ButtonStyle.success)
-    async def callback4(
-        self, button: discord.ui.Button, interaction: discord.Interaction
-    ) -> None:
-        button.style = (
-            discord.ButtonStyle.danger
-            if button.style == discord.ButtonStyle.success
-            else discord.ButtonStyle.success
-        )
-
-        self.ctx.bot.minecord.update_one(
-            {"_id": self.ctx.author.id},
-            {"$set": {"ed": not (self.db["minecord"]["ed"])}},
-        )
-        await interaction.response.edit_message(view=self)
-
-    @discord.ui.select(
-        placeholder="Currently editing: Minecord",
-        min_values=1,
-        max_values=1,
-        options=[
-            discord.SelectOption(
-                label="Virtual Fisher", description="Edit Virtual Fisher Settings"
-            ),
-            discord.SelectOption(
-                label="Minecord Classic", description="Edit Minecord Classic Settings"
-            ),
-        ],
-    )
-    async def select_callback(self, select, interaction):
-        self.value = select.values[0]
-        await interaction.response.edit_message(view=self)
-        self.stop()
-
 
 class TogglesVf(discord.ui.View):
     def __init__(self, ctx):
@@ -473,9 +342,6 @@ class TogglesVf(discord.ui.View):
         min_values=1,
         max_values=1,
         options=[
-            discord.SelectOption(
-                label="Minecord", description="Edit Minecord Settings"
-            ),
             discord.SelectOption(
                 label="Minecord Classic", description="Edit Minecord Classic Settings"
             ),

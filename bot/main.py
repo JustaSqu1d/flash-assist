@@ -24,7 +24,7 @@ logger.addHandler(handler)
 
 init(os.environ.get("SDKKEY"), traces_sample_rate=1.0)
 
-bots = [878007103460089886, 625363818968776705, 574652751745777665]
+bots = [878007103460089886, 574652751745777665]
 
 intents = discord.Intents(
     message_content=True, messages=True, guilds=True, guild_messages=True, members=True
@@ -38,7 +38,6 @@ bot = discord.AutoShardedBot(
 
 cluster = AsyncIOMotorClient(os.environ.get("DBCONN"))
 bot.db = cluster["discord"]
-bot.minecord = bot.db["minecord"]
 bot.minecordclassic = bot.db["minecord-classic"]
 bot.virtualfisher = bot.db["virtual-fisher"]
 bot.stats = bot.db["statistics"]
@@ -46,7 +45,7 @@ bot.events = bot.db["events"]
 
 bot.session = {}
 
-minecord = bot.create_group("minecord", "Settings for Minecords")
+minecord = bot.create_group("minecord", "Minecord")
 event = bot.create_group("event", "Event settings")
 
 stat_start = 1647338400
@@ -151,7 +150,7 @@ async def on_message(msg: discord.Message) -> None:
                         cooldown = 4
                     else:
                         cooldown = 5
-                    command = "mine (classic)"
+                    command = "mine"
                 elif (
                     ("you chopped" in msg.content or "youchopped" in msg.content)
                     and (
@@ -160,7 +159,7 @@ async def on_message(msg: discord.Message) -> None:
                     )
                     and db["minecordclassic"]["chop"]
                 ):
-                    command = "chop (classic)"
+                    command = "chop"
                     if db["minecordclassic"]["efficiency"]:
                         cooldown = 45
                     else:
@@ -174,7 +173,7 @@ async def on_message(msg: discord.Message) -> None:
                     and db["minecordclassic"]["fight"]
                 ):
                     cooldown = 40
-                    command = "fight (classic)"
+                    command = "fight"
                     if db["minecordclassic"]["armor"] == 1:
                         cooldown = 40
                     elif db["minecordclassic"]["armor"] == 2:
@@ -192,122 +191,31 @@ async def on_message(msg: discord.Message) -> None:
                 elif ("you dealt" in msg.content) and db["minecordclassic"]["ed"]:
                     times = db["minecordclassic"]["ed"]
                     cooldown = 60 * times
-                    command = "enderdragon (classic)"
+                    command = "enderdragon"
                 elif (
                     ("you mined" in msg.content or "youmined" in msg.content)
                     and ("in the nether" in msg.content or "inthenether" in msg.content)
                     and db["minecordclassic"]["mine"]
                 ):
                     cooldown = 5
-                    command = "nether mine (classic)"
+                    command = "nether mine"
                 elif (
                     ("you chopped" in msg.content or "youchopped" in msg.content)
                     and ("in the nether" in msg.content or "inthenether" in msg.content)
                     and db["minecordclassic"]["chop"]
                 ):
                     cooldown = 60
-                    command = "nether chop (classic)"
+                    command = "nether chop"
                 elif (
                     ("you killed" in msg.content or "youkilled" in msg.content)
                     and ("in the nether" in msg.content or "inthenether" in msg.content)
                     and db["minecordclassic"]["fight"]
                 ):
                     cooldown = 45
-                    command = "nether fight (classic)"
+                    command = "nether fight"
                 else:
                     return
                 response = db["minecordclassic"]["response"]
-
-            elif msg.author.id == 625363818968776705:
-
-                try:
-                    try:
-                        msg2 = await msg.channel.fetch_message(msg.reference.message_id)
-                        user = msg2.author
-                    except:
-                        user = msg.mentions[0]
-                except:
-                    return
-
-                await open_account(user, bot)
-                db = await fetch_user(user, bot)
-
-                if not (
-                    db["minecord"]["mine"]
-                    or db["minecord"]["fight"]
-                    or db["minecord"]["chop"]
-                    or db["minecord"]["ed"]
-                ):
-                    return
-
-                event = await bot.events.find_one({"_id": str(msg.guild.id)})
-
-                if "you mined" in msg.content or "youmined" in msg.content:
-
-                    if event != None:
-                        if str(user.id) not in event["participants"]:
-                            event["participants"][str(user.id)] = 1
-                        else:
-                            event["participants"][str(user.id)] += 1
-
-                        await bot.events.find_one_and_update(
-                            {"_id": str(msg.guild.id)},
-                            {"$set": {"participants": event["participants"]}},
-                        )
-
-                    await bot.stats.update_one({"_id": 1}, {"$inc": {"trials": 1}})
-                    if "bosskey" in msg.content or "boss key" in msg.content:
-                        await bot.stats.update_one({"_id": 1}, {"$inc": {"success": 1}})
-                    if db["minecord"]["mine"]:
-                        if db["minecord"]["efficiency"]:
-                            cooldown = 4
-                        else:
-                            cooldown = 5
-                        command = "mine"
-
-                elif "you chopped" in msg.content or "youchopped" in msg.content:
-
-                    if event != None:
-                        if str(user.id) not in event["participants"]:
-                            event["participants"][str(user.id)] = 9
-                        else:
-                            event["participants"][str(user.id)] += 9
-
-                        await bot.events.find_one_and_update(
-                            {"_id": str(msg.guild.id)},
-                            {"$set": {"participants": event["participants"]}},
-                        )
-
-                    if db["minecord"]["chop"]:
-                        if db["minecord"]["efficiency"]:
-                            cooldown = 48
-                        else:
-                            cooldown = 60
-                        command = "chop"
-
-                elif "you killed" in msg.content or "youkilled" in msg.content:
-
-                    if event != None:
-                        if str(user.id) not in event["participants"]:
-                            event["participants"][str(user.id)] = 5
-                        else:
-                            event["participants"][str(user.id)] += 5
-
-                        await bot.events.find_one_and_update(
-                            {"_id": str(msg.guild.id)},
-                            {"$set": {"participants": event["participants"]}},
-                        )
-
-                    if db["minecord"]["fight"]:
-                        if db["minecord"]["efficiency"]:
-                            cooldown = 32
-                        else:
-                            cooldown = 40
-                        command = "fight"
-
-                else:
-                    return
-                response = db["minecord"]["response"]
 
             elif msg.author.id == 574652751745777665:
                 try:
@@ -333,7 +241,7 @@ async def on_message(msg: discord.Message) -> None:
                                         try:
                                             author = embed["author"]["name"]
 
-                                            if author in bot.session.keys():
+                                            if f"{author}{msg.guild.id}" in bot.session.keys():
                                                 user = await msg.guild.fetch_member(
                                                     bot.session[author]
                                                 )
@@ -395,7 +303,7 @@ async def on_message(msg: discord.Message) -> None:
                                                 else:
                                                     user = confirmation.author
                                                     bot.session.update(
-                                                        {author: user.id}
+                                                        {f"{author}{msg.guild.id}": user.id}
                                                     )
                                             else:
                                                 user = potential_people[0]
@@ -518,180 +426,103 @@ async def on_message(msg: discord.Message) -> None:
 
     return
 
-
 @bot.event
 async def on_interaction(itx: discord.Interaction) -> None:
     await open_account(itx.user, bot)
     await bot.process_application_commands(itx)
-
-
-@minecord.command(name="droprate", description="Find the drop-rate of boss keys!")
-async def droprate(ctx: discord.ApplicationContext) -> None:
-    success = (await bot.stats.find_one({"_id": 1}))["success"]
-    trials = (await bot.stats.find_one({"_id": 1}))["trials"]
-
-    embed = discord.Embed(title="Boss Key Drop Rates", color=discord.Color.orange())
-    embed.add_field(name="Boss Key Drops", value=success, inline=False)
-    embed.add_field(name="Mines Recorded", value=trials, inline=False)
-    embed.set_footer(
-        text=f"Estimated chance of Boss Key drop: {round(success/(trials*100), 3)}% (1 in {round(trials/success)+1})"
-    )
-    embed.timestamp = datetime.now()
-    await ctx.respond(embed=embed)
-
 
 @minecord.command(name="setup", description="Setup for Minecord!")
 async def setup(ctx: discord.ApplicationContext) -> None:
     await ctx.defer(ephemeral=True)
 
     await open_account(ctx.author, bot)
-    user = ctx.author
-    view = Option1()
-    em = discord.Embed(title="What are your settings for?", color=ctx.author.color)
+
+    em = discord.Embed(
+        title="Do you have efficiency?",
+        description="Yes | No",
+        color=ctx.author.color,
+    )
     em.set_footer(
         text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
     )
     em.timestamp = datetime.now()
-    await ctx.followup.send(embed=em, view=view)
-    db = await fetch_user(ctx.user, bot)
-    timedout = await view.wait()
+    op1 = Option2()
+    await ctx.interaction.edit_original_message(embed=em, view=op1)
+
+    timedout = await op1.wait()
 
     if timedout:
-        for child in view.children:
-            child.disabled = True
-        await ctx.interaction.edit_original_message(view=view)
-        return
-
-    if view.value:
-
-        em = discord.Embed(
-            title="Do you have efficiency?",
-            description="Yes | No",
-            color=ctx.author.color,
-        )
-        em.set_footer(
-            text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
-        )
-        em.timestamp = datetime.now()
-        op1 = Option2()
-        await ctx.interaction.edit_original_message(embed=em, view=op1)
-
-        timedout = await op1.wait()
-
-        if timedout:
-            for child in op1.children:
-                child.disabled = True
-            await ctx.interaction.edit_original_message(view=op1)
-            return
-
-        await bot.minecordclassic.update_one(
-            {"_id": ctx.author.id}, {"$set": {"efficiency": op1.value}}
-        )
-
-        opar = OptionAr()
-
-        em = discord.Embed(title="What armor do you have?", color=ctx.author.color)
-        em.timestamp = datetime.now()
-        em.set_footer(
-            text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
-        )
-        await ctx.interaction.edit_original_message(embed=em, view=opar)
-
-        timedout = await opar.wait()
-
-        if timedout:
-            for child in opar.children:
-                child.disabled = True
-            await ctx.interaction.edit_original_message(view=opar)
-            return
-
-        await bot.minecordclassic.update_one(
-            {"_id": ctx.author.id}, {"$set": {"armor": opar.value}}
-        )
-
-        em = discord.Embed(
-            title="What is your Ender Dragon cooldown (In minutes)?",
-            description="Select a number!",
-            color=ctx.author.color,
-        )
-        em.timestamp = datetime.now()
-        em.set_footer(
-            text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
-        )
-
-        opmin = OptionMin()
-
-        await ctx.interaction.edit_original_message(embed=em, view=opmin)
-
-        timedout = await opmin.wait()
-
-        if timedout:
-            for child in opmin.children:
-                child.disabled = True
-            await ctx.interaction.edit_original_message(view=opmin)
-            return
-
-        await bot.minecordclassic.update_one(
-            {"_id": ctx.author.id}, {"$set": {"ed": opmin.value}}
-        )
-
-        em = discord.Embed(
-            title="Setup Complete!",
-            description="You can edit the commands you want to be reminded upon with `/config`!",
-            color=discord.Color.green(),
-        )
-        em.timestamp = datetime.now()
-        em.set_footer(
-            text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
-        )
-
-        for child in opmin.children:
-            child.disabled = True
-
-        await ctx.interaction.edit_original_message(embed=em, view=opmin)
-        return
-
-    else:
-        em = discord.Embed(
-            title="Do you have efficiency?",
-            description="Yes | No",
-            color=ctx.author.color,
-        )
-        em.timestamp = datetime.now()
-        em.set_footer(
-            text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
-        )
-
-        op1 = Option2()
-        await ctx.interaction.edit_original_message(embed=em, view=op1)
-
-        timedout = await op1.wait()
-
-        if timedout:
-            for child in op1.children:
-                child.disabled = True
-            await ctx.interaction.edit_original_message(view=op1)
-            return
-
-        await bot.minecord.update_one(
-            {"_id": ctx.author.id}, {"$set": {"efficiency": op1.value}}
-        )
-
-        em = discord.Embed(
-            title="Setup Complete!",
-            description="You can edit the commands you want to be reminded upon with `/config`!",
-            color=discord.Color.green(),
-        )
-        em.timestamp = datetime.now()
-        em.set_footer(
-            text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
-        )
-
         for child in op1.children:
             child.disabled = True
-        em.timestamp = datetime.now()
-        await ctx.interaction.edit_original_message(embed=em, view=op1)
+        await ctx.interaction.edit_original_message(view=op1)
         return
+
+    await bot.minecordclassic.update_one(
+        {"_id": ctx.author.id}, {"$set": {"efficiency": op1.value}}
+    )
+
+    opar = OptionAr()
+
+    em = discord.Embed(title="What armor do you have?", color=ctx.author.color)
+    em.timestamp = datetime.now()
+    em.set_footer(
+        text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
+    )
+    await ctx.interaction.edit_original_message(embed=em, view=opar)
+
+    timedout = await opar.wait()
+
+    if timedout:
+        for child in opar.children:
+            child.disabled = True
+        await ctx.interaction.edit_original_message(view=opar)
+        return
+
+    await bot.minecordclassic.update_one(
+        {"_id": ctx.author.id}, {"$set": {"armor": opar.value}}
+    )
+
+    em = discord.Embed(
+        title="What is your Ender Dragon cooldown (In minutes)?",
+        description="Select a number!",
+        color=ctx.author.color,
+    )
+    em.timestamp = datetime.now()
+    em.set_footer(
+        text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
+    )
+
+    opmin = OptionMin()
+
+    await ctx.interaction.edit_original_message(embed=em, view=opmin)
+
+    timedout = await opmin.wait()
+
+    if timedout:
+        for child in opmin.children:
+            child.disabled = True
+        await ctx.interaction.edit_original_message(view=opmin)
+        return
+
+    await bot.minecordclassic.update_one(
+        {"_id": ctx.author.id}, {"$set": {"ed": opmin.value}}
+    )
+
+    em = discord.Embed(
+        title="Setup Complete!",
+        description="You can edit the commands you want to be reminded upon with `/config`!",
+        color=discord.Color.green(),
+    )
+    em.timestamp = datetime.now()
+    em.set_footer(
+        text=f"© Flash Assist 2022 | {int(bot.latency*1000)} ms | {ctx.author}"
+    )
+
+    for child in opmin.children:
+        child.disabled = True
+
+    await ctx.interaction.edit_original_message(embed=em, view=opmin)
+    return
 
 
 @bot.slash_command(
@@ -702,26 +533,16 @@ async def config(ctx: discord.ApplicationContext) -> None:
     embed = discord.Embed(
         title="Reminder Control Panel", description="**Green:** ON\n**Red:** OFF"
     )
-    view = Toggles(ctx)
+    view = TogglesCl(ctx)
     embed.set_footer(text="Click the buttons to toggle between modes!")
     embed.timestamp = datetime.now()
     await ctx.respond(embed=embed, view=view, ephemeral=True)
-    view.value = "Minecord"
     to = await view.wait()
     while not (to):
-        if view.value == "Minecord Classic":
-            view = TogglesCl(ctx)
-            embed.color = discord.Color.orange()
-            await ctx.interaction.edit_original_message(view=view)
-        elif view.value == "Minecord":
-            view = Toggles(ctx)
-            embed.color = discord.Color.yellow()
-            await ctx.interaction.edit_original_message(view=view)
-        elif view.value == "Virtual Fisher":
+        if view.value == "Virtual Fisher":
             view = TogglesVf(ctx)
             embed.color = discord.Color.blue()
             await ctx.interaction.edit_original_message(view=view)
-
         to = await view.wait()
     for child in view.children:
         child.disabled = True
@@ -757,7 +578,7 @@ async def response1(
         str,
         name="bot",
         description="Choose the bot you want to edit reminder responses for.",
-        choices=["Minecord", "Minecord Classic", "Virtual Fisher"],
+        choices=["Minecord Classic", "Virtual Fisher"],
         required=True,
     ),
 ) -> None:
@@ -824,7 +645,7 @@ async def guide(ctx: discord.ApplicationContext) -> None:
 
     embed = discord.Embed(
         title="Guide",
-        description="**[Minecord](https://just-a-squid.gitbook.io/minecord-1/v/minecord/)**\n**[Virtual Fisher](https://virtualfisher.com/guide)**",
+        description="**[Virtual Fisher](https://virtualfisher.com/guide)**",
         color=discord.Color.orange(),
     )
     embed.timestamp = datetime.now()
@@ -883,7 +704,7 @@ async def start(
             )
         except discord.HTTPException:
             await event.interaction.followup.send(
-                'I am missing permissions. Use the "Add to server" button on my profile to correct the permissions.'
+                'I am missing permissions. Use the \"Add to server\" button on my profile to correct the permissions.'
             )
             return
 
