@@ -257,7 +257,7 @@ async def on_message(msg: discord.Message) -> None:
                                         potential_people = [
                                             item
                                             for item in msg.guild.members
-                                            if item.name == author
+                                            if item.display_name == author
                                         ]
                                         if len(potential_people) > 1:
 
