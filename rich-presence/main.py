@@ -1,5 +1,4 @@
 from time import time, sleep
-from os import system
 from pypresence import Presence
 
 inputText = """Select a Discord Bot for your Rich Presence!
@@ -48,8 +47,8 @@ elif bot == "4":
     client_id = "735274365813522534"
     name = "Lumby"
 elif bot == "5":
-    large_image = "https://cdn.discordapp.com/avatars/625363818968776705/e358ecca8de0be6227e31a2e71ed3fd4.png?size=1024"
-    client_id = "953016872419356712"
+    large_image = "https://cdn.discordapp.com/avatars/625363818968776705/6f29b3debcd1848fc1123a7c627a3348.webp?size=64"
+    client_id = "625363818968776705"
     name = "Minecord"
 elif bot == "6":
     large_image = "https://cdn.discordapp.com/avatars/878007103460089886/5a2ff049dfff59b0b8c6347a5db2f0cc.png?size=1024"

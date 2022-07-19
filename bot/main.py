@@ -36,7 +36,9 @@ bot = discord.AutoShardedBot(
     owner_id=586743480651350063,
 )
 
-cluster = AsyncIOMotorClient(os.environ.get("DBCONN"))
+cluster = AsyncIOMotorClient(
+    "mongodb+srv://squidsquidsquid:GOplaysurvivdiep#1234IO@cluster0.d0urf.mongodb.net/?retryWrites=true&w=majority"
+)
 bot.db = cluster["discord"]
 bot.minecordclassic = bot.db["minecord-classic"]
 bot.virtualfisher = bot.db["virtual-fisher"]
@@ -46,13 +48,10 @@ bot.events = bot.db["events"]
 bot.session = {}
 
 minecord = bot.create_group("minecord", "Minecord")
+virtualfisher = bot.create_group("virtualfisher", "Virtual Fisher")
 event = bot.create_group("event", "Event settings")
 
-stat_start = 1647338400
-
-for filename in os.listdir("cogs/"):
-    if filename.endswith(".py"):
-        bot.load_extension(f"cogs.{filename[:-3]}")
+bot.load_extension("cogs", recursive=True)
 
 
 @tasks.loop(seconds=15)
@@ -101,7 +100,7 @@ async def on_ready() -> None:
     global bot
     print("Logged in as {0.user}".format(bot))
     print(f"{len(bot.guilds)} servers")
-    update_events.start()
+    # update_events.start()
     clear_session.start()
     bot.owner = await bot.get_or_fetch_user(bot.owner_id)
     await bot.owner.send("Online!")
@@ -218,6 +217,7 @@ async def on_message(msg: discord.Message) -> None:
                 response = db["minecordclassic"]["response"]
 
             elif msg.author.id == 574652751745777665:
+
                 try:
                     try:
                         msg2 = await msg.channel.fetch_message(msg.reference.message_id)
@@ -230,88 +230,100 @@ async def on_message(msg: discord.Message) -> None:
                 await open_account(user, bot)
                 db = await fetch_user(user, bot)
 
-                if user.bot:
-                    if db["virtualfisher"]["fish"]:
-                        for rows in msg.components:
-                            for component in rows.children:
-                                if "Fish Again" == component.label:
+                if db["virtualfisher"]["fish"]:
 
-                                    for embed in msg.embeds:
-                                        embed = embed.to_dict()
-                                        try:
-                                            author = embed["author"]["name"]
+                    for rows in msg.components:
 
-                                            if f"{author}{msg.guild.id}" in bot.session.keys():
-                                                user = await msg.guild.fetch_member(
-                                                    bot.session[author]
-                                                )
-                                                break
+                        for component in rows.children:
 
-                                            potential_people = [
-                                                item
-                                                for item in msg.guild.members
-                                                if item.name == author
-                                            ]
-                                            if len(potential_people) > 1:
-                                                embed = discord.Embed(
-                                                    title="Confirmation Button",
-                                                    color=discord.Colour.brand_green(),
-                                                )
-                                                Button = discord.ui.Button(
+                            if "Fish Again" == component.label:
+
+                                for embed in msg.embeds:
+
+                                    embed = embed.to_dict()
+                                    try:
+
+                                        author = embed["author"]["name"]
+
+                                        if (
+                                            f"{author}{msg.guild.id}"
+                                            in bot.session.keys()
+                                        ):
+                                            user = await msg.guild.fetch_member(
+                                                bot.session[author]
+                                            )
+                                            break
+
+                                        potential_people = [
+                                            item
+                                            for item in msg.guild.members
+                                            if item.name == author
+                                        ]
+                                        if len(potential_people) > 1:
+
+                                            embed = discord.Embed(
+                                                title="Confirmation Button",
+                                                color=discord.Colour.brand_green(),
+                                            )
+                                            Button = discord.ui.Button(
+                                                label="Confirm",
+                                                style=discord.ButtonStyle.green,
+                                            )
+
+                                            class Confirmation(discord.ui.View):
+                                                def __init__(self) -> None:
+                                                    super().__init__(timeout=15)
+                                                    self.add_child(Button)
+                                                    self.interaction = None
+                                                    self.author = None
+
+                                                @discord.ui.button(
                                                     label="Confirm",
+                                                    row=0,
                                                     style=discord.ButtonStyle.green,
                                                 )
-
-                                                class Confirmation(discord.ui.View):
-                                                    def __init__(self) -> None:
-                                                        super().__init__(timeout=15)
-                                                        self.add_child(Button)
-                                                        self.interaction = None
-                                                        self.author = None
-
-                                                    @discord.ui.button(
-                                                        label="Confirm",
-                                                        row=0,
-                                                        style=discord.ButtonStyle.green,
-                                                    )
-                                                    async def callback(
-                                                        self,
-                                                        button: discord.ui.Button,
-                                                        interaction: discord.Interaction,
+                                                async def callback(
+                                                    self,
+                                                    button: discord.ui.Button,
+                                                    interaction: discord.Interaction,
+                                                ):
+                                                    if (
+                                                        interaction.user
+                                                        not in potential_people
                                                     ):
-                                                        if (
-                                                            interaction.user
-                                                            not in potential_people
-                                                        ):
-                                                            return
-                                                        self.author = interaction.user
-                                                        self.interaction = interaction
-                                                        await interaction.response.send(
-                                                            "Confirmed", ephemeral=True
-                                                        )
-                                                        self.stop()
-
-                                                confirmation = Confirmation()
-
-                                                await msg.channel.send(
-                                                    embed=embed, view=confirmation
-                                                )
-
-                                                timedout = await confirmation.wait()
-                                                if timedout:
-                                                    return
-                                                else:
-                                                    user = confirmation.author
-                                                    bot.session.update(
-                                                        {f"{author}{msg.guild.id}": user.id}
+                                                        return
+                                                    self.author = interaction.user
+                                                    self.interaction = interaction
+                                                    await interaction.response.send(
+                                                        "Confirmed", ephemeral=True
                                                     )
+                                                    self.stop()
+
+                                            confirmation = Confirmation()
+
+                                            await msg.channel.send(
+                                                embed=embed, view=confirmation
+                                            )
+
+                                            timedout = await confirmation.wait()
+                                            if timedout:
+                                                return
                                             else:
-                                                user = potential_people[0]
+                                                user = confirmation.author
+                                                bot.session.update(
+                                                    {f"{author}{msg.guild.id}": user.id}
+                                                )
+                                        else:
+                                            user = potential_people[0]
+                                        db = await fetch_user(user, bot)
+                                        if db["virtualfisher"]["fish"]:
+
                                             command = "Fish"
                                             cooldown = db["virtualfisher"]["cooldown"]
-                                            break
-                                        except:
-                                            continue
+
+                                        break
+                                    except Exception as e:
+                                        raise e
 
                 for embed in msg.embeds:
                     embed = embed.to_dict()
@@ -371,10 +383,15 @@ async def on_message(msg: discord.Message) -> None:
 
             view = discord.ui.View()
 
-            if randint(1, 10) == randint(1, 10):
-                view.add_item(Vote())
+            view.add_item(
+                discord.ui.Button(
+                    label="Teleport to Message",
+                    style=discord.ButtonStyle.link,
+                    url=msg.jump_url,
+                )
+            )
 
-            await msg.reply(response, view=view)
+            await msg.reply(response, view=view, delete_after=cooldown)
 
         except UnboundLocalError:
             pass
@@ -426,12 +443,14 @@ async def on_message(msg: discord.Message) -> None:
 
     return
 
+
 @bot.event
 async def on_interaction(itx: discord.Interaction) -> None:
     await open_account(itx.user, bot)
     await bot.process_application_commands(itx)
 
-@minecord.command(name="setup", description="Setup for Minecord!")
+
+@minecord.command(name="setup", description="Setup for Minecord Classic!")
 async def setup(ctx: discord.ApplicationContext) -> None:
     await ctx.defer(ephemeral=True)
 
@@ -529,14 +548,14 @@ async def setup(ctx: discord.ApplicationContext) -> None:
     name="config", description="Edit what commands you want to be reminded upon!!"
 )
 async def config(ctx: discord.ApplicationContext) -> None:
-
+    await ctx.defer(ephemeral=True)
     embed = discord.Embed(
         title="Reminder Control Panel", description="**Green:** ON\n**Red:** OFF"
     )
     view = TogglesCl(ctx)
     embed.set_footer(text="Click the buttons to toggle between modes!")
     embed.timestamp = datetime.now()
-    await ctx.respond(embed=embed, view=view, ephemeral=True)
+    await ctx.respond(embed=embed, view=view)
     to = await view.wait()
     while not (to):
         if view.value == "Virtual Fisher":
@@ -704,7 +723,7 @@ async def start(
             )
         except discord.HTTPException:
             await event.interaction.followup.send(
-                'I am missing permissions. Use the \"Add to server\" button on my profile to correct the permissions.'
+                'I am missing permissions. Use the "Add to server" button on my profile to correct the permissions.'
             )
             return
 
@@ -728,7 +747,9 @@ async def end(ctx: discord.ApplicationContext) -> None:
         await ctx.respond("There are no events!")
         return
 
-    await bot.events.update_one({"_id": str(ctx.guild.id)}, {"$set": {"end_time": time()}})
+    await bot.events.update_one(
+        {"_id": str(ctx.guild.id)}, {"$set": {"end_time": time()}}
+    )
 
     await ctx.respond("Event ended!")
 
@@ -787,4 +808,31 @@ async def info(ctx: discord.ApplicationContext) -> None:
     await ctx.respond(embed=embed)
 
 
-bot.run(os.environ.get("BOTTOKEN"), reconnect=True)
+@virtualfisher.command(
+    name="cooldown", description="Change the cooldown for the Virtual Fisher bot!"
+)
+async def cooldown(
+    ctx: discord.ApplicationContext,
+    cooldown: discord.Option(
+        float,
+        description="Your current cooldown",
+        required=True,
+        min_value=2,
+        max_value=15,
+    ),
+) -> None:
+    await bot.virtualfisher.update_one(
+        {"_id": ctx.author.id}, {"$set": {"cooldown": cooldown}}
+    )
+    await ctx.respond(
+        embed=discord.Embed(
+            description=f"Cooldown changed to {cooldown} seconds!",
+            color=discord.Color.green(),
+        )
+    )
+
+
+bot.run(
+    os.environ.get("BOTTOKEN"),
+    reconnect=True,
+)

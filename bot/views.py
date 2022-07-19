@@ -171,7 +171,6 @@ class TogglesCl(discord.ui.View):
         super().__init__(timeout=60)
         self.value = None
         self.ctx = ctx
-        user = self.ctx.author
         loop = asyncio.get_event_loop()
         self.db = loop.run_until_complete(fetch_user(self.ctx.author, self.ctx.bot))
         for child in self.children:
@@ -267,7 +266,7 @@ class TogglesCl(discord.ui.View):
     )
     async def select_callback(self, select, interaction):
         self.value = select.values[0]
-        await interaction.response.edit_message(view=self)
+        await interaction.response.defer()
         self.stop()
 
 class TogglesVf(discord.ui.View):
@@ -278,11 +277,11 @@ class TogglesVf(discord.ui.View):
         loop = asyncio.get_event_loop()
         self.db = loop.run_until_complete(fetch_user(self.ctx.author, self.ctx.bot))
         for child in self.children:
-            if child.row == 0:
+            if isinstance(child, discord.ui.Button):
                 if child.label == "Treasure":
                     if not (self.db["virtualfisher"]["treasure"]):
                         child.style = discord.ButtonStyle.danger
-                if child.label == "Fish":
+                if child.label == "Fishing":
                     if not (self.db["virtualfisher"]["fish"]):
                         child.style = discord.ButtonStyle.danger
                 if child.label == "Worker":

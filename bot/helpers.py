@@ -27,18 +27,26 @@ async def open_account(
             "treasure": True,
             "fish": True,
             "worker": True,
-            "response": "% & boost elapsed! \nCurrent cooldown is `$ seconds`!",
+            "cooldown": 3.0,
+            "response": "% & cooldown elapsed! \nCurrent cooldown is `$ seconds`!",
         }
         await bot.virtualfisher.insert_one(post2)
     return True
 
 
 async def fetch_user(user: Union[discord.Member, discord.User], bot: discord.Bot) -> dict:
+    """Fetches user data from database
 
+    Args:
+        user (Union[discord.Member, discord.User]): The user to fetch data for
+        bot (discord.Bot): The bot instance
+
+    Returns:
+        dict: The user data
+    """
     settings = {}
-    settings["minecord"] = await bot.minecord.find_one({"_id": user.id})
-    settings["minecordclassic"] = await bot.minecordclassic.find_one({"_id": user.id})
-    settings["virtualfisher"] = await bot.virtualfisher.find_one({"_id": user.id})
+    settings["minecordclassic"] = await bot.db["minecord-classic"].find_one({"_id": user.id})
+    settings["virtualfisher"] = await bot.db["virtual-fisher"].find_one({"_id": user.id})
     return settings
 
 
