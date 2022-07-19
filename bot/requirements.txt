@@ -1,6 +1,6 @@
 statcord.py
 sentry-sdk
-py-cord[speed]==2.0.0rc1
+py-cord[speed]==2.0.0
 aiohttp
 pymongo
 motor
