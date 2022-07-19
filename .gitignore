@@ -1,7 +1,4 @@
 *.pyc
-*.replit
-*.lock
-*.toml
 __pycache__/*
 *.log
 env.*

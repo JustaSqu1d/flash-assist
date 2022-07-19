@@ -1,12 +1,16 @@
-from discord.ext import commands
+import discord
 
-class Dev(commands.Cog):
-    def __init__(self, bot):
+
+class Dev(discord.Cog):
+    def __init__(self, bot: discord.Bot) -> None:
         self.bot = bot
 
-    @commands.Cog.listener()
-    async def on_message(self, msg):
-        if msg.author.id == 625363818968776705 and "Successfully joined clan `Valar Morghulis`".lower() in msg.content:
+    @discord.Cog.listener()
+    async def on_message(self, msg: discord.Message) -> None:
+        if (
+            msg.author.id == 625363818968776705
+            and "Successfully joined clan `Valar Morghulis`".lower() in msg.content
+        ):
             roles = await msg.guild.fetch_roles()
             for role in roles:
                 if role.id == 882120373582315540:
@@ -14,5 +18,6 @@ class Dev(commands.Cog):
                     break
             await msg.mentions[0].add_roles(member_role)
 
-def setup(bot):
+
+def setup(bot: discord.Bot):
     bot.add_cog(Dev(bot))

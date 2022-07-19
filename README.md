@@ -10,7 +10,6 @@ Flash Assist is an assistant Discord bot where it can remind players once their 
 
 Flash Assist supports functionality for the following bots:
 
-- [Minecord](https://top.gg/bot/625363818968776705)
 - [Virtual Fisher](https://virtualfisher.com/)
 
 ## How to use Flash Assist?
