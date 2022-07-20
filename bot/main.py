@@ -323,7 +323,7 @@ async def on_message(msg: discord.Message) -> None:
 
                                         break
                                     except Exception as e:
-                                        raise e
+                                        pass
 
                 for embed in msg.embeds:
                     embed = embed.to_dict()
