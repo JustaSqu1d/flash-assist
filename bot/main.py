@@ -265,15 +265,10 @@ async def on_message(msg: discord.Message) -> None:
                                                 title="Confirmation Button",
                                                 color=discord.Colour.brand_green(),
                                             )
-                                            Button = discord.ui.Button(
-                                                label="Confirm",
-                                                style=discord.ButtonStyle.green,
-                                            )
 
                                             class Confirmation(discord.ui.View):
                                                 def __init__(self) -> None:
                                                     super().__init__(timeout=15)
-                                                    self.add_child(Button)
                                                     self.interaction = None
                                                     self.author = None
 
