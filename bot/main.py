@@ -37,7 +37,7 @@ bot = discord.AutoShardedBot(
 )
 
 cluster = AsyncIOMotorClient(
-    "mongodb+srv://squidsquidsquid:GOplaysurvivdiep#1234IO@cluster0.d0urf.mongodb.net/?retryWrites=true&w=majority"
+    os.environ.get("DBCONN")
 )
 bot.db = cluster["discord"]
 bot.minecordclassic = bot.db["minecord-classic"]
