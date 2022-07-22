@@ -30,7 +30,7 @@ class Verify(discord.Cog):
                 await user.send(f"""{msg.jump_url}""")
             except discord.HTTPException:
                 await msg.channel.send(
-                    "Missing Permissions. Check your discord settings to allow direct messages."
+                    "Missing Permissions. Check your Discord settings to allow direct messages."
                 )
 
             for i in range(0, 5):
